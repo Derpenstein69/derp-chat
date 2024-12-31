@@ -9,6 +9,8 @@ html {
 
 .chat {
   padding-top: 40px;
+  width: 100%;
+  height: 100%;
 }
 
 #root {
@@ -18,6 +20,7 @@ html {
   justify-content: flex-end;
   overflow-y: auto;
   height: 100%;
+  width: 100%;
   /* padding: 10px; */
 }
 
@@ -48,4 +51,11 @@ html {
 
 .my-input-text::placeholder {
   color: #ccc;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .chat {
+    padding-top: 20px;
+  }
 }
