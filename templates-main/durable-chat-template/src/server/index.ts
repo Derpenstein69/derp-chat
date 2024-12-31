@@ -11,6 +11,10 @@ import { CloudflareStorage } from "@openauthjs/openauth/storage/cloudflare";
 import { PasswordAdapter } from "@openauthjs/openauth/adapter/password";
 import { PasswordUI } from "@openauthjs/openauth/ui/password";
 import { object, string } from "valibot";
+import { GoogleAdapter } from "@openauthjs/openauth/adapter/google";
+import { GithubAdapter } from "@openauthjs/openauth/adapter/github";
+import { AppleAdapter } from "@openauthjs/openauth/adapter/apple";
+import { DiscordAdapter } from "@openauthjs/openauth/adapter/discord";
 
 import type { ChatMessage, Message } from "../shared";
 
@@ -195,6 +199,26 @@ export default {
             },
           }),
         ),
+        google: GoogleAdapter({
+          clientID: process.env.GOOGLE_CLIENT_ID!,
+          clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+          scopes: ["profile", "email"],
+        }),
+        github: GithubAdapter({
+          clientID: process.env.GITHUB_CLIENT_ID!,
+          clientSecret: process.env.GITHUB_CLIENT_SECRET!,
+          scopes: ["user:email"],
+        }),
+        apple: AppleAdapter({
+          clientID: process.env.APPLE_CLIENT_ID!,
+          clientSecret: process.env.APPLE_CLIENT_SECRET!,
+          scopes: ["name", "email"],
+        }),
+        discord: DiscordAdapter({
+          clientID: process.env.DISCORD_CLIENT_ID!,
+          clientSecret: process.env.DISCORD_CLIENT_SECRET!,
+          scopes: ["identify", "email"],
+        }),
       },
       theme: {
         title: "myAuth",
