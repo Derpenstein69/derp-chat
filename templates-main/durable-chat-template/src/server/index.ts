@@ -9,6 +9,7 @@ import { EventSourceParserStream } from "eventsource-parser/stream";
 
 import type { ChatMessage, Message } from "../shared";
 
+// TODO: Explain that this should be a shared type
 export class Chat extends Server<Env> {
   static options = { hibernate: true };
 
@@ -148,6 +149,7 @@ export class Chat extends Server<Env> {
 
 export default {
   async fetch(request, env) {
+    // TODO: Explain this stuff at the top (for demo purposes only)
     return (
       (await routePartykitRequest(request, { ...env })) ||
       env.ASSETS.fetch(request)
