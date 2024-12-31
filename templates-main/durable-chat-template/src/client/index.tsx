@@ -1,21 +1,43 @@
 import { createRoot } from "react-dom/client";
 import { usePartySocket } from "partysocket/react";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   BrowserRouter,
   Routes,
   Route,
   Navigate,
   useParams,
+  useLocation,
 } from "react-router";
 import { nanoid } from "nanoid";
+import { createClient } from "@openauthjs/openauth/client";
 
 import { names, type ChatMessage, type Message } from "../shared";
+
+const client = createClient({
+  clientID: "your-client-id",
+  issuer: "https://auth.myserver.com",
+});
 
 function App() {
   const [name] = useState(names[Math.floor(Math.random() * names.length)]);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const { room } = useParams();
+  const location = useLocation();
+
+  useEffect(() => {
+    const handleAuthCallback = async () => {
+      const query = new URLSearchParams(location.search);
+      const code = query.get("code");
+      if (code) {
+        const tokens = await client.exchange(code, window.location.origin);
+        localStorage.setItem("access_token", tokens.access);
+        localStorage.setItem("refresh_token", tokens.refresh);
+      }
+    };
+
+    handleAuthCallback();
+  }, [location.search]);
 
   const socket = usePartySocket({
     party: "chat",
