@@ -1,3 +1,4 @@
+/* Main styles for the chat application */
 body,
 html {
   height: 100%;
@@ -7,12 +8,14 @@ html {
   flex-direction: column;
 }
 
+/* Chat container styles */
 .chat {
   padding-top: 40px;
   width: 100%;
   height: 100%;
 }
 
+/* Root element styles */
 #root {
   flex: 1;
   display: flex;
@@ -24,15 +27,18 @@ html {
   /* padding: 10px; */
 }
 
+/* Message styles */
 .message {
   margin-bottom: 10px;
 }
 
+/* User name styles */
 .message .user {
   font-weight: bold;
   text-align: right;
 }
 
+/* Remove button styles */
 .message .remove {
   position: absolute;
   width: 22px;
@@ -45,10 +51,12 @@ html {
   border: "none";
 }
 
+/* Send message button styles */
 .send-message {
   padding: 0;
 }
 
+/* Placeholder text styles */
 .my-input-text::placeholder {
   color: #ccc;
 }
@@ -150,6 +158,7 @@ html {
   background-color: #0fa0ce;
 }
 
+/* Rating system styles */
 .rating-system {
   display: flex;
   justify-content: center;
@@ -207,6 +216,7 @@ html {
   color: #0fa0ce;
 }
 
+/* Embedded survey styles */
 .embedded-survey {
   margin-top: 10px;
 }

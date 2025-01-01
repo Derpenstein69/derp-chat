@@ -3,6 +3,10 @@ import { Connection } from "partyserver";
 import { nanoid } from "nanoid";
 import { createClient } from "@openauthjs/openauth/client";
 
+/**
+ * Integration test suite for the Chat class and related components.
+ * This file contains end-to-end tests to ensure the integration of various components works as expected.
+ */
 describe("Integration Tests", () => {
   let chat: Chat;
   let connection: Connection;
@@ -17,6 +21,9 @@ describe("Integration Tests", () => {
     });
   });
 
+  /**
+   * Test to check the end-to-end flow of user authentication, message sending, and message storage.
+   */
   test("end-to-end flow", async () => {
     const userProfile = {
       name: "Alice",
@@ -67,6 +74,9 @@ describe("Integration Tests", () => {
     expect(chat.ctx.storage.sql.exec).toHaveBeenCalled();
   });
 
+  /**
+   * Test to check if the AI assistant responds to user messages.
+   */
   test("AI assistant response", async () => {
     const newMessage = {
       id: nanoid(8),
@@ -88,6 +98,9 @@ describe("Integration Tests", () => {
     expect(chat.ctx.storage.sql.exec).toHaveBeenCalled();
   });
 
+  /**
+   * Test to check the file attachment feature in messages.
+   */
   test("file attachment feature", async () => {
     const newMessage = {
       id: nanoid(8),
@@ -108,6 +121,9 @@ describe("Integration Tests", () => {
     expect(chat.ctx.storage.sql.exec).toHaveBeenCalled();
   });
 
+  /**
+   * Test to check the handling of user profiles in messages.
+   */
   test("user profiles", async () => {
     const userProfile = {
       name: "Alice",
@@ -159,6 +175,9 @@ describe("Integration Tests", () => {
     expect(chat.ctx.storage.sql.exec).toHaveBeenCalled();
   });
 
+  /**
+   * Test to check the session management functionality.
+   */
   test("session management", async () => {
     const newMessage = {
       id: nanoid(8),
@@ -180,6 +199,9 @@ describe("Integration Tests", () => {
     expect(session.updated_at).toBeDefined();
   });
 
+  /**
+   * Test to check the logging of session activities.
+   */
   test("logging of session activities", async () => {
     const newMessage = {
       id: nanoid(8),

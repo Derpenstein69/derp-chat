@@ -2,6 +2,10 @@ import { Chat } from "../index";
 import { Connection } from "partyserver";
 import { nanoid } from "nanoid";
 
+/**
+ * Test suite for the Chat class.
+ * This file contains unit tests for the Chat class and its methods.
+ */
 describe("Chat", () => {
   let chat: Chat;
   let connection: Connection;
@@ -11,6 +15,9 @@ describe("Chat", () => {
     connection = new Connection();
   });
 
+  /**
+   * Test to check if the Chat class initializes messages from the database on start.
+   */
   test("should initialize messages from the database on start", () => {
     const mockMessages = [
       { id: "1", user: "Alice", role: "user", content: "Hello", attachments: [] },
@@ -25,6 +32,9 @@ describe("Chat", () => {
     expect(chat.messages).toEqual(mockMessages);
   });
 
+  /**
+   * Test to check if the Chat class sends initial messages to connected client.
+   */
   test("should send initial messages to connected client", () => {
     chat.messages = [
       { id: "1", user: "Alice", role: "user", content: "Hello", attachments: [] },
@@ -41,6 +51,9 @@ describe("Chat", () => {
     );
   });
 
+  /**
+   * Test to check if the Chat class saves and broadcasts new messages.
+   */
   test("should save and broadcast new messages", async () => {
     const newMessage = {
       id: nanoid(8),
@@ -61,6 +74,9 @@ describe("Chat", () => {
     expect(chat.ctx.storage.sql.exec).toHaveBeenCalled();
   });
 
+  /**
+   * Test to check if the Chat class updates and broadcasts existing messages.
+   */
   test("should update and broadcast existing messages", async () => {
     const existingMessage = {
       id: "1",
@@ -83,6 +99,9 @@ describe("Chat", () => {
     expect(chat.ctx.storage.sql.exec).toHaveBeenCalled();
   });
 
+  /**
+   * Test to check if the Chat class handles AI assistant responses.
+   */
   test("should handle AI assistant responses", async () => {
     const newMessage = {
       id: nanoid(8),
@@ -104,6 +123,9 @@ describe("Chat", () => {
     expect(chat.ctx.storage.sql.exec).toHaveBeenCalled();
   });
 
+  /**
+   * Test to check if the Chat class creates and updates sessions.
+   */
   test("should create and update sessions", async () => {
     const newMessage = {
       id: nanoid(8),
@@ -125,6 +147,9 @@ describe("Chat", () => {
     expect(session.updated_at).toBeDefined();
   });
 
+  /**
+   * Test to check if the Chat class logs session activities.
+   */
   test("should log session activities", async () => {
     const newMessage = {
       id: nanoid(8),

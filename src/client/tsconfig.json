@@ -1,8 +1,9 @@
 {
+  // TypeScript configuration for the client-side code
   "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "jsx": "react",
-    "lib": ["DOM", "ESNext"]
+    "jsx": "react", // Enable JSX support for React
+    "lib": ["DOM", "ESNext"] // Include DOM and ESNext libraries
   },
-  "include": ["./index.tsx", "./__tests__/App.test.tsx"]
+  "include": ["./index.tsx", "./__tests__/App.test.tsx"] // Include specific files for compilation
 }

@@ -14,11 +14,13 @@ import { createClient } from "@openauthjs/openauth/client";
 
 import { names, type ChatMessage, type Message } from "../shared";
 
+// Create an OpenAuth client for user authentication
 const client = createClient({
   clientID: "your-client-id",
   issuer: "https://auth.myserver.com",
 });
 
+// Main application component
 function App() {
   const [name, setName] = useState<string | null>(null);
   const [profile, setProfile] = useState<{
@@ -58,6 +60,7 @@ function App() {
     handleAuthCallback();
   }, [location.search]);
 
+  // Initialize PartySocket for real-time communication
   const socket = usePartySocket({
     party: "chat",
     room,
@@ -217,6 +220,7 @@ function App() {
   );
 }
 
+// Component for managing user profile settings
 function ProfileSettings() {
   const [profile, setProfile] = useState<{
     picture: string;
@@ -303,6 +307,7 @@ function ProfileSettings() {
   );
 }
 
+// Component for providing feedback buttons (thumbs up/down)
 function FeedbackButtons({ messageId }: { messageId: string }) {
   const handleFeedback = (feedback: string) => {
     console.log(`Feedback for message ${messageId}: ${feedback}`);
@@ -316,6 +321,7 @@ function FeedbackButtons({ messageId }: { messageId: string }) {
   );
 }
 
+// Component for providing a star rating system
 function RatingSystem({ messageId }: { messageId: string }) {
   const [rating, setRating] = useState<number | null>(null);
 
@@ -339,6 +345,7 @@ function RatingSystem({ messageId }: { messageId: string }) {
   );
 }
 
+// Component for providing detailed feedback form
 function FeedbackForm({ messageId }: { messageId: string }) {
   const [feedback, setFeedback] = useState<string>("");
 
@@ -360,6 +367,7 @@ function FeedbackForm({ messageId }: { messageId: string }) {
   );
 }
 
+// Component for displaying a survey link
 function SurveyLink() {
   const handleSurveyClick = () => {
     console.log("Survey link clicked");
@@ -372,6 +380,7 @@ function SurveyLink() {
   );
 }
 
+// Component for embedding a survey within the application
 function EmbeddedSurvey() {
   return (
     <div className="embedded-survey">
@@ -384,6 +393,7 @@ function EmbeddedSurvey() {
   );
 }
 
+// Render the application
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 createRoot(document.getElementById("root")!).render(
   <BrowserRouter>

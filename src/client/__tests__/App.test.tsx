@@ -16,6 +16,10 @@ jest.mock('@openauthjs/openauth/client', () => ({
   })),
 }));
 
+/**
+ * Test suite for the App component.
+ * This file contains unit tests for the App component and its child components.
+ */
 describe('App component', () => {
   beforeEach(() => {
     usePartySocket.mockReturnValue({
@@ -23,6 +27,9 @@ describe('App component', () => {
     });
   });
 
+  /**
+   * Test to check if the App component renders correctly.
+   */
   test('renders App component', () => {
     render(
       <BrowserRouter>
@@ -34,6 +41,9 @@ describe('App component', () => {
     expect(screen.getByPlaceholderText(/Type a message/i)).toBeInTheDocument();
   });
 
+  /**
+   * Test to check if the App component handles state changes properly.
+   */
   test('handles state changes properly', () => {
     render(
       <BrowserRouter>
@@ -48,6 +58,9 @@ describe('App component', () => {
     expect(input.value).toBe('Hello');
   });
 
+  /**
+   * Test to check if the App component handles form submission.
+   */
   test('handles form submission', async () => {
     render(
       <BrowserRouter>
@@ -66,6 +79,9 @@ describe('App component', () => {
     expect(usePartySocket().send).toHaveBeenCalled();
   });
 
+  /**
+   * Test to check if the FeedbackButtons component renders correctly.
+   */
   test('renders FeedbackButtons component', () => {
     render(
       <BrowserRouter>
@@ -78,6 +94,9 @@ describe('App component', () => {
     expect(screen.getByText('👎')).toBeInTheDocument();
   });
 
+  /**
+   * Test to check if the RatingSystem component renders correctly.
+   */
   test('renders RatingSystem component', () => {
     render(
       <BrowserRouter>
@@ -89,6 +108,9 @@ describe('App component', () => {
     expect(screen.getAllByText('★').length).toBe(5);
   });
 
+  /**
+   * Test to check if the FeedbackForm component renders correctly.
+   */
   test('renders FeedbackForm component', () => {
     render(
       <BrowserRouter>
@@ -100,6 +122,9 @@ describe('App component', () => {
     expect(screen.getByPlaceholderText('Provide detailed feedback...')).toBeInTheDocument();
   });
 
+  /**
+   * Test to check if the SurveyLink component renders correctly.
+   */
   test('renders SurveyLink component', () => {
     render(
       <BrowserRouter>
@@ -111,6 +136,9 @@ describe('App component', () => {
     expect(screen.getByText('Take our survey')).toBeInTheDocument();
   });
 
+  /**
+   * Test to check if the EmbeddedSurvey component renders correctly.
+   */
   test('renders EmbeddedSurvey component', () => {
     render(
       <BrowserRouter>
