@@ -20,7 +20,8 @@ const client = createClient({
 });
 
 function App() {
-  const [name] = useState(names[Math.floor(Math.random() * names.length)]);
+  const [name, setName] = useState<string | null>(null);
+  const [profile, setProfile] = useState<{ picture: string; status: string } | null>(null);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const { room } = useParams();
   const location = useLocation();
@@ -33,6 +34,10 @@ function App() {
         const tokens = await client.exchange(code, window.location.origin);
         localStorage.setItem("access_token", tokens.access);
         localStorage.setItem("refresh_token", tokens.refresh);
+
+        const userProfile = await client.getUserProfile(tokens.access);
+        setName(userProfile.name);
+        setProfile({ picture: userProfile.picture, status: userProfile.status });
       }
     };
 
@@ -99,15 +104,27 @@ function App() {
     <div className="chat container">
       {messages.map((message) => (
         <div key={message.id} className="row message">
-          <div className="two columns user">{message.user}</div>
+          <div className="two columns user">
+            {message.user}
+            {profile && (
+              <>
+                <img src={profile.picture} alt="Profile" className="profile-picture" />
+                <div className="status-message">{profile.status}</div>
+              </>
+            )}
+          </div>
           <div className="ten columns">
             {message.content}
             {message.attachments &&
               message.attachments.map((attachment, index) => (
                 <div key={index}>
-                  <a href={attachment} target="_blank" rel="noopener noreferrer">
-                    {attachment}
-                  </a>
+                  {attachment.match(/\.(jpeg|jpg|gif|png)$/) ? (
+                    <img src={attachment} alt="Attachment" className="attachment-image" />
+                  ) : (
+                    <a href={attachment} target="_blank" rel="noopener noreferrer">
+                      {attachment}
+                    </a>
+                  )}
                 </div>
               ))}
           </div>
@@ -139,7 +156,7 @@ function App() {
           const chatMessage: ChatMessage = {
             id: nanoid(8),
             content: content.value,
-            user: name,
+            user: name || "Anonymous",
             role: "user",
             attachments: attachmentUrl ? [attachmentUrl] : [],
           };
@@ -161,7 +178,7 @@ function App() {
           type="text"
           name="content"
           className="ten columns my-input-text"
-          placeholder={`Hello ${name}! Type a message...`}
+          placeholder={`Hello ${name || "Anonymous"}! Type a message...`}
           autoComplete="off"
         />
         <input type="file" name="attachment" className="ten columns" />

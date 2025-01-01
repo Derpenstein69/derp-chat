@@ -1,0 +1,21 @@
+# Exclude node_modules directory
+node_modules/
+
+# Exclude dist directory
+dist/
+
+# Exclude .env file
+.env
+
+# Exclude public/dist directory
+public/dist/
+
+# Exclude .DS_Store file
+.DS_Store
+
+# Exclude log files
+*.log
+
+# Exclude npm-debug.log and yarn-error.log files
+npm-debug.log
+yarn-error.log
