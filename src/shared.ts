@@ -3,7 +3,11 @@ export type ChatMessage = {
   content: string;
   user: string;
   role: "user" | "assistant";
-  attachments?: string[]; // P758f
+  attachments?: string[];
+  profile?: {
+    picture: string;
+    status: string;
+  };
 };
 
 export type Message =
@@ -13,7 +17,11 @@ export type Message =
       content: string;
       user: string;
       role: "user" | "assistant";
-      attachments?: string[]; // P68ec
+      attachments?: string[];
+      profile?: {
+        picture: string;
+        status: string;
+      };
     }
   | {
       type: "update";
@@ -21,7 +29,11 @@ export type Message =
       content: string;
       user: string;
       role: "user" | "assistant";
-      attachments?: string[]; // P68ec
+      attachments?: string[];
+      profile?: {
+        picture: string;
+        status: string;
+      };
     }
   | {
       type: "all";
