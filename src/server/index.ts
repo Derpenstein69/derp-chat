@@ -15,6 +15,7 @@ import { GoogleAdapter } from "@openauthjs/openauth/adapter/google";
 import { GithubAdapter } from "@openauthjs/openauth/adapter/github";
 import { AppleAdapter } from "@openauthjs/openauth/adapter/apple";
 import { DiscordAdapter } from "@openauthjs/openauth/adapter/discord";
+import jwt from "jsonwebtoken";
 
 import type { ChatMessage, Message } from "../shared";
 
@@ -23,6 +24,7 @@ export class Chat extends Server<Env> {
   static options = { hibernate: true };
 
   messages = [] as ChatMessage[];
+  sessions = new Map<string, any>();
 
   broadcastMessage(message: Message, exclude?: string[]) {
     this.broadcast(JSON.stringify(message), exclude);
@@ -34,7 +36,12 @@ export class Chat extends Server<Env> {
 
     // create the messages table if it doesn't exist
     this.ctx.storage.sql.exec(
-      `CREATE TABLE IF NOT EXISTS messages (id TEXT PRIMARY KEY, user TEXT, role TEXT, content TEXT, attachments TEXT)`,
+      `CREATE TABLE IF NOT EXISTS messages (id TEXT PRIMARY KEY, user TEXT, role TEXT, content TEXT, attachments TEXT, user_id TEXT)`,
+    );
+
+    // create the sessions table if it doesn't exist
+    this.ctx.storage.sql.exec(
+      `CREATE TABLE IF NOT EXISTS sessions (session_id TEXT PRIMARY KEY, user_id TEXT, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, messages TEXT, ip_address TEXT, user_agent TEXT)`,
     );
 
     // load the messages from the database
@@ -67,13 +74,27 @@ export class Chat extends Server<Env> {
     }
 
     this.ctx.storage.sql.exec(
-      `INSERT INTO messages (id, user, role, content, attachments) VALUES ('${
+      `INSERT INTO messages (id, user, role, content, attachments, user_id) VALUES ('${
         message.id
       }', '${message.user}', '${message.role}', ${JSON.stringify(
         message.content,
-      )}, ${JSON.stringify(message.attachments)}) ON CONFLICT (id) DO UPDATE SET content = ${JSON.stringify(
+      )}, ${JSON.stringify(message.attachments)}, '${message.user_id}') ON CONFLICT (id) DO UPDATE SET content = ${JSON.stringify(
         message.content,
       )}, attachments = ${JSON.stringify(message.attachments)}`,
+    );
+  }
+
+  saveSession(session: any) {
+    this.sessions.set(session.session_id, session);
+
+    this.ctx.storage.sql.exec(
+      `INSERT INTO sessions (session_id, user_id, created_at, updated_at, messages, ip_address, user_agent) VALUES ('${
+        session.session_id
+      }', '${session.user_id}', '${session.created_at}', '${session.updated_at}', ${JSON.stringify(
+        session.messages,
+      )}, '${session.ip_address}', '${session.user_agent}') ON CONFLICT (session_id) DO UPDATE SET updated_at = '${session.updated_at}', messages = ${JSON.stringify(
+        session.messages,
+      )}`,
     );
   }
 
@@ -87,6 +108,21 @@ export class Chat extends Server<Env> {
     if (parsed.type === "add") {
       // add the message to the local store
       this.saveMessage(parsed);
+
+      // manage session data
+      const session = this.sessions.get(parsed.session_id) || {
+        session_id: parsed.session_id,
+        user_id: parsed.user_id,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        messages: [],
+        ip_address: connection.remoteAddress,
+        user_agent: connection.userAgent,
+      };
+      session.messages.push(parsed);
+      session.updated_at = new Date().toISOString();
+      this.saveSession(session);
+
       // let's ask AI to respond as well for fun
       const aiMessage = {
         id: nanoid(8),
@@ -153,6 +189,15 @@ export class Chat extends Server<Env> {
     } else if (parsed.type === "update") {
       // update the message in the local store
       this.saveMessage(parsed);
+    }
+  }
+
+  validateToken(token: string) {
+    try {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET!);
+      return decoded;
+    } catch (err) {
+      return null;
     }
   }
 }
