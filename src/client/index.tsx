@@ -21,7 +21,14 @@ const client = createClient({
 
 function App() {
   const [name, setName] = useState<string | null>(null);
-  const [profile, setProfile] = useState<{ picture: string; status: string } | null>(null);
+  const [profile, setProfile] = useState<{
+    picture: string;
+    status: string;
+    bio: string;
+    location: string;
+    website: string;
+    social_media_links: string;
+  } | null>(null);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const { room } = useParams();
   const location = useLocation();
@@ -37,7 +44,14 @@ function App() {
 
         const userProfile = await client.getUserProfile(tokens.access);
         setName(userProfile.name);
-        setProfile({ picture: userProfile.picture, status: userProfile.status });
+        setProfile({
+          picture: userProfile.picture,
+          status: userProfile.status,
+          bio: userProfile.bio,
+          location: userProfile.location,
+          website: userProfile.website,
+          social_media_links: userProfile.social_media_links,
+        });
       }
     };
 
@@ -110,6 +124,14 @@ function App() {
               <>
                 <img src={profile.picture} alt="Profile" className="profile-picture" />
                 <div className="status-message">{profile.status}</div>
+                <div className="bio">{profile.bio}</div>
+                <div className="location">{profile.location}</div>
+                <div className="website">
+                  <a href={profile.website} target="_blank" rel="noopener noreferrer">
+                    {profile.website}
+                  </a>
+                </div>
+                <div className="social-media-links">{profile.social_media_links}</div>
               </>
             )}
           </div>
@@ -190,12 +212,99 @@ function App() {
   );
 }
 
+function ProfileSettings() {
+  const [profile, setProfile] = useState<{
+    picture: string;
+    status: string;
+    bio: string;
+    location: string;
+    website: string;
+    social_media_links: string;
+  }>({
+    picture: "",
+    status: "",
+    bio: "",
+    location: "",
+    website: "",
+    social_media_links: "",
+  });
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setProfile((prevProfile) => ({
+      ...prevProfile,
+      [name]: value,
+    }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    // Save profile settings to the server or local storage
+  };
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <label>
+        Profile Picture URL:
+        <input
+          type="text"
+          name="picture"
+          value={profile.picture}
+          onChange={handleInputChange}
+        />
+      </label>
+      <label>
+        Status:
+        <input
+          type="text"
+          name="status"
+          value={profile.status}
+          onChange={handleInputChange}
+        />
+      </label>
+      <label>
+        Bio:
+        <input type="text" name="bio" value={profile.bio} onChange={handleInputChange} />
+      </label>
+      <label>
+        Location:
+        <input
+          type="text"
+          name="location"
+          value={profile.location}
+          onChange={handleInputChange}
+        />
+      </label>
+      <label>
+        Website:
+        <input
+          type="text"
+          name="website"
+          value={profile.website}
+          onChange={handleInputChange}
+        />
+      </label>
+      <label>
+        Social Media Links:
+        <input
+          type="text"
+          name="social_media_links"
+          value={profile.social_media_links}
+          onChange={handleInputChange}
+        />
+      </label>
+      <button type="submit">Save</button>
+    </form>
+  );
+}
+
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 createRoot(document.getElementById("root")!).render(
   <BrowserRouter>
     <Routes>
       <Route path="/" element={<Navigate to={`/${nanoid()}`} />} />
       <Route path="/:room" element={<App />} />
+      <Route path="/profile-settings" element={<ProfileSettings />} />
       <Route path="*" element={<Navigate to="/" />} />
     </Routes>
   </BrowserRouter>,

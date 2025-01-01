@@ -4,7 +4,11 @@ CREATE TABLE IF NOT EXISTS users (
   name TEXT,
   email TEXT UNIQUE,
   profile_picture_url TEXT,
-  status_message TEXT
+  status_message TEXT,
+  bio TEXT,
+  location TEXT,
+  website TEXT,
+  social_media_links TEXT
 );
 
 -- Update messages table to include user_id foreign key

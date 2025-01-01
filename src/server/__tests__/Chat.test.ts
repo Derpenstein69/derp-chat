@@ -48,6 +48,8 @@ describe("Chat", () => {
       role: "user",
       content: "Hello",
       attachments: [],
+      session_id: "session1",
+      user_id: "user1",
     };
     chat.broadcast = jest.fn();
     chat.ctx.storage.sql.exec = jest.fn();
@@ -66,6 +68,8 @@ describe("Chat", () => {
       role: "user",
       content: "Hello",
       attachments: [],
+      session_id: "session1",
+      user_id: "user1",
     };
     chat.messages = [existingMessage];
     const updatedMessage = { ...existingMessage, content: "Hi" };
@@ -86,6 +90,8 @@ describe("Chat", () => {
       role: "user",
       content: "Hello",
       attachments: [],
+      session_id: "session1",
+      user_id: "user1",
     };
     chat.broadcast = jest.fn();
     chat.ctx.storage.sql.exec = jest.fn();
@@ -96,5 +102,47 @@ describe("Chat", () => {
     expect(chat.messages).toContainEqual(newMessage);
     expect(chat.broadcast).toHaveBeenCalledWith(JSON.stringify({ type: "add", ...newMessage }));
     expect(chat.ctx.storage.sql.exec).toHaveBeenCalled();
+  });
+
+  test("should create and update sessions", async () => {
+    const newMessage = {
+      id: nanoid(8),
+      user: "Alice",
+      role: "user",
+      content: "Hello",
+      attachments: [],
+      session_id: "session1",
+      user_id: "user1",
+    };
+    chat.broadcast = jest.fn();
+    chat.ctx.storage.sql.exec = jest.fn();
+
+    await chat.onMessage(connection, JSON.stringify({ type: "add", ...newMessage }));
+
+    const session = chat.sessions.get("session1");
+    expect(session).toBeDefined();
+    expect(session.messages).toContainEqual(newMessage);
+    expect(session.updated_at).toBeDefined();
+  });
+
+  test("should log session activities", async () => {
+    const newMessage = {
+      id: nanoid(8),
+      user: "Alice",
+      role: "user",
+      content: "Hello",
+      attachments: [],
+      session_id: "session1",
+      user_id: "user1",
+    };
+    chat.broadcast = jest.fn();
+    chat.ctx.storage.sql.exec = jest.fn();
+
+    console.log = jest.fn();
+
+    await chat.onMessage(connection, JSON.stringify({ type: "add", ...newMessage }));
+
+    expect(console.log).toHaveBeenCalledWith(expect.stringContaining("session1"));
+    expect(console.log).toHaveBeenCalledWith(expect.stringContaining("user1"));
   });
 });
