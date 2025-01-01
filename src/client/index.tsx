@@ -55,6 +55,7 @@ function App() {
               content: message.content,
               user: message.user,
               role: message.role,
+              attachments: message.attachments,
             },
           ]);
         } else {
@@ -69,6 +70,7 @@ function App() {
                 content: message.content,
                 user: message.user,
                 role: message.role,
+                attachments: message.attachments,
               })
               .concat(messages.slice(foundIndex + 1));
           });
@@ -82,6 +84,7 @@ function App() {
                   content: message.content,
                   user: message.user,
                   role: message.role,
+                  attachments: message.attachments,
                 }
               : m,
           ),
@@ -97,24 +100,51 @@ function App() {
       {messages.map((message) => (
         <div key={message.id} className="row message">
           <div className="two columns user">{message.user}</div>
-          <div className="ten columns">{message.content}</div>
+          <div className="ten columns">
+            {message.content}
+            {message.attachments &&
+              message.attachments.map((attachment, index) => (
+                <div key={index}>
+                  <a href={attachment} target="_blank" rel="noopener noreferrer">
+                    {attachment}
+                  </a>
+                </div>
+              ))}
+          </div>
         </div>
       ))}
       <form
         className="row"
-        onSubmit={(e) => {
+        onSubmit={async (e) => {
           e.preventDefault();
           const content = e.currentTarget.elements.namedItem(
             "content",
           ) as HTMLInputElement;
+          const fileInput = e.currentTarget.elements.namedItem(
+            "attachment",
+          ) as HTMLInputElement;
+          const formData = new FormData();
+          formData.append("content", content.value);
+          if (fileInput.files && fileInput.files.length > 0) {
+            formData.append("attachment", fileInput.files[0]);
+          }
+
+          const response = await fetch("/upload", {
+            method: "POST",
+            body: formData,
+          });
+
+          const { attachmentUrl } = await response.json();
+
           const chatMessage: ChatMessage = {
             id: nanoid(8),
             content: content.value,
             user: name,
             role: "user",
+            attachments: attachmentUrl ? [attachmentUrl] : [],
           };
+
           setMessages((messages) => [...messages, chatMessage]);
-          // we could broadcast the message here
 
           socket.send(
             JSON.stringify({
@@ -124,6 +154,7 @@ function App() {
           );
 
           content.value = "";
+          fileInput.value = "";
         }}
       >
         <input
@@ -133,6 +164,7 @@ function App() {
           placeholder={`Hello ${name}! Type a message...`}
           autoComplete="off"
         />
+        <input type="file" name="attachment" className="ten columns" />
         <button type="submit" className="send-message two columns">
           Send
         </button>
