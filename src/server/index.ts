@@ -34,7 +34,7 @@ export class Chat extends Server<Env> {
 
     // create the messages table if it doesn't exist
     this.ctx.storage.sql.exec(
-      `CREATE TABLE IF NOT EXISTS messages (id TEXT PRIMARY KEY, user TEXT, role TEXT, content TEXT)`,
+      `CREATE TABLE IF NOT EXISTS messages (id TEXT PRIMARY KEY, user TEXT, role TEXT, content TEXT, attachments TEXT)`,
     );
 
     // load the messages from the database
@@ -67,13 +67,13 @@ export class Chat extends Server<Env> {
     }
 
     this.ctx.storage.sql.exec(
-      `INSERT INTO messages (id, user, role, content) VALUES ('${
+      `INSERT INTO messages (id, user, role, content, attachments) VALUES ('${
         message.id
       }', '${message.user}', '${message.role}', ${JSON.stringify(
         message.content,
-      )}) ON CONFLICT (id) DO UPDATE SET content = ${JSON.stringify(
+      )}, ${JSON.stringify(message.attachments)}) ON CONFLICT (id) DO UPDATE SET content = ${JSON.stringify(
         message.content,
-      )}`,
+      )}, attachments = ${JSON.stringify(message.attachments)}`,
     );
   }
 
@@ -93,6 +93,7 @@ export class Chat extends Server<Env> {
         content: "...",
         user: "AI",
         role: "assistant",
+        attachments: [],
       } as const;
 
       this.broadcastMessage({

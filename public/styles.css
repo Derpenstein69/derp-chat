@@ -53,6 +53,41 @@ html {
   color: #ccc;
 }
 
+/* Rich text content styles */
+.message .content {
+  white-space: pre-wrap;
+}
+
+.message .content a {
+  color: #1eaedb;
+  text-decoration: underline;
+}
+
+.message .content a:hover {
+  color: #0fa0ce;
+}
+
+/* File attachment preview styles */
+.message .attachment {
+  margin-top: 5px;
+}
+
+.message .attachment img {
+  max-width: 100%;
+  height: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.message .attachment a {
+  color: #1eaedb;
+  text-decoration: underline;
+}
+
+.message .attachment a:hover {
+  color: #0fa0ce;
+}
+
 /* Responsive design */
 @media (max-width: 768px) {
   .chat {
