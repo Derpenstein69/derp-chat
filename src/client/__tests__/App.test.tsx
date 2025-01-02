@@ -65,4 +65,60 @@ describe('App component', () => {
 
     expect(usePartySocket().send).toHaveBeenCalled();
   });
+
+  test('renders FeedbackButtons component', () => {
+    render(
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<App />} />
+        </Routes>
+      </BrowserRouter>
+    );
+    expect(screen.getByText('👍')).toBeInTheDocument();
+    expect(screen.getByText('👎')).toBeInTheDocument();
+  });
+
+  test('renders RatingSystem component', () => {
+    render(
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<App />} />
+        </Routes>
+      </BrowserRouter>
+    );
+    expect(screen.getAllByText('★').length).toBe(5);
+  });
+
+  test('renders FeedbackForm component', () => {
+    render(
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<App />} />
+        </Routes>
+      </BrowserRouter>
+    );
+    expect(screen.getByPlaceholderText('Provide detailed feedback...')).toBeInTheDocument();
+  });
+
+  test('renders SurveyLink component', () => {
+    render(
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<App />} />
+        </Routes>
+      </BrowserRouter>
+    );
+    expect(screen.getByText('Take our survey')).toBeInTheDocument();
+  });
+
+  test('renders EmbeddedSurvey component', () => {
+    render(
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<App />} />
+        </Routes>
+      </BrowserRouter>
+    );
+    expect(screen.getByTitle('Embedded Survey')).toBeInTheDocument();
+  });
 });

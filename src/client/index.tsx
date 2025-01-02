@@ -149,6 +149,9 @@ function App() {
                   )}
                 </div>
               ))}
+            <FeedbackButtons messageId={message.id} />
+            <RatingSystem messageId={message.id} />
+            <FeedbackForm messageId={message.id} />
           </div>
         </div>
       ))}
@@ -208,6 +211,8 @@ function App() {
           Send
         </button>
       </form>
+      <SurveyLink />
+      <EmbeddedSurvey />
     </div>
   );
 }
@@ -295,6 +300,87 @@ function ProfileSettings() {
       </label>
       <button type="submit">Save</button>
     </form>
+  );
+}
+
+function FeedbackButtons({ messageId }: { messageId: string }) {
+  const handleFeedback = (feedback: string) => {
+    console.log(`Feedback for message ${messageId}: ${feedback}`);
+  };
+
+  return (
+    <div className="feedback-buttons">
+      <button onClick={() => handleFeedback("thumbs-up")}>👍</button>
+      <button onClick={() => handleFeedback("thumbs-down")}>👎</button>
+    </div>
+  );
+}
+
+function RatingSystem({ messageId }: { messageId: string }) {
+  const [rating, setRating] = useState<number | null>(null);
+
+  const handleRating = (rate: number) => {
+    setRating(rate);
+    console.log(`Rating for message ${messageId}: ${rate}`);
+  };
+
+  return (
+    <div className="rating-system">
+      {[1, 2, 3, 4, 5].map((star) => (
+        <span
+          key={star}
+          className={`star ${rating && rating >= star ? "selected" : ""}`}
+          onClick={() => handleRating(star)}
+        >
+          ★
+        </span>
+      ))}
+    </div>
+  );
+}
+
+function FeedbackForm({ messageId }: { messageId: string }) {
+  const [feedback, setFeedback] = useState<string>("");
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    console.log(`Detailed feedback for message ${messageId}: ${feedback}`);
+    setFeedback("");
+  };
+
+  return (
+    <form className="feedback-form" onSubmit={handleSubmit}>
+      <textarea
+        value={feedback}
+        onChange={(e) => setFeedback(e.target.value)}
+        placeholder="Provide detailed feedback..."
+      />
+      <button type="submit">Submit</button>
+    </form>
+  );
+}
+
+function SurveyLink() {
+  const handleSurveyClick = () => {
+    console.log("Survey link clicked");
+  };
+
+  return (
+    <a className="survey-link" onClick={handleSurveyClick}>
+      Take our survey
+    </a>
+  );
+}
+
+function EmbeddedSurvey() {
+  return (
+    <div className="embedded-survey">
+      <iframe
+        src="https://example.com/survey"
+        title="Embedded Survey"
+        frameBorder="0"
+      ></iframe>
+    </div>
   );
 }
 
