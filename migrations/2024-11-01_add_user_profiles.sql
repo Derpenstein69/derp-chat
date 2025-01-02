@@ -19,3 +19,6 @@ ALTER TABLE messages ADD COLUMN user_id TEXT REFERENCES users(id);
 -- Add new columns to store thread and reply information in the messages table
 ALTER TABLE messages ADD COLUMN thread_id TEXT;
 ALTER TABLE messages ADD COLUMN reply_to TEXT;
+
+-- Add session_id column to messages table to link messages to sessions
+ALTER TABLE messages ADD COLUMN session_id TEXT REFERENCES sessions(session_id);
