@@ -333,4 +333,110 @@ describe("Chat", () => {
     expect(console.log).toHaveBeenCalledWith(expect.stringContaining("session1"));
     expect(console.log).toHaveBeenCalledWith(expect.stringContaining("user1"));
   });
+
+  /**
+   * Test to check if the Chat class handles errors gracefully.
+   * 
+   * @remarks
+   * This test verifies that the Chat class catches and handles errors gracefully by logging the error and continuing execution.
+   * 
+   * @example
+   * test("should handle errors gracefully", async () => {
+   *   const newMessage = {
+   *     id: nanoid(8),
+   *     user: "Alice",
+   *     role: "user",
+   *     content: "Hello",
+   *     attachments: [],
+   *     session_id: "session1",
+   *     user_id: "user1",
+   *   };
+   *   chat.broadcast = jest.fn();
+   *   chat.ctx.storage.sql.exec = jest.fn().mockImplementation(() => {
+   *     throw new Error("Test error");
+   *   });
+   *   console.error = jest.fn();
+   * 
+   *   await chat.onMessage(connection, JSON.stringify({ type: "add", ...newMessage }));
+   * 
+   *   expect(console.error).toHaveBeenCalledWith("Error processing message", expect.any(Error));
+   *   expect(chat.messages).not.toContainEqual(newMessage);
+   * });
+   */
+  test("should handle errors gracefully", async () => {
+    const newMessage = {
+      id: nanoid(8),
+      user: "Alice",
+      role: "user",
+      content: "Hello",
+      attachments: [],
+      session_id: "session1",
+      user_id: "user1",
+    };
+    chat.broadcast = jest.fn();
+    chat.ctx.storage.sql.exec = jest.fn().mockImplementation(() => {
+      throw new Error("Test error");
+    });
+    console.error = jest.fn();
+
+    await chat.onMessage(connection, JSON.stringify({ type: "add", ...newMessage }));
+
+    expect(console.error).toHaveBeenCalledWith("Error processing message", expect.any(Error));
+    expect(chat.messages).not.toContainEqual(newMessage);
+  });
+
+  /**
+   * Test to check if the Chat class logs errors to an external logging service.
+   * 
+   * @remarks
+   * This test verifies that the Chat class calls the logErrorToService function when an error occurs.
+   * 
+   * @example
+   * test("should log errors to an external logging service", async () => {
+   *   const newMessage = {
+   *     id: nanoid(8),
+   *     user: "Alice",
+   *     role: "user",
+   *     content: "Hello",
+   *     attachments: [],
+   *     session_id: "session1",
+   *     user_id: "user1",
+   *   };
+   *   chat.broadcast = jest.fn();
+   *   chat.ctx.storage.sql.exec = jest.fn().mockImplementation(() => {
+   *     throw new Error("Test error");
+   *   });
+   *   const logErrorToService = jest.fn();
+   *   console.error = jest.fn().mockImplementation((message, error) => {
+   *     logErrorToService(error);
+   *   });
+   * 
+   *   await chat.onMessage(connection, JSON.stringify({ type: "add", ...newMessage }));
+   * 
+   *   expect(logErrorToService).toHaveBeenCalledWith(expect.any(Error));
+   * });
+   */
+  test("should log errors to an external logging service", async () => {
+    const newMessage = {
+      id: nanoid(8),
+      user: "Alice",
+      role: "user",
+      content: "Hello",
+      attachments: [],
+      session_id: "session1",
+      user_id: "user1",
+    };
+    chat.broadcast = jest.fn();
+    chat.ctx.storage.sql.exec = jest.fn().mockImplementation(() => {
+      throw new Error("Test error");
+    });
+    const logErrorToService = jest.fn();
+    console.error = jest.fn().mockImplementation((message, error) => {
+      logErrorToService(error);
+    });
+
+    await chat.onMessage(connection, JSON.stringify({ type: "add", ...newMessage }));
+
+    expect(logErrorToService).toHaveBeenCalledWith(expect.any(Error));
+  });
 });

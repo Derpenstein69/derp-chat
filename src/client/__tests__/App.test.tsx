@@ -280,4 +280,84 @@ describe('App component', () => {
     );
     expect(screen.getByTitle('Embedded Survey')).toBeInTheDocument();
   });
+
+  /**
+   * Test to check if the App component handles errors gracefully.
+   * 
+   * @remarks
+   * This test verifies that the App component displays a user-friendly error message when an error occurs.
+   * 
+   * @example
+   * test('handles errors gracefully', () => {
+   *   usePartySocket.mockImplementation(() => {
+   *     throw new Error('Test error');
+   *   });
+   * 
+   *   render(
+   *     <BrowserRouter>
+   *       <Routes>
+   *         <Route path="/" element={<App />} />
+   *       </Routes>
+   *     </BrowserRouter>
+   *   );
+   * 
+   *   expect(screen.getByText('Something went wrong. Please try again later.')).toBeInTheDocument();
+   * });
+   */
+  test('handles errors gracefully', () => {
+    usePartySocket.mockImplementation(() => {
+      throw new Error('Test error');
+    });
+
+    render(
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<App />} />
+        </Routes>
+      </BrowserRouter>
+    );
+
+    expect(screen.getByText('Something went wrong. Please try again later.')).toBeInTheDocument();
+  });
+
+  /**
+   * Test to check if the App component logs errors to an external logging service.
+   * 
+   * @remarks
+   * This test verifies that the App component calls the logErrorToService function when an error occurs.
+   * 
+   * @example
+   * test('logs errors to an external logging service', () => {
+   *   const logErrorToService = jest.fn();
+   *   usePartySocket.mockImplementation(() => {
+   *     throw new Error('Test error');
+   *   });
+   * 
+   *   render(
+   *     <BrowserRouter>
+   *       <Routes>
+   *         <Route path="/" element={<App />} />
+   *       </Routes>
+   *     </BrowserRouter>
+   *   );
+   * 
+   *   expect(logErrorToService).toHaveBeenCalled();
+   * });
+   */
+  test('logs errors to an external logging service', () => {
+    const logErrorToService = jest.fn();
+    usePartySocket.mockImplementation(() => {
+      throw new Error('Test error');
+    });
+
+    render(
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<App />} />
+        </Routes>
+      </BrowserRouter>
+    );
+
+    expect(logErrorToService).toHaveBeenCalled();
+  });
 });
