@@ -41,7 +41,7 @@ export class Chat extends Server<Env> {
 
     // create the sessions table if it doesn't exist
     this.ctx.storage.sql.exec(
-      `CREATE TABLE IF NOT EXISTS sessions (session_id TEXT PRIMARY KEY, user_id TEXT, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, messages TEXT, ip_address TEXT, user_agent TEXT)`,
+      `CREATE TABLE IF NOT EXISTS sessions (session_id TEXT PRIMARY KEY, user_id TEXT REFERENCES users(id), created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, messages TEXT, ip_address TEXT, user_agent TEXT)`,
     );
 
     // load the messages from the database
@@ -74,11 +74,11 @@ export class Chat extends Server<Env> {
     }
 
     this.ctx.storage.sql.exec(
-      `INSERT INTO messages (id, user, role, content, attachments, user_id) VALUES ('${
+      `INSERT INTO messages (id, user, role, content, attachments, user_id, session_id) VALUES ('${
         message.id
       }', '${message.user}', '${message.role}', ${JSON.stringify(
         message.content,
-      )}, ${JSON.stringify(message.attachments)}, '${message.user_id}') ON CONFLICT (id) DO UPDATE SET content = ${JSON.stringify(
+      )}, ${JSON.stringify(message.attachments)}, '${message.user_id}', '${message.session_id}') ON CONFLICT (id) DO UPDATE SET content = ${JSON.stringify(
         message.content,
       )}, attachments = ${JSON.stringify(message.attachments)}`,
     );

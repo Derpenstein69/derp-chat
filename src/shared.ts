@@ -9,6 +9,7 @@ export type ChatMessage = {
     status: string;
   };
   session_id?: string;
+  user_id?: string;
 };
 
 export type Message =
@@ -24,6 +25,7 @@ export type Message =
         status: string;
       };
       session_id?: string;
+      user_id?: string;
     }
   | {
       type: "update";
@@ -37,6 +39,7 @@ export type Message =
         status: string;
       };
       session_id?: string;
+      user_id?: string;
     }
   | {
       type: "all";
