@@ -32,6 +32,7 @@ function App() {
     social_media_links: string;
   } | null>(null);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [searchQuery, setSearchQuery] = useState<string>(""); // Search query state
   const { room } = useParams();
   const location = useLocation();
 
@@ -117,9 +118,24 @@ function App() {
     },
   });
 
+  // Filter messages based on search query
+  const filteredMessages = messages.filter((message) =>
+    message.content.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
     <div className="chat container">
-      {messages.map((message) => (
+      <form className="row search-form">
+        <input
+          type="text"
+          name="search"
+          className="ten columns search-input"
+          placeholder="Search messages..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
+      </form>
+      {filteredMessages.map((message) => (
         <div key={message.id} className="row message">
           <div className="two columns user">
             {message.user}
@@ -155,6 +171,8 @@ function App() {
             <FeedbackButtons messageId={message.id} />
             <RatingSystem messageId={message.id} />
             <FeedbackForm messageId={message.id} />
+            <MessageReactions messageId={message.id} />
+            <MessageThreads messageId={message.id} />
           </div>
         </div>
       ))}
@@ -389,6 +407,68 @@ function EmbeddedSurvey() {
         title="Embedded Survey"
         frameBorder="0"
       ></iframe>
+    </div>
+  );
+}
+
+// Component for message reactions
+function MessageReactions({ messageId }: { messageId: string }) {
+  const [reactions, setReactions] = useState<{ [key: string]: number }>({});
+
+  const handleReaction = (reaction: string) => {
+    setReactions((prevReactions) => ({
+      ...prevReactions,
+      [reaction]: (prevReactions[reaction] || 0) + 1,
+    }));
+    console.log(`Reaction for message ${messageId}: ${reaction}`);
+  };
+
+  return (
+    <div className="message-reactions">
+      {["👍", "❤️", "😂", "😮", "😢", "😡"].map((reaction) => (
+        <button key={reaction} onClick={() => handleReaction(reaction)}>
+          {reaction} {reactions[reaction] || 0}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+// Component for message threads and replies
+function MessageThreads({ messageId }: { messageId: string }) {
+  const [replies, setReplies] = useState<ChatMessage[]>([]);
+  const [replyContent, setReplyContent] = useState<string>("");
+
+  const handleReplySubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const newReply: ChatMessage = {
+      id: nanoid(8),
+      content: replyContent,
+      user: "Anonymous",
+      role: "user",
+      attachments: [],
+    };
+    setReplies((prevReplies) => [...prevReplies, newReply]);
+    setReplyContent("");
+    console.log(`Reply for message ${messageId}: ${replyContent}`);
+  };
+
+  return (
+    <div className="message-threads">
+      {replies.map((reply) => (
+        <div key={reply.id} className="reply">
+          {reply.content}
+        </div>
+      ))}
+      <form onSubmit={handleReplySubmit}>
+        <input
+          type="text"
+          value={replyContent}
+          onChange={(e) => setReplyContent(e.target.value)}
+          placeholder="Write a reply..."
+        />
+        <button type="submit">Reply</button>
+      </form>
     </div>
   );
 }

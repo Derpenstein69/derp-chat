@@ -38,7 +38,7 @@ export class Chat extends Server<Env> {
 
     // create the messages table if it doesn't exist
     this.ctx.storage.sql.exec(
-      `CREATE TABLE IF NOT EXISTS messages (id TEXT PRIMARY KEY, user TEXT, role TEXT, content TEXT, attachments TEXT, user_id TEXT)`,
+      `CREATE TABLE IF NOT EXISTS messages (id TEXT PRIMARY KEY, user TEXT, role TEXT, content TEXT, attachments TEXT, user_id TEXT, thread_id TEXT, reply_to TEXT)`,
     );
 
     // create the sessions table if it doesn't exist
@@ -78,13 +78,13 @@ export class Chat extends Server<Env> {
     }
 
     this.ctx.storage.sql.exec(
-      `INSERT INTO messages (id, user, role, content, attachments, user_id, session_id) VALUES ('${
+      `INSERT INTO messages (id, user, role, content, attachments, user_id, session_id, thread_id, reply_to) VALUES ('${
         message.id
       }', '${message.user}', '${message.role}', ${JSON.stringify(
         message.content,
-      )}, ${JSON.stringify(message.attachments)}, '${message.user_id}', '${message.session_id}') ON CONFLICT (id) DO UPDATE SET content = ${JSON.stringify(
+      )}, ${JSON.stringify(message.attachments)}, '${message.user_id}', '${message.session_id}', '${message.thread_id}', '${message.reply_to}') ON CONFLICT (id) DO UPDATE SET content = ${JSON.stringify(
         message.content,
-      )}, attachments = ${JSON.stringify(message.attachments)}`,
+      )}, attachments = ${JSON.stringify(message.attachments)}, thread_id = '${message.thread_id}', reply_to = '${message.reply_to}'`,
     );
   }
 

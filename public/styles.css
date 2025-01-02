@@ -227,3 +227,77 @@ html {
   border: 1px solid #ddd;
   border-radius: 4px;
 }
+
+/* Inline media preview styles */
+.attachment-image {
+  max-width: 100%;
+  height: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  margin-top: 5px;
+}
+
+/* Message reactions styles */
+.message-reactions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+}
+
+.message-reactions button {
+  background-color: #1eaedb;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.message-reactions button:hover {
+  background-color: #0fa0ce;
+}
+
+/* Search input field styles */
+.search-form {
+  margin-bottom: 10px;
+}
+
+.search-input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+/* Threads and replies styles */
+.message-threads {
+  margin-top: 10px;
+  padding-left: 20px;
+  border-left: 2px solid #ddd;
+}
+
+.message-threads .reply {
+  margin-bottom: 10px;
+}
+
+.message-threads input[type="text"] {
+  width: 100%;
+  padding: 5px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  margin-top: 5px;
+}
+
+.message-threads button {
+  background-color: #1eaedb;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 5px;
+}
+
+.message-threads button:hover {
+  background-color: #0fa0ce;
+}
