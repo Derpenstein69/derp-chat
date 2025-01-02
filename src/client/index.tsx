@@ -239,7 +239,7 @@ function App(): JSX.Element {
                 </div>
               ))}
             <FeedbackButtons messageId={message.id} />
-            <RatingSystem messageId={message.id} />
+            {message.role === "assistant" && <RatingSystem messageId={message.id} />}
             <FeedbackForm messageId={message.id} />
             <MessageReactions messageId={message.id} />
             <MessageThreads messageId={message.id} />
@@ -454,9 +454,31 @@ function FeedbackButtons({ messageId }: { messageId: string }): JSX.Element {
 function RatingSystem({ messageId }: { messageId: string }): JSX.Element {
   const [rating, setRating] = useState<number | null>(null);
 
-  const handleRating = (rate: number) => {
+  const handleRating = async (rate: number) => {
     setRating(rate);
     console.log(`Rating for message ${messageId}: ${rate}`);
+
+    try {
+      const response = await fetch("/rate", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          messageId,
+          rating: rate,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to submit rating");
+      }
+
+      console.log("Rating submitted successfully");
+    } catch (error) {
+      console.error("Error submitting rating", error);
+      alert("An error occurred while submitting the rating. Please try again.");
+    }
   };
 
   return (

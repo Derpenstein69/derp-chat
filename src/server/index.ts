@@ -61,6 +61,11 @@ export class Chat extends Server<Env> {
       `CREATE TABLE IF NOT EXISTS sessions (session_id TEXT PRIMARY KEY, user_id TEXT REFERENCES users(id), created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, messages TEXT, ip_address TEXT, user_agent TEXT)`,
     );
 
+    // create the ratings table if it doesn't exist
+    this.ctx.storage.sql.exec(
+      `CREATE TABLE IF NOT EXISTS ratings (rating_id TEXT PRIMARY KEY, user_id TEXT REFERENCES users(id), message_id TEXT REFERENCES messages(id), rating_value INTEGER CHECK (rating_value >= 1 AND rating_value <= 5), timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP)`,
+    );
+
     // load the messages from the database
     this.messages = this.ctx.storage.sql
       .exec(`SELECT * FROM messages`)
@@ -127,6 +132,19 @@ export class Chat extends Server<Env> {
       )}, '${session.ip_address}', '${session.user_agent}') ON CONFLICT (session_id) DO UPDATE SET updated_at = '${session.updated_at}', messages = ${JSON.stringify(
         session.messages,
       )}`,
+    );
+  }
+
+  /**
+   * Saves a rating to the database.
+   * 
+   * @param {string} userId - The ID of the user providing the rating.
+   * @param {string} messageId - The ID of the message being rated.
+   * @param {number} ratingValue - The rating value (1-5).
+   */
+  saveRating(userId: string, messageId: string, ratingValue: number) {
+    this.ctx.storage.sql.exec(
+      `INSERT INTO ratings (rating_id, user_id, message_id, rating_value, timestamp) VALUES ('${nanoid(8)}', '${userId}', '${messageId}', ${ratingValue}, CURRENT_TIMESTAMP)`,
     );
   }
 
@@ -278,6 +296,11 @@ export default {
         message: "OAuth flow complete!",
         params: Object.fromEntries(url.searchParams.entries()),
       });
+    } else if (url.pathname === "/rate" && request.method === "POST") {
+      const { userId, messageId, rating } = await request.json();
+      const chat = new Chat();
+      chat.saveRating(userId, messageId, rating);
+      return new Response("Rating submitted successfully", { status: 200 });
     }
 
     // The real OpenAuth server code starts here:
