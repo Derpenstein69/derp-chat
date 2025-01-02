@@ -81,3 +81,19 @@ interface Env {
    */
   DISCORD_CLIENT_SECRET: string;
 }
+
+/**
+ * User interface for the Durable Chat application.
+ * This interface defines the user profile fields used in the application.
+ */
+interface User {
+  id: string;
+  name: string;
+  email: string;
+  profile_picture_url: string;
+  status_message: string;
+  bio: string;
+  location: string;
+  website: string;
+  social_media_links: string;
+}

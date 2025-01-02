@@ -33,6 +33,7 @@ export class Chat extends Server<Env> {
 
   messages = [] as ChatMessage[];
   sessions = new Map<string, any>();
+  cache = new Map<string, ChatMessage[]>(); // Pfa71
 
   /**
    * Broadcasts a message to all connected clients, excluding specified clients.
@@ -63,12 +64,12 @@ export class Chat extends Server<Env> {
 
     // create the ratings table if it doesn't exist
     this.ctx.storage.sql.exec(
-      `CREATE TABLE IF NOT EXISTS ratings (rating_id TEXT PRIMARY KEY, user_id TEXT REFERENCES users(id), message_id TEXT REFERENCES messages(id), rating_value INTEGER CHECK (rating_value >= 1 AND rating_value <= 5), timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP)`,
+      `CREATE TABLE IF NOT EXISTS ratings (rating_id TEXT PRIMARY KEY, user_id TEXT REFERENCES users(id), message_id TEXT REFERENCES messages(id), rating_value INTEGER CHECK (rating_value >= 1 AND RATING_VALUE <= 5), timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP)`,
     );
 
     // load the messages from the database
     this.messages = this.ctx.storage.sql
-      .exec(`SELECT * FROM messages`)
+      .exec(`SELECT * FROM messages LIMIT 50 OFFSET 0`) // P9e9c
       .toArray() as ChatMessage[];
   }
 
@@ -114,6 +115,9 @@ export class Chat extends Server<Env> {
         message.content,
       )}, attachments = ${JSON.stringify(message.attachments)}, thread_id = '${message.thread_id}', reply_to = '${message.reply_to}'`,
     );
+
+    // Update cache
+    this.cache.set(message.id, [message]); // Pfa71
   }
 
   /**
