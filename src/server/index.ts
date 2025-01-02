@@ -23,7 +23,7 @@ import { AppleAdapter } from "@openauthjs/openauth/adapter/apple";
 import { DiscordAdapter } from "@openauthjs/openauth/adapter/discord";
 import jwt from "jsonwebtoken";
 
-import type { ChatMessage, Message } from "../shared";
+import type { ChatMessage, Message, Session } from "../shared";
 
 /**
  * Chat class handles the chat server logic and manages messages and sessions.
@@ -53,7 +53,7 @@ export class Chat extends Server<Env> {
 
     // create the messages table if it doesn't exist
     this.ctx.storage.sql.exec(
-      `CREATE TABLE IF NOT EXISTS messages (id TEXT PRIMARY KEY, user TEXT, role TEXT, content TEXT, attachments TEXT, user_id TEXT, thread_id TEXT, reply_to TEXT)`,
+      `CREATE TABLE IF NOT EXISTS messages (id TEXT PRIMARY KEY, user TEXT, role TEXT, content TEXT, attachments TEXT, user_id TEXT, thread_id TEXT, reply_to TEXT, session_id TEXT REFERENCES sessions(session_id))`,
     );
 
     // create the sessions table if it doesn't exist
@@ -119,9 +119,9 @@ export class Chat extends Server<Env> {
   /**
    * Saves a session to the local store and the database.
    * 
-   * @param {any} session - The session to save.
+   * @param {Session} session - The session to save.
    */
-  saveSession(session: any) {
+  saveSession(session: Session) {
     this.sessions.set(session.session_id, session);
 
     this.ctx.storage.sql.exec(
