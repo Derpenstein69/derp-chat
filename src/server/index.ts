@@ -19,17 +19,19 @@ import jwt from "jsonwebtoken";
 
 import type { ChatMessage, Message } from "../shared";
 
-// TODO: Explain that this should be a shared type
+// Chat class handles the chat server logic and manages messages and sessions
 export class Chat extends Server<Env> {
   static options = { hibernate: true };
 
   messages = [] as ChatMessage[];
   sessions = new Map<string, any>();
 
+  // Broadcasts a message to all connected clients, excluding specified clients
   broadcastMessage(message: Message, exclude?: string[]) {
     this.broadcast(JSON.stringify(message), exclude);
   }
 
+  // Initializes the chat server, loads previous messages from the database
   onStart() {
     // this is where you can initialize things that need to be done before the server starts
     // for example, load previous messages from a database or a service
@@ -50,6 +52,7 @@ export class Chat extends Server<Env> {
       .toArray() as ChatMessage[];
   }
 
+  // Handles a new client connection, sends initial messages to the client
   onConnect(connection: Connection) {
     connection.send(
       JSON.stringify({
@@ -59,6 +62,7 @@ export class Chat extends Server<Env> {
     );
   }
 
+  // Saves a message to the local store and the database
   saveMessage(message: ChatMessage) {
     // check if the message already exists
     const existingMessage = this.messages.find((m) => m.id === message.id);
@@ -84,6 +88,7 @@ export class Chat extends Server<Env> {
     );
   }
 
+  // Saves a session to the local store and the database
   saveSession(session: any) {
     this.sessions.set(session.session_id, session);
 
@@ -98,6 +103,7 @@ export class Chat extends Server<Env> {
     );
   }
 
+  // Handles incoming messages from clients, updates local store and broadcasts messages
   async onMessage(connection: Connection, message: WSMessage) {
     // let's broadcast the raw message to everyone else
     this.broadcast(message);
@@ -192,6 +198,7 @@ export class Chat extends Server<Env> {
     }
   }
 
+  // Validates a JWT token and returns the decoded payload if valid
   validateToken(token: string) {
     try {
       const decoded = jwt.verify(token, process.env.JWT_SECRET!);

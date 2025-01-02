@@ -26,6 +26,7 @@
 
 /* Grid
 –––––––––––––––––––––––––––––––––––––––––––––––––– */
+/* The container class is used to center the content and provide padding */
 .container {
   position: relative;
   width: 100%;
@@ -34,6 +35,7 @@
   padding: 0 20px;
   box-sizing: border-box;
 }
+/* The column and columns classes are used to create a grid layout */
 .column,
 .columns {
   width: 100%;
@@ -192,6 +194,7 @@ body {
 
 /* Typography
 –––––––––––––––––––––––––––––––––––––––––––––––––– */
+/* Headings (h1 to h6) are styled with different font sizes and margins */
 h1,
 h2,
 h3,
@@ -255,12 +258,14 @@ h6 {
   }
 }
 
+/* Paragraphs are styled with a margin-top of 0 */
 p {
   margin-top: 0;
 }
 
 /* Links
 –––––––––––––––––––––––––––––––––––––––––––––––––– */
+/* Links are styled with a specific color and hover effect */
 a {
   color: #1eaedb;
 }
@@ -270,6 +275,7 @@ a:hover {
 
 /* Buttons
 –––––––––––––––––––––––––––––––––––––––––––––––––– */
+/* Buttons and input elements are styled with specific height, padding, color, and other properties */
 .button,
 button,
 input[type="submit"],
@@ -333,6 +339,7 @@ input[type="button"].button-primary:focus {
 
 /* Forms
 –––––––––––––––––––––––––––––––––––––––––––––––––– */
+/* Form elements are styled with specific height, padding, background color, border, and other properties */
 input[type="email"],
 input[type="number"],
 input[type="search"],
@@ -402,6 +409,7 @@ label > .label-body {
 
 /* Lists
 –––––––––––––––––––––––––––––––––––––––––––––––––– */
+/* Lists are styled with specific list-style and padding properties */
 ul {
   list-style: circle inside;
 }
@@ -426,6 +434,7 @@ li {
 
 /* Code
 –––––––––––––––––––––––––––––––––––––––––––––––––– */
+/* Code elements are styled with specific padding, margin, font-size, background, border, and border-radius properties */
 code {
   padding: 0.2rem 0.5rem;
   margin: 0 0.2rem;
@@ -443,6 +452,7 @@ pre > code {
 
 /* Tables
 –––––––––––––––––––––––––––––––––––––––––––––––––– */
+/* Table elements are styled with specific padding, text-align, and border properties */
 th,
 td {
   padding: 12px 15px;
@@ -460,6 +470,7 @@ td:last-child {
 
 /* Spacing
 –––––––––––––––––––––––––––––––––––––––––––––––––– */
+/* Spacing is applied to various elements to provide consistent margins */
 button,
 .button {
   margin-bottom: 1rem;
@@ -484,6 +495,7 @@ form {
 
 /* Utilities
 –––––––––––––––––––––––––––––––––––––––––––––––––– */
+/* Utility classes are provided for common layout and styling needs */
 .u-full-width {
   width: 100%;
   box-sizing: border-box;
@@ -501,6 +513,7 @@ form {
 
 /* Misc
 –––––––––––––––––––––––––––––––––––––––––––––––––– */
+/* Horizontal rule is styled with specific margin and border properties */
 hr {
   margin-top: 3rem;
   margin-bottom: 3.5rem;
@@ -510,8 +523,7 @@ hr {
 
 /* Clearing
 –––––––––––––––––––––––––––––––––––––––––––––––––– */
-
-/* Self Clearing Goodness */
+/* Self-clearing goodness for container, row, and u-cf classes */
 .container:after,
 .row:after,
 .u-cf {
