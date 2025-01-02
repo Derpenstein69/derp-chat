@@ -8,6 +8,7 @@ export type ChatMessage = {
     picture: string;
     status: string;
   };
+  session_id?: string;
 };
 
 export type Message =
@@ -22,6 +23,7 @@ export type Message =
         picture: string;
         status: string;
       };
+      session_id?: string;
     }
   | {
       type: "update";
@@ -34,11 +36,22 @@ export type Message =
         picture: string;
         status: string;
       };
+      session_id?: string;
     }
   | {
       type: "all";
       messages: ChatMessage[];
     };
+
+export type Session = {
+  session_id: string;
+  user_id: string;
+  created_at: string;
+  updated_at: string;
+  messages: string;
+  ip_address: string;
+  user_agent: string;
+};
 
 export const names = [
   "Alice",
