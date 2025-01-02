@@ -7,5 +7,8 @@ CREATE TABLE IF NOT EXISTS sessions (
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   messages TEXT,
   ip_address TEXT,
-  user_agent TEXT
+  user_agent TEXT,
+  user_activity_timestamps TEXT,
+  device_information TEXT,
+  session_duration INTEGER
 );

@@ -129,13 +129,21 @@ export class Chat extends Server<Env> {
     this.sessions.set(session.session_id, session);
 
     this.ctx.storage.sql.exec(
-      `INSERT INTO sessions (session_id, user_id, created_at, updated_at, messages, ip_address, user_agent) VALUES ('${
+      `INSERT INTO sessions (session_id, user_id, created_at, updated_at, messages, ip_address, user_agent, user_activity_timestamps, device_information, session_duration) VALUES ('${
         session.session_id
       }', '${session.user_id}', '${session.created_at}', '${session.updated_at}', ${JSON.stringify(
         session.messages,
-      )}, '${session.ip_address}', '${session.user_agent}') ON CONFLICT (session_id) DO UPDATE SET updated_at = '${session.updated_at}', messages = ${JSON.stringify(
+      )}, '${session.ip_address}', '${session.user_agent}', ${JSON.stringify(
+        session.user_activity_timestamps,
+      )}, ${JSON.stringify(
+        session.device_information,
+      )}, ${session.session_duration}) ON CONFLICT (session_id) DO UPDATE SET updated_at = '${session.updated_at}', messages = ${JSON.stringify(
         session.messages,
-      )}`,
+      )}, user_activity_timestamps = ${JSON.stringify(
+        session.user_activity_timestamps,
+      )}, device_information = ${JSON.stringify(
+        session.device_information,
+      )}, session_duration = ${session.session_duration}`,
     );
   }
 
@@ -185,9 +193,20 @@ export class Chat extends Server<Env> {
           messages: [],
           ip_address: connection.remoteAddress,
           user_agent: connection.userAgent,
+          user_activity_timestamps: [],
+          device_information: connection.deviceInformation,
+          session_duration: 0,
         };
+
+        // Validate IP address and user agent
+        if (session.ip_address !== connection.remoteAddress || session.user_agent !== connection.userAgent) {
+          throw new Error("IP address or user agent mismatch");
+        }
+
         session.messages.push(parsed);
         session.updated_at = new Date().toISOString();
+        session.user_activity_timestamps.push(new Date().toISOString());
+        session.session_duration = (new Date().getTime() - new Date(session.created_at).getTime()) / 1000;
         this.saveSession(session);
 
         // let's ask AI to respond as well for fun
