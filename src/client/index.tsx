@@ -1,3 +1,9 @@
+/**
+ * @file index.tsx
+ * @description Main application component and related components for managing the chat interface.
+ * @module Client
+ */
+
 import { createRoot } from "react-dom/client";
 import { usePartySocket } from "partysocket/react";
 import React, { useState, useEffect } from "react";
@@ -20,8 +26,16 @@ const client = createClient({
   issuer: "https://auth.myserver.com",
 });
 
-// Main application component
-function App() {
+/**
+ * Main application component.
+ * Manages the chat interface, user authentication, and real-time communication.
+ * 
+ * @returns {JSX.Element} The rendered chat application component.
+ * 
+ * @example
+ * <App />
+ */
+function App(): JSX.Element {
   const [name, setName] = useState<string | null>(null);
   const [profile, setProfile] = useState<{
     picture: string;
@@ -238,8 +252,15 @@ function App() {
   );
 }
 
-// Component for managing user profile settings
-function ProfileSettings() {
+/**
+ * Component for managing user profile settings.
+ * 
+ * @returns {JSX.Element} The rendered profile settings form.
+ * 
+ * @example
+ * <ProfileSettings />
+ */
+function ProfileSettings(): JSX.Element {
   const [profile, setProfile] = useState<{
     picture: string;
     status: string;
@@ -325,8 +346,18 @@ function ProfileSettings() {
   );
 }
 
-// Component for providing feedback buttons (thumbs up/down)
-function FeedbackButtons({ messageId }: { messageId: string }) {
+/**
+ * Component for providing feedback buttons (thumbs up/down).
+ * 
+ * @param {Object} props - Component properties.
+ * @param {string} props.messageId - The ID of the message to provide feedback for.
+ * 
+ * @returns {JSX.Element} The rendered feedback buttons.
+ * 
+ * @example
+ * <FeedbackButtons messageId="12345" />
+ */
+function FeedbackButtons({ messageId }: { messageId: string }): JSX.Element {
   const handleFeedback = (feedback: string) => {
     console.log(`Feedback for message ${messageId}: ${feedback}`);
   };
@@ -339,8 +370,18 @@ function FeedbackButtons({ messageId }: { messageId: string }) {
   );
 }
 
-// Component for providing a star rating system
-function RatingSystem({ messageId }: { messageId: string }) {
+/**
+ * Component for providing a star rating system.
+ * 
+ * @param {Object} props - Component properties.
+ * @param {string} props.messageId - The ID of the message to rate.
+ * 
+ * @returns {JSX.Element} The rendered star rating system.
+ * 
+ * @example
+ * <RatingSystem messageId="12345" />
+ */
+function RatingSystem({ messageId }: { messageId: string }): JSX.Element {
   const [rating, setRating] = useState<number | null>(null);
 
   const handleRating = (rate: number) => {
@@ -363,8 +404,18 @@ function RatingSystem({ messageId }: { messageId: string }) {
   );
 }
 
-// Component for providing detailed feedback form
-function FeedbackForm({ messageId }: { messageId: string }) {
+/**
+ * Component for providing detailed feedback form.
+ * 
+ * @param {Object} props - Component properties.
+ * @param {string} props.messageId - The ID of the message to provide detailed feedback for.
+ * 
+ * @returns {JSX.Element} The rendered detailed feedback form.
+ * 
+ * @example
+ * <FeedbackForm messageId="12345" />
+ */
+function FeedbackForm({ messageId }: { messageId: string }): JSX.Element {
   const [feedback, setFeedback] = useState<string>("");
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -385,8 +436,15 @@ function FeedbackForm({ messageId }: { messageId: string }) {
   );
 }
 
-// Component for displaying a survey link
-function SurveyLink() {
+/**
+ * Component for displaying a survey link.
+ * 
+ * @returns {JSX.Element} The rendered survey link.
+ * 
+ * @example
+ * <SurveyLink />
+ */
+function SurveyLink(): JSX.Element {
   const handleSurveyClick = () => {
     console.log("Survey link clicked");
   };
@@ -398,8 +456,15 @@ function SurveyLink() {
   );
 }
 
-// Component for embedding a survey within the application
-function EmbeddedSurvey() {
+/**
+ * Component for embedding a survey within the application.
+ * 
+ * @returns {JSX.Element} The rendered embedded survey.
+ * 
+ * @example
+ * <EmbeddedSurvey />
+ */
+function EmbeddedSurvey(): JSX.Element {
   return (
     <div className="embedded-survey">
       <iframe
@@ -411,8 +476,18 @@ function EmbeddedSurvey() {
   );
 }
 
-// Component for message reactions
-function MessageReactions({ messageId }: { messageId: string }) {
+/**
+ * Component for message reactions.
+ * 
+ * @param {Object} props - Component properties.
+ * @param {string} props.messageId - The ID of the message to react to.
+ * 
+ * @returns {JSX.Element} The rendered message reactions.
+ * 
+ * @example
+ * <MessageReactions messageId="12345" />
+ */
+function MessageReactions({ messageId }: { messageId: string }): JSX.Element {
   const [reactions, setReactions] = useState<{ [key: string]: number }>({});
 
   const handleReaction = (reaction: string) => {
@@ -434,8 +509,18 @@ function MessageReactions({ messageId }: { messageId: string }) {
   );
 }
 
-// Component for message threads and replies
-function MessageThreads({ messageId }: { messageId: string }) {
+/**
+ * Component for message threads and replies.
+ * 
+ * @param {Object} props - Component properties.
+ * @param {string} props.messageId - The ID of the message to reply to.
+ * 
+ * @returns {JSX.Element} The rendered message threads and replies.
+ * 
+ * @example
+ * <MessageThreads messageId="12345" />
+ */
+function MessageThreads({ messageId }: { messageId: string }): JSX.Element {
   const [replies, setReplies] = useState<ChatMessage[]>([]);
   const [replyContent, setReplyContent] = useState<string>("");
 

@@ -1,3 +1,9 @@
+/**
+ * @file index.ts
+ * @description Chat server logic and main functionalities for managing messages and sessions.
+ * @module Server
+ */
+
 import {
   type Connection,
   Server,
@@ -19,19 +25,28 @@ import jwt from "jsonwebtoken";
 
 import type { ChatMessage, Message } from "../shared";
 
-// Chat class handles the chat server logic and manages messages and sessions
+/**
+ * Chat class handles the chat server logic and manages messages and sessions.
+ */
 export class Chat extends Server<Env> {
   static options = { hibernate: true };
 
   messages = [] as ChatMessage[];
   sessions = new Map<string, any>();
 
-  // Broadcasts a message to all connected clients, excluding specified clients
+  /**
+   * Broadcasts a message to all connected clients, excluding specified clients.
+   * 
+   * @param {Message} message - The message to broadcast.
+   * @param {string[]} [exclude] - List of client IDs to exclude from broadcasting.
+   */
   broadcastMessage(message: Message, exclude?: string[]) {
     this.broadcast(JSON.stringify(message), exclude);
   }
 
-  // Initializes the chat server, loads previous messages from the database
+  /**
+   * Initializes the chat server, loads previous messages from the database.
+   */
   onStart() {
     // this is where you can initialize things that need to be done before the server starts
     // for example, load previous messages from a database or a service
@@ -52,7 +67,11 @@ export class Chat extends Server<Env> {
       .toArray() as ChatMessage[];
   }
 
-  // Handles a new client connection, sends initial messages to the client
+  /**
+   * Handles a new client connection, sends initial messages to the client.
+   * 
+   * @param {Connection} connection - The connection object representing the client.
+   */
   onConnect(connection: Connection) {
     connection.send(
       JSON.stringify({
@@ -62,7 +81,11 @@ export class Chat extends Server<Env> {
     );
   }
 
-  // Saves a message to the local store and the database
+  /**
+   * Saves a message to the local store and the database.
+   * 
+   * @param {ChatMessage} message - The message to save.
+   */
   saveMessage(message: ChatMessage) {
     // check if the message already exists
     const existingMessage = this.messages.find((m) => m.id === message.id);
@@ -88,7 +111,11 @@ export class Chat extends Server<Env> {
     );
   }
 
-  // Saves a session to the local store and the database
+  /**
+   * Saves a session to the local store and the database.
+   * 
+   * @param {any} session - The session to save.
+   */
   saveSession(session: any) {
     this.sessions.set(session.session_id, session);
 
@@ -103,7 +130,12 @@ export class Chat extends Server<Env> {
     );
   }
 
-  // Handles incoming messages from clients, updates local store and broadcasts messages
+  /**
+   * Handles incoming messages from clients, updates local store and broadcasts messages.
+   * 
+   * @param {Connection} connection - The connection object representing the client.
+   * @param {WSMessage} message - The message received from the client.
+   */
   async onMessage(connection: Connection, message: WSMessage) {
     // let's broadcast the raw message to everyone else
     this.broadcast(message);
@@ -198,7 +230,12 @@ export class Chat extends Server<Env> {
     }
   }
 
-  // Validates a JWT token and returns the decoded payload if valid
+  /**
+   * Validates a JWT token and returns the decoded payload if valid.
+   * 
+   * @param {string} token - The JWT token to validate.
+   * @returns {object | null} The decoded payload if the token is valid, otherwise null.
+   */
   validateToken(token: string) {
     try {
       const decoded = jwt.verify(token, process.env.JWT_SECRET!);
