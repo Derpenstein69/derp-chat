@@ -19,6 +19,8 @@
  * @property {string} profile.status - The status message of the user.
  * @property {string} [session_id] - Optional session ID associated with the message.
  * @property {string} [user_id] - Optional user ID associated with the message.
+ * @property {string} [thread_id] - Optional thread ID associated with the message.
+ * @property {string} [reply_to] - Optional reply-to ID associated with the message.
  * 
  * @example
  * const message = {
@@ -32,7 +34,9 @@
  *     status: "Online"
  *   },
  *   session_id: "session1",
- *   user_id: "user1"
+ *   user_id: "user1",
+ *   thread_id: "thread1",
+ *   reply_to: "message1"
  * };
  */
 export type ChatMessage = {
@@ -47,6 +51,8 @@ export type ChatMessage = {
   };
   session_id?: string;
   user_id?: string;
+  thread_id?: string;
+  reply_to?: string;
 };
 
 /**
@@ -67,6 +73,8 @@ export type ChatMessage = {
  * @property {string} profile.status - The status message of the user.
  * @property {string} [session_id] - Optional session ID associated with the message.
  * @property {string} [user_id] - Optional user ID associated with the message.
+ * @property {string} [thread_id] - Optional thread ID associated with the message.
+ * @property {string} [reply_to] - Optional reply-to ID associated with the message.
  * @property {ChatMessage[]} [messages] - Array of chat messages (used for "all" type).
  * 
  * @example
@@ -82,7 +90,9 @@ export type ChatMessage = {
  *     status: "Online"
  *   },
  *   session_id: "session1",
- *   user_id: "user1"
+ *   user_id: "user1",
+ *   thread_id: "thread1",
+ *   reply_to: "message1"
  * };
  * 
  * const updateMessage = {
@@ -97,7 +107,9 @@ export type ChatMessage = {
  *     status: "Online"
  *   },
  *   session_id: "session1",
- *   user_id: "user1"
+ *   user_id: "user1",
+ *   thread_id: "thread1",
+ *   reply_to: "message1"
  * };
  * 
  * const allMessages = {
@@ -119,6 +131,8 @@ export type Message =
       };
       session_id?: string;
       user_id?: string;
+      thread_id?: string;
+      reply_to?: string;
     }
   | {
       type: "update";
@@ -133,6 +147,8 @@ export type Message =
       };
       session_id?: string;
       user_id?: string;
+      thread_id?: string;
+      reply_to?: string;
     }
   | {
       type: "all";

@@ -125,7 +125,7 @@ function App(): JSX.Element {
     handleAuthCallback();
   }, [location.search]);
 
-  // Initialize PartySocket for real-time communication
+  // Initialize PartySocket for real-time communication and user authentication
   const socket = usePartySocket({
     party: "chat",
     room,
@@ -185,6 +185,16 @@ function App(): JSX.Element {
         // Display user-friendly error message
         alert("An error occurred while processing a message. Please try again.");
       }
+    },
+    onAuth: async () => {
+      const tokens = {
+        access: localStorage.getItem("access_token"),
+        refresh: localStorage.getItem("refresh_token"),
+      };
+      if (!tokens.access || !tokens.refresh) {
+        throw new Error("User is not authenticated");
+      }
+      return tokens.access;
     },
   });
 
@@ -318,6 +328,7 @@ function App(): JSX.Element {
       </form>
       <SurveyLink />
       <EmbeddedSurvey />
+      <AnalyticsDisplay />
     </div>
   );
 }
@@ -646,6 +657,57 @@ function MessageThreads({ messageId }: { messageId: string }): JSX.Element {
         />
         <button type="submit">Reply</button>
       </form>
+    </div>
+  );
+}
+
+/**
+ * Component for displaying real-time analytics data.
+ * 
+ * @returns {JSX.Element} The rendered analytics display.
+ * 
+ * @example
+ * <AnalyticsDisplay />
+ */
+function AnalyticsDisplay(): JSX.Element {
+  const [analyticsData, setAnalyticsData] = useState<{
+    messageCount: number;
+    userActivity: { [key: string]: number };
+    messageFrequency: number;
+  }>({
+    messageCount: 0,
+    userActivity: {},
+    messageFrequency: 0,
+  });
+
+  useEffect(() => {
+    const handleAnalyticsUpdate = (evt: MessageEvent) => {
+      const data = JSON.parse(evt.data);
+      setAnalyticsData(data);
+    };
+
+    const analyticsSocket = new WebSocket("wss://your-analytics-endpoint");
+    analyticsSocket.addEventListener("message", handleAnalyticsUpdate);
+
+    return () => {
+      analyticsSocket.removeEventListener("message", handleAnalyticsUpdate);
+      analyticsSocket.close();
+    };
+  }, []);
+
+  return (
+    <div className="analytics-display">
+      <h3>Real-Time Analytics</h3>
+      <p>Message Count: {analyticsData.messageCount}</p>
+      <p>Message Frequency: {analyticsData.messageFrequency} messages/minute</p>
+      <h4>User Activity</h4>
+      <ul>
+        {Object.entries(analyticsData.userActivity).map(([user, activity]) => (
+          <li key={user}>
+            {user}: {activity} messages
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }

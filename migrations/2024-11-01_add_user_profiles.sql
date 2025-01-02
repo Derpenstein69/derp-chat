@@ -9,7 +9,8 @@ CREATE TABLE IF NOT EXISTS users (
   bio TEXT,
   location TEXT,
   website TEXT,
-  social_media_links TEXT
+  social_media_links TEXT,
+  role TEXT -- Add role column to store user roles
 );
 
 -- Update messages table to include user_id foreign key
