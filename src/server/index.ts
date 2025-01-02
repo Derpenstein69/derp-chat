@@ -16,7 +16,7 @@ import { authorizer, createSubjects } from "@openauthjs/openauth";
 import { CloudflareStorage } from "@openauthjs/openauth/storage/cloudflare";
 import { PasswordAdapter } from "@openauthjs/openauth/adapter/password";
 import { PasswordUI } from "@openauthjs/openauth/ui/password";
-import { object, string } from "valibot";
+import { object, string, validate } from "valibot";
 import { GoogleAdapter } from "@openauthjs/openauth/adapter/google";
 import { GithubAdapter } from "@openauthjs/openauth/adapter/github";
 import { AppleAdapter } from "@openauthjs/openauth/adapter/apple";
@@ -137,96 +137,108 @@ export class Chat extends Server<Env> {
    * @param {WSMessage} message - The message received from the client.
    */
   async onMessage(connection: Connection, message: WSMessage) {
-    // let's broadcast the raw message to everyone else
-    this.broadcast(message);
+    try {
+      // let's broadcast the raw message to everyone else
+      this.broadcast(message);
 
-    // let's update our local messages store
-    const parsed = JSON.parse(message as string) as Message;
+      // let's update our local messages store
+      const parsed = JSON.parse(message as string) as Message;
 
-    if (parsed.type === "add") {
-      // add the message to the local store
-      this.saveMessage(parsed);
-
-      // manage session data
-      const session = this.sessions.get(parsed.session_id) || {
-        session_id: parsed.session_id,
-        user_id: parsed.user_id,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-        messages: [],
-        ip_address: connection.remoteAddress,
-        user_agent: connection.userAgent,
-      };
-      session.messages.push(parsed);
-      session.updated_at = new Date().toISOString();
-      this.saveSession(session);
-
-      // let's ask AI to respond as well for fun
-      const aiMessage = {
-        id: nanoid(8),
-        content: "...",
-        user: "AI",
-        role: "assistant",
-        attachments: [],
-      } as const;
-
-      this.broadcastMessage({
-        type: "add",
-        ...aiMessage,
-      });
-
-      const aiMessageStream = (await this.env.AI.run(
-        "@cf/meta/llama-2-7b-chat-int8",
-        {
-          stream: true,
-          messages: this.messages.map((m) => ({
-            content: m.content,
-            role: m.role,
-          })),
-        },
-      )) as ReadableStream;
-
-      this.saveMessage(aiMessage);
-
-      const eventStream = aiMessageStream
-        .pipeThrough(new TextDecoderStream())
-        .pipeThrough(new EventSourceParserStream());
-
-      // We want the AI to respond to the message in real-time
-      // so we're going to stream every chunk as an "update" message
-
-      let buffer = "";
-
-      for await (const event of eventStream) {
-        if (event.data !== "[DONE]") {
-          // let's append the response to the buffer
-          const data = JSON.parse(event.data) as { response: string };
-          buffer += data.response;
-          // and broadcast the buffer as an update
-          this.broadcastMessage({
-            type: "update",
-            ...aiMessage,
-            content: buffer + "...", // let's add an ellipsis to show it's still typing
-          });
-        } else {
-          // the AI is done responding
-          // we update our local messages store with the final response
-          this.saveMessage({
-            ...aiMessage,
-            content: buffer,
-          });
-
-          // let's update the message with the final response
-          this.broadcastMessage({
-            type: "update",
-            ...aiMessage,
-            content: buffer,
-          });
-        }
+      // Validate input data
+      const validationResult = validate(messageSchema, { content: parsed.content });
+      if (!validationResult.success) {
+        throw new Error(validationResult.errors[0].message);
       }
-    } else if (parsed.type === "update") {
-      // update the message in the local store
-      this.saveMessage(parsed);
+
+      if (parsed.type === "add") {
+        // add the message to the local store
+        this.saveMessage(parsed);
+
+        // manage session data
+        const session = this.sessions.get(parsed.session_id) || {
+          session_id: parsed.session_id,
+          user_id: parsed.user_id,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+          messages: [],
+          ip_address: connection.remoteAddress,
+          user_agent: connection.userAgent,
+        };
+        session.messages.push(parsed);
+        session.updated_at = new Date().toISOString();
+        this.saveSession(session);
+
+        // let's ask AI to respond as well for fun
+        const aiMessage = {
+          id: nanoid(8),
+          content: "...",
+          user: "AI",
+          role: "assistant",
+          attachments: [],
+        } as const;
+
+        this.broadcastMessage({
+          type: "add",
+          ...aiMessage,
+        });
+
+        const aiMessageStream = (await this.env.AI.run(
+          "@cf/meta/llama-2-7b-chat-int8",
+          {
+            stream: true,
+            messages: this.messages.map((m) => ({
+              content: m.content,
+              role: m.role,
+            })),
+          },
+        )) as ReadableStream;
+
+        this.saveMessage(aiMessage);
+
+        const eventStream = aiMessageStream
+          .pipeThrough(new TextDecoderStream())
+          .pipeThrough(new EventSourceParserStream());
+
+        // We want the AI to respond to the message in real-time
+        // so we're going to stream every chunk as an "update" message
+
+        let buffer = "";
+
+        for await (const event of eventStream) {
+          if (event.data !== "[DONE]") {
+            // let's append the response to the buffer
+            const data = JSON.parse(event.data) as { response: string };
+            buffer += data.response;
+            // and broadcast the buffer as an update
+            this.broadcastMessage({
+              type: "update",
+              ...aiMessage,
+              content: buffer + "...", // let's add an ellipsis to show it's still typing
+            });
+          } else {
+            // the AI is done responding
+            // we update our local messages store with the final response
+            this.saveMessage({
+              ...aiMessage,
+              content: buffer,
+            });
+
+            // let's update the message with the final response
+            this.broadcastMessage({
+              type: "update",
+              ...aiMessage,
+              content: buffer,
+            });
+          }
+        }
+      } else if (parsed.type === "update") {
+        // update the message in the local store
+        this.saveMessage(parsed);
+      }
+    } catch (error) {
+      console.error("Error processing message", error);
+      // Implement a logging mechanism to log errors to an external logging service
+      // Example: logErrorToService(error);
     }
   }
 

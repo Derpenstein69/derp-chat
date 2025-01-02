@@ -17,6 +17,10 @@ A chat application with an AI assistant backed by a Durable Object.
 * User authentication and profiles 🔒
 * Rich media support 📷
 * Real-time messaging 💬
+* Search messages 🔍
+* Provide feedback and ratings ⭐
+* Profile customization 🎨
+* Threads and replies 🧵
 
 ## Prerequisites
 
@@ -50,6 +54,18 @@ A chat application with an AI assistant backed by a Durable Object.
      DISCORD_CLIENT_ID=your-discord-client-id
      DISCORD_CLIENT_SECRET=your-discord-client-secret
      ```
+
+4. Example environment variable values:
+   ```
+   GOOGLE_CLIENT_ID=1234567890-abcdefghijklmnopqrstuvwxyz.apps.googleusercontent.com
+   GOOGLE_CLIENT_SECRET=your-google-client-secret
+   GITHUB_CLIENT_ID=Iv1.1234567890abcdef
+   GITHUB_CLIENT_SECRET=your-github-client-secret
+   APPLE_CLIENT_ID=com.example.app
+   APPLE_CLIENT_SECRET=your-apple-client-secret
+   DISCORD_CLIENT_ID=123456789012345678
+   DISCORD_CLIENT_SECRET=your-discord-client-secret
+   ```
 
 ## Running the project
 

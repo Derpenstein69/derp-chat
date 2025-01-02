@@ -17,6 +17,7 @@ import {
 } from "react-router";
 import { nanoid } from "nanoid";
 import { createClient } from "@openauthjs/openauth/client";
+import { object, string, validate } from "valibot";
 
 import { names, type ChatMessage, type Message } from "../shared";
 
@@ -25,6 +26,49 @@ const client = createClient({
   clientID: "your-client-id",
   issuer: "https://auth.myserver.com",
 });
+
+// Define a schema for input validation using valibot
+const messageSchema = object({
+  content: string().min(1, "Content cannot be empty"),
+});
+
+/**
+ * ErrorBoundary component to catch and handle errors in the component tree.
+ * 
+ * @param {Object} props - Component properties.
+ * @param {React.ReactNode} props.children - Child components.
+ * 
+ * @returns {JSX.Element} The rendered error boundary component.
+ * 
+ * @example
+ * <ErrorBoundary>
+ *   <App />
+ * </ErrorBoundary>
+ */
+class ErrorBoundary extends React.Component<{ children: React.ReactNode }, { hasError: boolean }> {
+  constructor(props: { children: React.ReactNode }) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+
+  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+    console.error("ErrorBoundary caught an error", error, errorInfo);
+    // Implement a logging mechanism to log errors to an external logging service
+    // Example: logErrorToService(error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return <h1>Something went wrong. Please try again later.</h1>;
+    }
+
+    return this.props.children;
+  }
+}
 
 /**
  * Main application component.
@@ -52,23 +96,29 @@ function App(): JSX.Element {
 
   useEffect(() => {
     const handleAuthCallback = async () => {
-      const query = new URLSearchParams(location.search);
-      const code = query.get("code");
-      if (code) {
-        const tokens = await client.exchange(code, window.location.origin);
-        localStorage.setItem("access_token", tokens.access);
-        localStorage.setItem("refresh_token", tokens.refresh);
+      try {
+        const query = new URLSearchParams(location.search);
+        const code = query.get("code");
+        if (code) {
+          const tokens = await client.exchange(code, window.location.origin);
+          localStorage.setItem("access_token", tokens.access);
+          localStorage.setItem("refresh_token", tokens.refresh);
 
-        const userProfile = await client.getUserProfile(tokens.access);
-        setName(userProfile.name);
-        setProfile({
-          picture: userProfile.picture,
-          status: userProfile.status,
-          bio: userProfile.bio,
-          location: userProfile.location,
-          website: userProfile.website,
-          social_media_links: userProfile.social_media_links,
-        });
+          const userProfile = await client.getUserProfile(tokens.access);
+          setName(userProfile.name);
+          setProfile({
+            picture: userProfile.picture,
+            status: userProfile.status,
+            bio: userProfile.bio,
+            location: userProfile.location,
+            website: userProfile.website,
+            social_media_links: userProfile.social_media_links,
+          });
+        }
+      } catch (error) {
+        console.error("Error during authentication callback", error);
+        // Display user-friendly error message
+        alert("An error occurred during authentication. Please try again.");
       }
     };
 
@@ -80,54 +130,60 @@ function App(): JSX.Element {
     party: "chat",
     room,
     onMessage: (evt) => {
-      const message = JSON.parse(evt.data as string) as Message;
-      if (message.type === "add") {
-        const foundIndex = messages.findIndex((m) => m.id === message.id);
-        if (foundIndex === -1) {
-          // probably someone else who added a message
-          setMessages((messages) => [
-            ...messages,
-            {
-              id: message.id,
-              content: message.content,
-              user: message.user,
-              role: message.role,
-              attachments: message.attachments,
-            },
-          ]);
-        } else {
-          // this usually means we ourselves added a message
-          // and it was broadcasted back
-          // so let's replace the message with the new message
-          setMessages((messages) => {
-            return messages
-              .slice(0, foundIndex)
-              .concat({
+      try {
+        const message = JSON.parse(evt.data as string) as Message;
+        if (message.type === "add") {
+          const foundIndex = messages.findIndex((m) => m.id === message.id);
+          if (foundIndex === -1) {
+            // probably someone else who added a message
+            setMessages((messages) => [
+              ...messages,
+              {
                 id: message.id,
                 content: message.content,
                 user: message.user,
                 role: message.role,
                 attachments: message.attachments,
-              })
-              .concat(messages.slice(foundIndex + 1));
-          });
-        }
-      } else if (message.type === "update") {
-        setMessages((messages) =>
-          messages.map((m) =>
-            m.id === message.id
-              ? {
+              },
+            ]);
+          } else {
+            // this usually means we ourselves added a message
+            // and it was broadcasted back
+            // so let's replace the message with the new message
+            setMessages((messages) => {
+              return messages
+                .slice(0, foundIndex)
+                .concat({
                   id: message.id,
                   content: message.content,
                   user: message.user,
                   role: message.role,
                   attachments: message.attachments,
-                }
-              : m,
-          ),
-        );
-      } else {
-        setMessages(message.messages);
+                })
+                .concat(messages.slice(foundIndex + 1));
+            });
+          }
+        } else if (message.type === "update") {
+          setMessages((messages) =>
+            messages.map((m) =>
+              m.id === message.id
+                ? {
+                    id: message.id,
+                    content: message.content,
+                    user: message.user,
+                    role: message.role,
+                    attachments: message.attachments,
+                  }
+                : m,
+            ),
+          );
+        } else {
+          setMessages(message.messages);
+        }
+      } catch (error) {
+        console.error("Error processing incoming message", error);
+        // Display user-friendly error message
+        alert("An error occurred while processing a message. Please try again.");
       }
     },
   });
@@ -200,38 +256,52 @@ function App(): JSX.Element {
           const fileInput = e.currentTarget.elements.namedItem(
             "attachment",
           ) as HTMLInputElement;
-          const formData = new FormData();
-          formData.append("content", content.value);
-          if (fileInput.files && fileInput.files.length > 0) {
-            formData.append("attachment", fileInput.files[0]);
+
+          // Validate input data
+          const validationResult = validate(messageSchema, { content: content.value });
+          if (!validationResult.success) {
+            alert(validationResult.errors[0].message);
+            return;
           }
 
-          const response = await fetch("/upload", {
-            method: "POST",
-            body: formData,
-          });
+          try {
+            const formData = new FormData();
+            formData.append("content", content.value);
+            if (fileInput.files && fileInput.files.length > 0) {
+              formData.append("attachment", fileInput.files[0]);
+            }
 
-          const { attachmentUrl } = await response.json();
+            const response = await fetch("/upload", {
+              method: "POST",
+              body: formData,
+            });
 
-          const chatMessage: ChatMessage = {
-            id: nanoid(8),
-            content: content.value,
-            user: name || "Anonymous",
-            role: "user",
-            attachments: attachmentUrl ? [attachmentUrl] : [],
-          };
+            const { attachmentUrl } = await response.json();
 
-          setMessages((messages) => [...messages, chatMessage]);
+            const chatMessage: ChatMessage = {
+              id: nanoid(8),
+              content: content.value,
+              user: name || "Anonymous",
+              role: "user",
+              attachments: attachmentUrl ? [attachmentUrl] : [],
+            };
 
-          socket.send(
-            JSON.stringify({
-              type: "add",
-              ...chatMessage,
-            } satisfies Message),
-          );
+            setMessages((messages) => [...messages, chatMessage]);
 
-          content.value = "";
-          fileInput.value = "";
+            socket.send(
+              JSON.stringify({
+                type: "add",
+                ...chatMessage,
+              } satisfies Message),
+            );
+
+            content.value = "";
+            fileInput.value = "";
+          } catch (error) {
+            console.error("Error sending message", error);
+            // Display user-friendly error message
+            alert("An error occurred while sending the message. Please try again.");
+          }
         }}
       >
         <input
@@ -561,12 +631,14 @@ function MessageThreads({ messageId }: { messageId: string }): JSX.Element {
 // Render the application
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 createRoot(document.getElementById("root")!).render(
-  <BrowserRouter>
-    <Routes>
-      <Route path="/" element={<Navigate to={`/${nanoid()}`} />} />
-      <Route path="/:room" element={<App />} />
-      <Route path="/profile-settings" element={<ProfileSettings />} />
-      <Route path="*" element={<Navigate to="/" />} />
-    </Routes>
-  </BrowserRouter>,
+  <ErrorBoundary>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Navigate to={`/${nanoid()}`} />} />
+        <Route path="/:room" element={<App />} />
+        <Route path="/profile-settings" element={<ProfileSettings />} />
+        <Route path="*" element={<Navigate to="/" />} />
+      </Routes>
+    </BrowserRouter>
+  </ErrorBoundary>,
 );
