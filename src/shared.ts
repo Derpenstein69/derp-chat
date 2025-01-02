@@ -141,7 +141,7 @@ export type Message =
 
 /**
  * Represents a user session in the application.
- * Each session has an ID, user ID, timestamps, messages, IP address, and user agent.
+ * Each session has an ID, user ID, timestamps, messages, IP address, user agent, user activity timestamps, device information, and session duration.
  * 
  * @typedef {Object} Session
  * @property {string} session_id - The unique identifier for the session.
@@ -151,6 +151,9 @@ export type Message =
  * @property {string} messages - The messages associated with the session.
  * @property {string} ip_address - The IP address of the user.
  * @property {string} user_agent - The user agent of the user's device.
+ * @property {string[]} user_activity_timestamps - The timestamps of user activities during the session.
+ * @property {string} device_information - The device information of the user's device.
+ * @property {number} session_duration - The duration of the session in seconds.
  * 
  * @example
  * const session = {
@@ -160,7 +163,10 @@ export type Message =
  *   updated_at: "2023-01-01T01:00:00Z",
  *   messages: "Hello, world!",
  *   ip_address: "192.168.1.1",
- *   user_agent: "Mozilla/5.0"
+ *   user_agent: "Mozilla/5.0",
+ *   user_activity_timestamps: ["2023-01-01T00:00:00Z", "2023-01-01T00:30:00Z"],
+ *   device_information: "Windows 10",
+ *   session_duration: 3600
  * };
  */
 export type Session = {
@@ -171,6 +177,9 @@ export type Session = {
   messages: string;
   ip_address: string;
   user_agent: string;
+  user_activity_timestamps: string[];
+  device_information: string;
+  session_duration: number;
 };
 
 /**
