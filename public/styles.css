@@ -301,3 +301,24 @@ html {
 .message-threads button:hover {
   background-color: #0fa0ce;
 }
+
+/* Rating footer styles */
+.rating-footer {
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
+  padding: 10px;
+  background-color: #f9f9f9;
+  border-top: 1px solid #ddd;
+}
+
+.rating-footer .star {
+  font-size: 1.5em;
+  color: #ffd700;
+  cursor: pointer;
+}
+
+.rating-footer .star:hover,
+.rating-footer .star.selected {
+  color: #ffa500;
+}
