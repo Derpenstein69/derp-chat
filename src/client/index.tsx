@@ -144,6 +144,7 @@ function App(): JSX.Element {
                 user: message.user,
                 role: message.role,
                 attachments: message.attachments,
+                profile: message.profile, // P3190
               },
             ]);
           } else {
@@ -159,6 +160,7 @@ function App(): JSX.Element {
                   user: message.user,
                   role: message.role,
                   attachments: message.attachments,
+                  profile: message.profile, // P3190
                 })
                 .concat(messages.slice(foundIndex + 1));
             });
@@ -173,6 +175,7 @@ function App(): JSX.Element {
                     user: message.user,
                     role: message.role,
                     attachments: message.attachments,
+                    profile: message.profile, // P3190
                   }
                 : m,
             ),
@@ -219,18 +222,18 @@ function App(): JSX.Element {
         <div key={message.id} className="row message">
           <div className="two columns user">
             {message.user}
-            {profile && (
+            {message.profile && ( // P3190
               <>
-                <img src={profile.picture} alt="Profile" className="profile-picture" />
-                <div className="status-message">{profile.status}</div>
-                <div className="bio">{profile.bio}</div>
-                <div className="location">{profile.location}</div>
+                <img src={message.profile.picture} alt="Profile" className="profile-picture" />
+                <div className="status-message">{message.profile.status}</div>
+                <div className="bio">{message.profile.bio}</div>
+                <div className="location">{message.profile.location}</div>
                 <div className="website">
-                  <a href={profile.website} target="_blank" rel="noopener noreferrer">
-                    {profile.website}
+                  <a href={message.profile.website} target="_blank" rel="noopener noreferrer">
+                    {message.profile.website}
                   </a>
                 </div>
-                <div className="social-media-links">{profile.social_media_links}</div>
+                <div className="social-media-links">{message.profile.social_media_links}</div>
               </>
             )}
           </div>
@@ -294,6 +297,7 @@ function App(): JSX.Element {
               user: name || "Anonymous",
               role: "user",
               attachments: attachmentUrl ? [attachmentUrl] : [],
+              profile: profile || undefined, // P3190
             };
 
             setMessages((messages) => [...messages, chatMessage]);
@@ -674,10 +678,14 @@ function AnalyticsDisplay(): JSX.Element {
     messageCount: number;
     userActivity: { [key: string]: number };
     messageFrequency: number;
+    userPreferences: { [key: string]: any }; // P171c
+    previousInteractions: { [key: string]: any }; // P171c
   }>({
     messageCount: 0,
     userActivity: {},
     messageFrequency: 0,
+    userPreferences: {}, // P171c
+    previousInteractions: {}, // P171c
   });
 
   useEffect(() => {
@@ -705,6 +713,22 @@ function AnalyticsDisplay(): JSX.Element {
         {Object.entries(analyticsData.userActivity).map(([user, activity]) => (
           <li key={user}>
             {user}: {activity} messages
+          </li>
+        ))}
+      </ul>
+      <h4>User Preferences</h4> {/* P171c */}
+      <ul>
+        {Object.entries(analyticsData.userPreferences).map(([user, preferences]) => (
+          <li key={user}>
+            {user}: {JSON.stringify(preferences)}
+          </li>
+        ))}
+      </ul>
+      <h4>Previous Interactions</h4> {/* P171c */}
+      <ul>
+        {Object.entries(analyticsData.previousInteractions).map(([user, interactions]) => (
+          <li key={user}>
+            {user}: {JSON.stringify(interactions)}
           </li>
         ))}
       </ul>
