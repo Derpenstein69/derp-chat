@@ -360,4 +360,316 @@ describe('App component', () => {
 
     expect(logErrorToService).toHaveBeenCalled();
   });
+
+  /**
+   * Test to check if the ProfileSettings component renders correctly.
+   * 
+   * @remarks
+   * This test verifies that the ProfileSettings component renders the profile settings form.
+   * 
+   * @example
+   * test('renders ProfileSettings component', () => {
+   *   render(
+   *     <BrowserRouter>
+   *       <Routes>
+   *         <Route path="/profile-settings" element={<ProfileSettings />} />
+   *       </Routes>
+   *     </BrowserRouter>
+   *   );
+   *   expect(screen.getByLabelText('Profile Picture URL:')).toBeInTheDocument();
+   *   expect(screen.getByLabelText('Status:')).toBeInTheDocument();
+   *   expect(screen.getByLabelText('Bio:')).toBeInTheDocument();
+   *   expect(screen.getByLabelText('Location:')).toBeInTheDocument();
+   *   expect(screen.getByLabelText('Website:')).toBeInTheDocument();
+   *   expect(screen.getByLabelText('Social Media Links:')).toBeInTheDocument();
+   * });
+   */
+  test('renders ProfileSettings component', () => {
+    render(
+      <BrowserRouter>
+        <Routes>
+          <Route path="/profile-settings" element={<ProfileSettings />} />
+        </Routes>
+      </BrowserRouter>
+    );
+    expect(screen.getByLabelText('Profile Picture URL:')).toBeInTheDocument();
+    expect(screen.getByLabelText('Status:')).toBeInTheDocument();
+    expect(screen.getByLabelText('Bio:')).toBeInTheDocument();
+    expect(screen.getByLabelText('Location:')).toBeInTheDocument();
+    expect(screen.getByLabelText('Website:')).toBeInTheDocument();
+    expect(screen.getByLabelText('Social Media Links:')).toBeInTheDocument();
+  });
+
+  /**
+   * Test to check if the FeedbackButtons component handles feedback correctly.
+   * 
+   * @remarks
+   * This test verifies that the FeedbackButtons component calls the handleFeedback function when a feedback button is clicked.
+   * 
+   * @example
+   * test('handles feedback correctly', () => {
+   *   render(
+   *     <BrowserRouter>
+   *       <Routes>
+   *         <Route path="/" element={<App />} />
+   *       </Routes>
+   *     </BrowserRouter>
+   *   );
+   * 
+   *   const thumbsUpButton = screen.getByText('👍');
+   *   fireEvent.click(thumbsUpButton);
+   *   expect(console.log).toHaveBeenCalledWith(expect.stringContaining('thumbs-up'));
+   * 
+   *   const thumbsDownButton = screen.getByText('👎');
+   *   fireEvent.click(thumbsDownButton);
+   *   expect(console.log).toHaveBeenCalledWith(expect.stringContaining('thumbs-down'));
+   * });
+   */
+  test('handles feedback correctly', () => {
+    render(
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<App />} />
+        </Routes>
+      </BrowserRouter>
+    );
+
+    const thumbsUpButton = screen.getByText('👍');
+    fireEvent.click(thumbsUpButton);
+    expect(console.log).toHaveBeenCalledWith(expect.stringContaining('thumbs-up'));
+
+    const thumbsDownButton = screen.getByText('👎');
+    fireEvent.click(thumbsDownButton);
+    expect(console.log).toHaveBeenCalledWith(expect.stringContaining('thumbs-down'));
+  });
+
+  /**
+   * Test to check if the RatingSystem component handles rating correctly.
+   * 
+   * @remarks
+   * This test verifies that the RatingSystem component calls the handleRating function when a star is clicked.
+   * 
+   * @example
+   * test('handles rating correctly', () => {
+   *   render(
+   *     <BrowserRouter>
+   *       <Routes>
+   *         <Route path="/" element={<App />} />
+   *       </Routes>
+   *     </BrowserRouter>
+   *   );
+   * 
+   *   const stars = screen.getAllByText('★');
+   *   fireEvent.click(stars[2]);
+   *   expect(console.log).toHaveBeenCalledWith(expect.stringContaining('3'));
+   * });
+   */
+  test('handles rating correctly', () => {
+    render(
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<App />} />
+        </Routes>
+      </BrowserRouter>
+    );
+
+    const stars = screen.getAllByText('★');
+    fireEvent.click(stars[2]);
+    expect(console.log).toHaveBeenCalledWith(expect.stringContaining('3'));
+  });
+
+  /**
+   * Test to check if the FeedbackForm component handles form submission correctly.
+   * 
+   * @remarks
+   * This test verifies that the FeedbackForm component calls the handleSubmit function when the form is submitted.
+   * 
+   * @example
+   * test('handles form submission correctly', () => {
+   *   render(
+   *     <BrowserRouter>
+   *       <Routes>
+   *         <Route path="/" element={<App />} />
+   *       </Routes>
+   *     </BrowserRouter>
+   *   );
+   * 
+   *   const textarea = screen.getByPlaceholderText('Provide detailed feedback...');
+   *   fireEvent.change(textarea, { target: { value: 'Great job!' } });
+   * 
+   *   const form = screen.getByRole('form');
+   *   fireEvent.submit(form);
+   * 
+   *   expect(console.log).toHaveBeenCalledWith(expect.stringContaining('Great job!'));
+   * });
+   */
+  test('handles form submission correctly', () => {
+    render(
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<App />} />
+        </Routes>
+      </BrowserRouter>
+    );
+
+    const textarea = screen.getByPlaceholderText('Provide detailed feedback...');
+    fireEvent.change(textarea, { target: { value: 'Great job!' } });
+
+    const form = screen.getByRole('form');
+    fireEvent.submit(form);
+
+    expect(console.log).toHaveBeenCalledWith(expect.stringContaining('Great job!'));
+  });
+
+  /**
+   * Test to check if the SurveyLink component handles survey link click correctly.
+   * 
+   * @remarks
+   * This test verifies that the SurveyLink component calls the handleSurveyClick function when the survey link is clicked.
+   * 
+   * @example
+   * test('handles survey link click correctly', () => {
+   *   render(
+   *     <BrowserRouter>
+   *       <Routes>
+   *         <Route path="/" element={<App />} />
+   *       </Routes>
+   *     </BrowserRouter>
+   *   );
+   * 
+   *   const surveyLink = screen.getByText('Take our survey');
+   *   fireEvent.click(surveyLink);
+   *   expect(console.log).toHaveBeenCalledWith(expect.stringContaining('Survey link clicked'));
+   * });
+   */
+  test('handles survey link click correctly', () => {
+    render(
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<App />} />
+        </Routes>
+      </BrowserRouter>
+    );
+
+    const surveyLink = screen.getByText('Take our survey');
+    fireEvent.click(surveyLink);
+    expect(console.log).toHaveBeenCalledWith(expect.stringContaining('Survey link clicked'));
+  });
+
+  /**
+   * Test to check if the MessageReactions component handles reactions correctly.
+   * 
+   * @remarks
+   * This test verifies that the MessageReactions component calls the handleReaction function when a reaction button is clicked.
+   * 
+   * @example
+   * test('handles reactions correctly', () => {
+   *   render(
+   *     <BrowserRouter>
+   *       <Routes>
+   *         <Route path="/" element={<App />} />
+   *       </Routes>
+   *     </BrowserRouter>
+   *   );
+   * 
+   *   const reactionButton = screen.getByText('👍');
+   *   fireEvent.click(reactionButton);
+   *   expect(console.log).toHaveBeenCalledWith(expect.stringContaining('👍'));
+   * });
+   */
+  test('handles reactions correctly', () => {
+    render(
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<App />} />
+        </Routes>
+      </BrowserRouter>
+    );
+
+    const reactionButton = screen.getByText('👍');
+    fireEvent.click(reactionButton);
+    expect(console.log).toHaveBeenCalledWith(expect.stringContaining('👍'));
+  });
+
+  /**
+   * Test to check if the MessageThreads component handles replies correctly.
+   * 
+   * @remarks
+   * This test verifies that the MessageThreads component calls the handleReplySubmit function when a reply is submitted.
+   * 
+   * @example
+   * test('handles replies correctly', () => {
+   *   render(
+   *     <BrowserRouter>
+   *       <Routes>
+   *         <Route path="/" element={<App />} />
+   *       </Routes>
+   *     </BrowserRouter>
+   *   );
+   * 
+   *   const replyInput = screen.getByPlaceholderText('Write a reply...');
+   *   fireEvent.change(replyInput, { target: { value: 'This is a reply' } });
+   * 
+   *   const form = screen.getByRole('form');
+   *   fireEvent.submit(form);
+   * 
+   *   expect(console.log).toHaveBeenCalledWith(expect.stringContaining('This is a reply'));
+   * });
+   */
+  test('handles replies correctly', () => {
+    render(
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<App />} />
+        </Routes>
+      </BrowserRouter>
+    );
+
+    const replyInput = screen.getByPlaceholderText('Write a reply...');
+    fireEvent.change(replyInput, { target: { value: 'This is a reply' } });
+
+    const form = screen.getByRole('form');
+    fireEvent.submit(form);
+
+    expect(console.log).toHaveBeenCalledWith(expect.stringContaining('This is a reply'));
+  });
+
+  /**
+   * Test to check if the AnalyticsDisplay component renders correctly.
+   * 
+   * @remarks
+   * This test verifies that the AnalyticsDisplay component renders the real-time analytics data.
+   * 
+   * @example
+   * test('renders AnalyticsDisplay component', () => {
+   *   render(
+   *     <BrowserRouter>
+   *       <Routes>
+   *         <Route path="/" element={<App />} />
+   *       </Routes>
+   *     </BrowserRouter>
+   *   );
+   *   expect(screen.getByText('Real-Time Analytics')).toBeInTheDocument();
+   *   expect(screen.getByText('Message Count:')).toBeInTheDocument();
+   *   expect(screen.getByText('Message Frequency:')).toBeInTheDocument();
+   *   expect(screen.getByText('User Activity')).toBeInTheDocument();
+   *   expect(screen.getByText('User Preferences')).toBeInTheDocument();
+   *   expect(screen.getByText('Previous Interactions')).toBeInTheDocument();
+   * });
+   */
+  test('renders AnalyticsDisplay component', () => {
+    render(
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<App />} />
+        </Routes>
+      </BrowserRouter>
+    );
+    expect(screen.getByText('Real-Time Analytics')).toBeInTheDocument();
+    expect(screen.getByText('Message Count:')).toBeInTheDocument();
+    expect(screen.getByText('Message Frequency:')).toBeInTheDocument();
+    expect(screen.getByText('User Activity')).toBeInTheDocument();
+    expect(screen.getByText('User Preferences')).toBeInTheDocument();
+    expect(screen.getByText('Previous Interactions')).toBeInTheDocument();
+  });
 });

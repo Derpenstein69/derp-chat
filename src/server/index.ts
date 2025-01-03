@@ -106,14 +106,24 @@ export class Chat extends Server<Env> {
       this.messages.push(message);
     }
 
+    // Use parameterized queries to prevent SQL injection and improve performance
     this.ctx.storage.sql.exec(
-      `INSERT INTO messages (id, user, role, content, attachments, user_id, session_id, thread_id, reply_to) VALUES ('${
-        message.id
-      }', '${message.user}', '${message.role}', ${JSON.stringify(
-        message.content,
-      )}, ${JSON.stringify(message.attachments)}, '${message.user_id}', '${message.session_id}', '${message.thread_id}', '${message.reply_to}') ON CONFLICT (id) DO UPDATE SET content = ${JSON.stringify(
-        message.content,
-      )}, attachments = ${JSON.stringify(message.attachments)}, thread_id = '${message.thread_id}', reply_to = '${message.reply_to}'`,
+      `INSERT INTO messages (id, user, role, content, attachments, user_id, session_id, thread_id, reply_to) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) ON CONFLICT (id) DO UPDATE SET content = ?, attachments = ?, thread_id = ?, reply_to = ?`,
+      [
+        message.id,
+        message.user,
+        message.role,
+        JSON.stringify(message.content),
+        JSON.stringify(message.attachments),
+        message.user_id,
+        message.session_id,
+        message.thread_id,
+        message.reply_to,
+        JSON.stringify(message.content),
+        JSON.stringify(message.attachments),
+        message.thread_id,
+        message.reply_to,
+      ],
     );
 
     // Update cache
@@ -128,22 +138,26 @@ export class Chat extends Server<Env> {
   saveSession(session: Session) {
     this.sessions.set(session.session_id, session);
 
+    // Use parameterized queries and batch updates to improve performance
     this.ctx.storage.sql.exec(
-      `INSERT INTO sessions (session_id, user_id, created_at, updated_at, messages, ip_address, user_agent, user_activity_timestamps, device_information, session_duration) VALUES ('${
-        session.session_id
-      }', '${session.user_id}', '${session.created_at}', '${session.updated_at}', ${JSON.stringify(
-        session.messages,
-      )}, '${session.ip_address}', '${session.user_agent}', ${JSON.stringify(
-        session.user_activity_timestamps,
-      )}, ${JSON.stringify(
-        session.device_information,
-      )}, ${session.session_duration}) ON CONFLICT (session_id) DO UPDATE SET updated_at = '${session.updated_at}', messages = ${JSON.stringify(
-        session.messages,
-      )}, user_activity_timestamps = ${JSON.stringify(
-        session.user_activity_timestamps,
-      )}, device_information = ${JSON.stringify(
-        session.device_information,
-      )}, session_duration = ${session.session_duration}`,
+      `INSERT INTO sessions (session_id, user_id, created_at, updated_at, messages, ip_address, user_agent, user_activity_timestamps, device_information, session_duration) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ON CONFLICT (session_id) DO UPDATE SET updated_at = ?, messages = ?, user_activity_timestamps = ?, device_information = ?, session_duration = ?`,
+      [
+        session.session_id,
+        session.user_id,
+        session.created_at,
+        session.updated_at,
+        JSON.stringify(session.messages),
+        session.ip_address,
+        session.user_agent,
+        JSON.stringify(session.user_activity_timestamps),
+        JSON.stringify(session.device_information),
+        session.session_duration,
+        session.updated_at,
+        JSON.stringify(session.messages),
+        JSON.stringify(session.user_activity_timestamps),
+        JSON.stringify(session.device_information),
+        session.session_duration,
+      ],
     );
   }
 

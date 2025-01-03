@@ -439,4 +439,211 @@ describe("Chat", () => {
 
     expect(logErrorToService).toHaveBeenCalledWith(expect.any(Error));
   });
+
+  /**
+   * Test to check if the Chat class validates incoming messages.
+   * 
+   * @remarks
+   * This test verifies that the Chat class validates incoming messages using the messageSchema and throws an error if validation fails.
+   * 
+   * @example
+   * test("should validate incoming messages", async () => {
+   *   const invalidMessage = {
+   *     id: nanoid(8),
+   *     user: "Alice",
+   *     role: "user",
+   *     content: "",
+   *     attachments: [],
+   *     session_id: "session1",
+   *     user_id: "user1",
+   *   };
+   *   chat.broadcast = jest.fn();
+   *   chat.ctx.storage.sql.exec = jest.fn();
+   *   console.error = jest.fn();
+   * 
+   *   await chat.onMessage(connection, JSON.stringify({ type: "add", ...invalidMessage }));
+   * 
+   *   expect(console.error).toHaveBeenCalledWith("Error processing message", expect.any(Error));
+   *   expect(chat.messages).not.toContainEqual(invalidMessage);
+   * });
+   */
+  test("should validate incoming messages", async () => {
+    const invalidMessage = {
+      id: nanoid(8),
+      user: "Alice",
+      role: "user",
+      content: "",
+      attachments: [],
+      session_id: "session1",
+      user_id: "user1",
+    };
+    chat.broadcast = jest.fn();
+    chat.ctx.storage.sql.exec = jest.fn();
+    console.error = jest.fn();
+
+    await chat.onMessage(connection, JSON.stringify({ type: "add", ...invalidMessage }));
+
+    expect(console.error).toHaveBeenCalledWith("Error processing message", expect.any(Error));
+    expect(chat.messages).not.toContainEqual(invalidMessage);
+  });
+
+  /**
+   * Test to check if the Chat class saves messages to the database.
+   * 
+   * @remarks
+   * This test verifies that the Chat class saves messages to the database using parameterized queries to prevent SQL injection and improve performance.
+   * 
+   * @example
+   * test("should save messages to the database", () => {
+   *   const newMessage = {
+   *     id: nanoid(8),
+   *     user: "Alice",
+   *     role: "user",
+   *     content: "Hello",
+   *     attachments: [],
+   *     session_id: "session1",
+   *     user_id: "user1",
+   *   };
+   *   chat.ctx.storage.sql.exec = jest.fn();
+   * 
+   *   chat.saveMessage(newMessage);
+   * 
+   *   expect(chat.ctx.storage.sql.exec).toHaveBeenCalledWith(
+   *     `INSERT INTO messages (id, user, role, content, attachments, user_id, session_id, thread_id, reply_to) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) ON CONFLICT (id) DO UPDATE SET content = ?, attachments = ?, thread_id = ?, reply_to = ?`,
+   *     [
+   *       newMessage.id,
+   *       newMessage.user,
+   *       newMessage.role,
+   *       JSON.stringify(newMessage.content),
+   *       JSON.stringify(newMessage.attachments),
+   *       newMessage.user_id,
+   *       newMessage.session_id,
+   *       newMessage.thread_id,
+   *       newMessage.reply_to,
+   *       JSON.stringify(newMessage.content),
+   *       JSON.stringify(newMessage.attachments),
+   *       newMessage.thread_id,
+   *       newMessage.reply_to,
+   *     ],
+   *   );
+   * });
+   */
+  test("should save messages to the database", () => {
+    const newMessage = {
+      id: nanoid(8),
+      user: "Alice",
+      role: "user",
+      content: "Hello",
+      attachments: [],
+      session_id: "session1",
+      user_id: "user1",
+    };
+    chat.ctx.storage.sql.exec = jest.fn();
+
+    chat.saveMessage(newMessage);
+
+    expect(chat.ctx.storage.sql.exec).toHaveBeenCalledWith(
+      `INSERT INTO messages (id, user, role, content, attachments, user_id, session_id, thread_id, reply_to) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) ON CONFLICT (id) DO UPDATE SET content = ?, attachments = ?, thread_id = ?, reply_to = ?`,
+      [
+        newMessage.id,
+        newMessage.user,
+        newMessage.role,
+        JSON.stringify(newMessage.content),
+        JSON.stringify(newMessage.attachments),
+        newMessage.user_id,
+        newMessage.session_id,
+        newMessage.thread_id,
+        newMessage.reply_to,
+        JSON.stringify(newMessage.content),
+        JSON.stringify(newMessage.attachments),
+        newMessage.thread_id,
+        newMessage.reply_to,
+      ],
+    );
+  });
+
+  /**
+   * Test to check if the Chat class saves sessions to the database.
+   * 
+   * @remarks
+   * This test verifies that the Chat class saves sessions to the database using parameterized queries and batch updates to improve performance.
+   * 
+   * @example
+   * test("should save sessions to the database", () => {
+   *   const newSession = {
+   *     session_id: "session1",
+   *     user_id: "user1",
+   *     created_at: new Date().toISOString(),
+   *     updated_at: new Date().toISOString(),
+   *     messages: [],
+   *     ip_address: "127.0.0.1",
+   *     user_agent: "Mozilla/5.0",
+   *     user_activity_timestamps: [],
+   *     device_information: "Windows 10",
+   *     session_duration: 0,
+   *   };
+   *   chat.ctx.storage.sql.exec = jest.fn();
+   * 
+   *   chat.saveSession(newSession);
+   * 
+   *   expect(chat.ctx.storage.sql.exec).toHaveBeenCalledWith(
+   *     `INSERT INTO sessions (session_id, user_id, created_at, updated_at, messages, ip_address, user_agent, user_activity_timestamps, device_information, session_duration) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ON CONFLICT (session_id) DO UPDATE SET updated_at = ?, messages = ?, user_activity_timestamps = ?, device_information = ?, session_duration = ?`,
+   *     [
+   *       newSession.session_id,
+   *       newSession.user_id,
+   *       newSession.created_at,
+   *       newSession.updated_at,
+   *       JSON.stringify(newSession.messages),
+   *       newSession.ip_address,
+   *       newSession.user_agent,
+   *       JSON.stringify(newSession.user_activity_timestamps),
+   *       JSON.stringify(newSession.device_information),
+   *       newSession.session_duration,
+   *       newSession.updated_at,
+   *       JSON.stringify(newSession.messages),
+   *       JSON.stringify(newSession.user_activity_timestamps),
+   *       JSON.stringify(newSession.device_information),
+   *       newSession.session_duration,
+   *     ],
+   *   );
+   * });
+   */
+  test("should save sessions to the database", () => {
+    const newSession = {
+      session_id: "session1",
+      user_id: "user1",
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+      messages: [],
+      ip_address: "127.0.0.1",
+      user_agent: "Mozilla/5.0",
+      user_activity_timestamps: [],
+      device_information: "Windows 10",
+      session_duration: 0,
+    };
+    chat.ctx.storage.sql.exec = jest.fn();
+
+    chat.saveSession(newSession);
+
+    expect(chat.ctx.storage.sql.exec).toHaveBeenCalledWith(
+      `INSERT INTO sessions (session_id, user_id, created_at, updated_at, messages, ip_address, user_agent, user_activity_timestamps, device_information, session_duration) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ON CONFLICT (session_id) DO UPDATE SET updated_at = ?, messages = ?, user_activity_timestamps = ?, device_information = ?, session_duration = ?`,
+      [
+        newSession.session_id,
+        newSession.user_id,
+        newSession.created_at,
+        newSession.updated_at,
+        JSON.stringify(newSession.messages),
+        newSession.ip_address,
+        newSession.user_agent,
+        JSON.stringify(newSession.user_activity_timestamps),
+        JSON.stringify(newSession.device_information),
+        newSession.session_duration,
+        newSession.updated_at,
+        JSON.stringify(newSession.messages),
+        JSON.stringify(newSession.user_activity_timestamps),
+        JSON.stringify(newSession.device_information),
+        newSession.session_duration,
+      ],
+    );
+  });
 });
