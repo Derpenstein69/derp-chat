@@ -8,6 +8,8 @@ A chat application with an AI assistant backed by a Durable Object.
 * Prerequisites
 * Setup
 * Running the project
+* Running Tests
+* Performance Optimization Tips
 * Contributing
 * License
 
@@ -86,6 +88,25 @@ A chat application with an AI assistant backed by a Durable Object.
    ```
 
 3. Open your browser and navigate to `http://localhost:8787` to see the application in action.
+
+## Running Tests
+
+To run the tests, use the following command:
+```bash
+npm test
+```
+
+This will execute all unit tests and integration tests in the project.
+
+## Performance Optimization Tips
+
+To optimize the performance of the chat application, consider the following tips:
+
+1. **Implement Caching**: Use caching mechanisms to reduce the load on the database and improve response times.
+2. **Optimize Database Queries**: Ensure that database queries are efficient and performant.
+3. **Use a Performance Monitoring Tool**: Identify and address performance bottlenecks using a performance monitoring tool.
+4. **Minimize Client-Side Rendering**: Reduce the amount of client-side rendering to improve the application's responsiveness.
+5. **Optimize Asset Loading**: Use techniques like lazy loading and code splitting to optimize the loading of assets.
 
 ## Contributing
 

@@ -672,4 +672,131 @@ describe('App component', () => {
     expect(screen.getByText('User Preferences')).toBeInTheDocument();
     expect(screen.getByText('Previous Interactions')).toBeInTheDocument();
   });
+
+  /**
+   * Test to check if the ProfileSettings component validates profile settings.
+   * 
+   * @remarks
+   * This test verifies that the ProfileSettings component validates the profile settings form and displays error messages for invalid fields.
+   * 
+   * @example
+   * test('validates profile settings', () => {
+   *   render(
+   *     <BrowserRouter>
+   *       <Routes>
+   *         <Route path="/profile-settings" element={<ProfileSettings />} />
+   *       </Routes>
+   *     </BrowserRouter>
+   *   );
+   * 
+   *   const input = screen.getByLabelText('Profile Picture URL:');
+   *   fireEvent.change(input, { target: { value: '' } });
+   * 
+   *   const form = screen.getByRole('form');
+   *   fireEvent.submit(form);
+   * 
+   *   expect(screen.getByText('Profile Picture URL is required')).toBeInTheDocument();
+   * });
+   */
+  test('validates profile settings', () => {
+    render(
+      <BrowserRouter>
+        <Routes>
+          <Route path="/profile-settings" element={<ProfileSettings />} />
+        </Routes>
+      </BrowserRouter>
+    );
+
+    const input = screen.getByLabelText('Profile Picture URL:');
+    fireEvent.change(input, { target: { value: '' } });
+
+    const form = screen.getByRole('form');
+    fireEvent.submit(form);
+
+    expect(screen.getByText('Profile Picture URL is required')).toBeInTheDocument();
+  });
+
+  /**
+   * Test to check if the App component filters messages based on search query.
+   * 
+   * @remarks
+   * This test verifies that the App component filters the displayed messages based on the search query entered by the user.
+   * 
+   * @example
+   * test('filters messages based on search query', () => {
+   *   render(
+   *     <BrowserRouter>
+   *       <Routes>
+   *         <Route path="/" element={<App />} />
+   *       </Routes>
+   *     </BrowserRouter>
+   *   );
+   * 
+   *   const searchInput = screen.getByPlaceholderText('Search messages...');
+   *   fireEvent.change(searchInput, { target: { value: 'Hello' } });
+   * 
+   *   expect(screen.getByText('Hello')).toBeInTheDocument();
+   *   expect(screen.queryByText('Goodbye')).not.toBeInTheDocument();
+   * });
+   */
+  test('filters messages based on search query', () => {
+    render(
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<App />} />
+        </Routes>
+      </BrowserRouter>
+    );
+
+    const searchInput = screen.getByPlaceholderText('Search messages...');
+    fireEvent.change(searchInput, { target: { value: 'Hello' } });
+
+    expect(screen.getByText('Hello')).toBeInTheDocument();
+    expect(screen.queryByText('Goodbye')).not.toBeInTheDocument();
+  });
+
+  /**
+   * Test to check if the App component handles file attachments in messages.
+   * 
+   * @remarks
+   * This test verifies that the App component correctly handles file attachments in messages and displays them appropriately.
+   * 
+   * @example
+   * test('handles file attachments in messages', () => {
+   *   render(
+   *     <BrowserRouter>
+   *       <Routes>
+   *         <Route path="/" element={<App />} />
+   *       </Routes>
+   *     </BrowserRouter>
+   *   );
+   * 
+   *   const fileInput = screen.getByLabelText('Attachment');
+   *   const file = new File(['file content'], 'example.jpg', { type: 'image/jpeg' });
+   *   fireEvent.change(fileInput, { target: { files: [file] } });
+   * 
+   *   const form = screen.getByRole('form');
+   *   fireEvent.submit(form);
+   * 
+   *   expect(screen.getByAltText('Attachment')).toBeInTheDocument();
+   * });
+   */
+  test('handles file attachments in messages', () => {
+    render(
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<App />} />
+        </Routes>
+      </BrowserRouter>
+    );
+
+    const fileInput = screen.getByLabelText('Attachment');
+    const file = new File(['file content'], 'example.jpg', { type: 'image/jpeg' });
+    fireEvent.change(fileInput, { target: { files: [file] } });
+
+    const form = screen.getByRole('form');
+    fireEvent.submit(form);
+
+    expect(screen.getByAltText('Attachment')).toBeInTheDocument();
+  });
 });
