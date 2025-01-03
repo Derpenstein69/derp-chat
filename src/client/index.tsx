@@ -89,6 +89,9 @@ function App(): JSX.Element {
     location: string;
     website: string;
     social_media_links: string;
+    theme: string; // Pc65c
+    avatar: string; // Pc65c
+    interaction_style: string; // Pc65c
   } | null>(null);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [searchQuery, setSearchQuery] = useState<string>(""); // Search query state
@@ -115,6 +118,9 @@ function App(): JSX.Element {
             location: userProfile.location,
             website: userProfile.website,
             social_media_links: userProfile.social_media_links,
+            theme: userProfile.theme, // Pc65c
+            avatar: userProfile.avatar, // Pc65c
+            interaction_style: userProfile.interaction_style, // Pc65c
           });
         }
       } catch (error) {
@@ -147,6 +153,9 @@ function App(): JSX.Element {
                 role: message.role,
                 attachments: message.attachments,
                 profile: message.profile, // P3190
+                context: message.context, // P3a7a
+                preferences: message.preferences, // P5238
+                multi_modal_attachments: message.multi_modal_attachments, // P1668
               },
             ]);
           } else {
@@ -163,6 +172,9 @@ function App(): JSX.Element {
                   role: message.role,
                   attachments: message.attachments,
                   profile: message.profile, // P3190
+                  context: message.context, // P3a7a
+                  preferences: message.preferences, // P5238
+                  multi_modal_attachments: message.multi_modal_attachments, // P1668
                 })
                 .concat(messages.slice(foundIndex + 1));
             });
@@ -178,6 +190,9 @@ function App(): JSX.Element {
                     role: message.role,
                     attachments: message.attachments,
                     profile: message.profile, // P3190
+                    context: message.context, // P3a7a
+                    preferences: message.preferences, // P5238
+                    multi_modal_attachments: message.multi_modal_attachments, // P1668
                   }
                 : m,
             ),
@@ -300,6 +315,13 @@ function App(): JSX.Element {
               role: "user",
               attachments: attachmentUrl ? [attachmentUrl] : [],
               profile: profile || undefined, // P3190
+              context: "", // P3a7a
+              preferences: profile ? { // P5238
+                theme: profile.theme,
+                avatar: profile.avatar,
+                interaction_style: profile.interaction_style,
+              } : undefined,
+              multi_modal_attachments: [], // P1668
             };
 
             setMessages((messages) => [...messages, chatMessage]);
@@ -355,6 +377,9 @@ function ProfileSettings(): JSX.Element {
     location: string;
     website: string;
     social_media_links: string;
+    theme: string; // Pc65c
+    avatar: string; // Pc65c
+    interaction_style: string; // Pc65c
   }>({
     picture: "",
     status: "",
@@ -362,6 +387,9 @@ function ProfileSettings(): JSX.Element {
     location: "",
     website: "",
     social_media_links: "",
+    theme: "", // Pc65c
+    avatar: "", // Pc65c
+    interaction_style: "", // Pc65c
   });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -425,6 +453,33 @@ function ProfileSettings(): JSX.Element {
           type="text"
           name="social_media_links"
           value={profile.social_media_links}
+          onChange={handleInputChange}
+        />
+      </label>
+      <label>
+        Theme:
+        <input
+          type="text"
+          name="theme"
+          value={profile.theme}
+          onChange={handleInputChange}
+        />
+      </label>
+      <label>
+        Avatar:
+        <input
+          type="text"
+          name="avatar"
+          value={profile.avatar}
+          onChange={handleInputChange}
+        />
+      </label>
+      <label>
+        Interaction Style:
+        <input
+          type="text"
+          name="interaction_style"
+          value={profile.interaction_style}
           onChange={handleInputChange}
         />
       </label>

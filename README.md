@@ -24,6 +24,9 @@ A chat application with an AI assistant backed by a Durable Object.
 * Role-based access control 🔑
 * File attachments 📎
 * Real-time analytics and monitoring 📊
+* Context-aware responses 🧠
+* Personalized interactions 👤
+* Multi-modal interactions 🎥
 
 ## Prerequisites
 
@@ -131,3 +134,33 @@ The chat application now supports real-time analytics and monitoring to track an
 2. Create a new table in the database to store analytics data by adding a new migration file in the `migrations` directory.
 3. Use WebSockets to send real-time updates to the client by broadcasting analytics data to all connected clients whenever a new message is received.
 4. Update the client-side code in `src/client/index.tsx` to display real-time analytics data.
+
+## Context-aware Responses
+
+The chat application now supports context-aware responses by maintaining a conversation history for each user session. This allows the AI assistant to provide more relevant and coherent responses based on the context of the conversation.
+
+### Implementing Context-aware Responses
+
+1. Extend the `ChatMessage` and `Session` types in the `src/shared.ts` file to include fields for context-aware responses.
+2. Update the server-side code in `src/server/index.ts` to maintain a conversation history for each user session and use it to generate context-aware responses.
+3. Update the client-side code in `src/client/index.tsx` to handle context-aware responses and display them appropriately.
+
+## Personalized Interactions
+
+The chat application now supports personalized interactions by leveraging user profile information. The AI assistant can tailor its responses based on the user's preferences, interests, and past interactions.
+
+### Implementing Personalized Interactions
+
+1. Extend the `ChatMessage` and `Session` types in the `src/shared.ts` file to include fields for personalized interactions.
+2. Update the server-side code in `src/server/index.ts` to leverage user profile information and generate personalized responses.
+3. Update the client-side code in `src/client/index.tsx` to handle personalized interactions and display them appropriately.
+
+## Multi-modal Interactions
+
+The chat application now supports multi-modal interactions by allowing users to send and receive messages in different formats, such as text, images, and videos. The AI assistant can analyze and respond to these different formats appropriately.
+
+### Implementing Multi-modal Interactions
+
+1. Extend the `ChatMessage` and `Session` types in the `src/shared.ts` file to include fields for multi-modal interactions.
+2. Update the server-side code in `src/server/index.ts` to handle multi-modal interactions and generate appropriate responses.
+3. Update the client-side code in `src/client/index.tsx` to handle multi-modal interactions and display them appropriately.

@@ -10,5 +10,7 @@ CREATE TABLE IF NOT EXISTS sessions (
   user_agent TEXT, -- User agent of the user's device
   user_activity_timestamps TEXT, -- Timestamps of user activities during the session
   device_information TEXT, -- Device information of the user's device
-  session_duration INTEGER -- Duration of the session in seconds
+  session_duration INTEGER, -- Duration of the session in seconds
+  conversation_history TEXT, -- Conversation history for context-aware responses
+  user_preferences TEXT -- User preferences for personalized interactions
 );

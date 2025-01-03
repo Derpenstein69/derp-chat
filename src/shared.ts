@@ -25,6 +25,12 @@
  * @property {string} [user_id] - Optional user ID associated with the message.
  * @property {string} [thread_id] - Optional thread ID associated with the message.
  * @property {string} [reply_to] - Optional reply-to ID associated with the message.
+ * @property {string} [context] - Optional context information for the message.
+ * @property {Object} [preferences] - Optional user preferences for personalized interactions.
+ * @property {string} [preferences.theme] - The theme preference of the user.
+ * @property {string} [preferences.avatar] - The avatar preference of the user.
+ * @property {string} [preferences.interaction_style] - The interaction style preference of the user.
+ * @property {string[]} [multi_modal_attachments] - Optional multi-modal attachments associated with the message.
  * 
  * @example
  * const message = {
@@ -44,7 +50,14 @@
  *   session_id: "session1",
  *   user_id: "user1",
  *   thread_id: "thread1",
- *   reply_to: "message1"
+ *   reply_to: "message1",
+ *   context: "Previous conversation context",
+ *   preferences: {
+ *     theme: "dark",
+ *     avatar: "robot",
+ *     interaction_style: "friendly"
+ *   },
+ *   multi_modal_attachments: ["video.mp4"]
  * };
  */
 export type ChatMessage = {
@@ -65,6 +78,13 @@ export type ChatMessage = {
   user_id?: string;
   thread_id?: string;
   reply_to?: string;
+  context?: string;
+  preferences?: {
+    theme: string;
+    avatar: string;
+    interaction_style: string;
+  };
+  multi_modal_attachments?: string[];
 };
 
 /**
@@ -91,6 +111,12 @@ export type ChatMessage = {
  * @property {string} [user_id] - Optional user ID associated with the message.
  * @property {string} [thread_id] - Optional thread ID associated with the message.
  * @property {string} [reply_to] - Optional reply-to ID associated with the message.
+ * @property {string} [context] - Optional context information for the message.
+ * @property {Object} [preferences] - Optional user preferences for personalized interactions.
+ * @property {string} [preferences.theme] - The theme preference of the user.
+ * @property {string} [preferences.avatar] - The avatar preference of the user.
+ * @property {string} [preferences.interaction_style] - The interaction style preference of the user.
+ * @property {string[]} [multi_modal_attachments] - Optional multi-modal attachments associated with the message.
  * @property {ChatMessage[]} [messages] - Array of chat messages (used for "all" type).
  * 
  * @example
@@ -112,7 +138,14 @@ export type ChatMessage = {
  *   session_id: "session1",
  *   user_id: "user1",
  *   thread_id: "thread1",
- *   reply_to: "message1"
+ *   reply_to: "message1",
+ *   context: "Previous conversation context",
+ *   preferences: {
+ *     theme: "dark",
+ *     avatar: "robot",
+ *     interaction_style: "friendly"
+ *   },
+ *   multi_modal_attachments: ["video.mp4"]
  * };
  * 
  * const updateMessage = {
@@ -133,7 +166,14 @@ export type ChatMessage = {
  *   session_id: "session1",
  *   user_id: "user1",
  *   thread_id: "thread1",
- *   reply_to: "message1"
+ *   reply_to: "message1",
+ *   context: "Previous conversation context",
+ *   preferences: {
+ *     theme: "dark",
+ *     avatar: "robot",
+ *     interaction_style: "friendly"
+ *   },
+ *   multi_modal_attachments: ["video.mp4"]
  * };
  * 
  * const allMessages = {
@@ -161,6 +201,13 @@ export type Message =
       user_id?: string;
       thread_id?: string;
       reply_to?: string;
+      context?: string;
+      preferences?: {
+        theme: string;
+        avatar: string;
+        interaction_style: string;
+      };
+      multi_modal_attachments?: string[];
     }
   | {
       type: "update";
@@ -181,6 +228,13 @@ export type Message =
       user_id?: string;
       thread_id?: string;
       reply_to?: string;
+      context?: string;
+      preferences?: {
+        theme: string;
+        avatar: string;
+        interaction_style: string;
+      };
+      multi_modal_attachments?: string[];
     }
   | {
       type: "all";
@@ -209,6 +263,12 @@ export type Message =
  * @property {string} profile.location - The location of the user.
  * @property {string} profile.website - The website of the user.
  * @property {string} profile.social_media_links - The social media links of the user.
+ * @property {string} [context] - Optional context information for the session.
+ * @property {Object} [preferences] - Optional user preferences for personalized interactions.
+ * @property {string} [preferences.theme] - The theme preference of the user.
+ * @property {string} [preferences.avatar] - The avatar preference of the user.
+ * @property {string} [preferences.interaction_style] - The interaction style preference of the user.
+ * @property {string[]} [multi_modal_attachments] - Optional multi-modal attachments associated with the session.
  * 
  * @example
  * const session = {
@@ -229,7 +289,14 @@ export type Message =
  *     location: "San Francisco",
  *     website: "https://example.com",
  *     social_media_links: "https://twitter.com/example"
- *   }
+ *   },
+ *   context: "Previous conversation context",
+ *   preferences: {
+ *     theme: "dark",
+ *     avatar: "robot",
+ *     interaction_style: "friendly"
+ *   },
+ *   multi_modal_attachments: ["video.mp4"]
  * };
  */
 export type Session = {
@@ -251,6 +318,13 @@ export type Session = {
     website: string;
     social_media_links: string;
   };
+  context?: string;
+  preferences?: {
+    theme: string;
+    avatar: string;
+    interaction_style: string;
+  };
+  multi_modal_attachments?: string[];
 };
 
 /**
