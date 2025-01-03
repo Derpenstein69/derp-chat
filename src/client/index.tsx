@@ -80,6 +80,7 @@ class ErrorBoundary extends React.Component<{ children: React.ReactNode }, { has
  * <App />
  */
 function App(): JSX.Element {
+  // State variables for managing user profile, messages, and search query
   const [name, setName] = useState<string | null>(null);
   const [profile, setProfile] = useState<{
     picture: string;
@@ -94,6 +95,7 @@ function App(): JSX.Element {
   const { room } = useParams();
   const location = useLocation();
 
+  // Effect for handling authentication callback and setting user profile
   useEffect(() => {
     const handleAuthCallback = async () => {
       try {

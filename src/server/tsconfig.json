@@ -2,7 +2,9 @@
   // TypeScript configuration for the server-side code
   "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "types": ["@cloudflare/workers-types", "./worker-configuration.d.ts"] // Include Cloudflare Workers types and custom worker configuration types
+    // Include Cloudflare Workers types and custom worker configuration types
+    "types": ["@cloudflare/workers-types", "./worker-configuration.d.ts"]
   },
-  "include": ["./index.ts", "./worker-configuration.d.ts"] // Include specific files for compilation
+  // Include specific files for compilation
+  "include": ["./index.ts", "./worker-configuration.d.ts"]
 }
