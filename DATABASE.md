@@ -70,3 +70,24 @@ The `ratings` table stores ratings provided by users for messages.
 | `message_id`  | TEXT      | Foreign key, references `messages(id)`.          |
 | `rating_value`| INTEGER   | Rating value (1-5).                              |
 | `timestamp`   | TIMESTAMP | Timestamp when the rating was provided.          |
+
+### Cache Table
+
+The `cache` table stores cached data to reduce database load and improve response times.
+
+| Column        | Type      | Description                                      |
+|---------------|-----------|--------------------------------------------------|
+| `key`         | TEXT      | Primary key, unique identifier for the cache key.|
+| `data`        | TEXT      | Cached data associated with the key.             |
+| `timestamp`   | TIMESTAMP | Timestamp when the data was cached.              |
+
+### Performance Metrics Table
+
+The `performance_metrics` table stores performance metrics to identify and address performance bottlenecks.
+
+| Column        | Type      | Description                                      |
+|---------------|-----------|--------------------------------------------------|
+| `metric_id`   | TEXT      | Primary key, unique identifier for the metric.   |
+| `metric_name` | TEXT      | Name of the performance metric.                  |
+| `value`       | TEXT      | Value of the performance metric.                 |
+| `timestamp`   | TIMESTAMP | Timestamp when the metric was recorded.          |

@@ -132,6 +132,100 @@ This document provides an overview of the API endpoints, request/response format
   }
   ```
 
+### Caching Mechanism
+
+#### GET /cache/:key
+- Description: Retrieve cached data by key.
+- Response Body:
+  ```json
+  {
+    "key": "cache-key",
+    "data": "cached-data"
+  }
+  ```
+
+#### POST /cache
+- Description: Store data in the cache.
+- Request Body:
+  ```json
+  {
+    "key": "cache-key",
+    "data": "data-to-cache"
+  }
+  ```
+- Response Body:
+  ```json
+  {
+    "message": "Data cached successfully"
+  }
+  ```
+
+### Performance Monitoring
+
+#### GET /performance/metrics
+- Description: Retrieve performance metrics.
+- Response Body:
+  ```json
+  {
+    "metrics": {
+      "responseTime": "100ms",
+      "requestsPerSecond": 10
+    }
+  }
+  ```
+
+### Optimized Database Queries
+
+#### GET /optimized-queries/messages
+- Description: Retrieve messages using optimized database queries.
+- Response Body:
+  ```json
+  [
+    {
+      "id": "message-id",
+      "user": "Alice",
+      "content": "Hello",
+      "attachments": []
+    }
+  ]
+  ```
+
+### Context-aware Responses
+
+#### POST /context-aware-responses
+- Description: Generate context-aware responses based on conversation history.
+- Request Body:
+  ```json
+  {
+    "sessionId": "session-id",
+    "message": "user-message"
+  }
+  ```
+- Response Body:
+  ```json
+  {
+    "response": "context-aware-response"
+  }
+  ```
+
+### Personalized Responses
+
+#### POST /personalized-responses
+- Description: Generate personalized responses based on user profile information.
+- Request Body:
+  ```json
+  {
+    "userId": "user-id",
+    "message": "user-message"
+  }
+  ```
+- Response Body:
+  ```json
+  {
+    "response": "personalized-response"
+  }
+  ```
+
 ## Request/Response Formats
 
 - All requests and responses use JSON format.
