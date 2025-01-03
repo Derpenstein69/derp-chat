@@ -682,12 +682,16 @@ function AnalyticsDisplay(): JSX.Element {
     messageFrequency: number;
     userPreferences: { [key: string]: any }; // P171c
     previousInteractions: { [key: string]: any }; // P171c
+    activeSessions: number; // P6059
+    sessionDuration: number; // P6059
   }>({
     messageCount: 0,
     userActivity: {},
     messageFrequency: 0,
     userPreferences: {}, // P171c
     previousInteractions: {}, // P171c
+    activeSessions: 0, // P6059
+    sessionDuration: 0, // P6059
   });
 
   useEffect(() => {
@@ -734,6 +738,10 @@ function AnalyticsDisplay(): JSX.Element {
           </li>
         ))}
       </ul>
+      <h4>Active Sessions</h4> {/* P6059 */}
+      <p>Active Sessions: {analyticsData.activeSessions}</p> {/* P6059 */}
+      <h4>Session Duration</h4> {/* P6059 */}
+      <p>Session Duration: {analyticsData.sessionDuration} minutes</p> {/* P6059 */}
     </div>
   );
 }
