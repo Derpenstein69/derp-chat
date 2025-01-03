@@ -17,6 +17,10 @@
  * @property {Object} [profile] - Optional profile information of the user.
  * @property {string} profile.picture - The profile picture URL of the user.
  * @property {string} profile.status - The status message of the user.
+ * @property {string} profile.bio - The bio of the user.
+ * @property {string} profile.location - The location of the user.
+ * @property {string} profile.website - The website of the user.
+ * @property {string} profile.social_media_links - The social media links of the user.
  * @property {string} [session_id] - Optional session ID associated with the message.
  * @property {string} [user_id] - Optional user ID associated with the message.
  * @property {string} [thread_id] - Optional thread ID associated with the message.
@@ -31,7 +35,11 @@
  *   attachments: ["image.png"],
  *   profile: {
  *     picture: "https://example.com/profile.png",
- *     status: "Online"
+ *     status: "Online",
+ *     bio: "Software Developer",
+ *     location: "San Francisco",
+ *     website: "https://example.com",
+ *     social_media_links: "https://twitter.com/example"
  *   },
  *   session_id: "session1",
  *   user_id: "user1",
@@ -48,6 +56,10 @@ export type ChatMessage = {
   profile?: {
     picture: string;
     status: string;
+    bio: string;
+    location: string;
+    website: string;
+    social_media_links: string;
   };
   session_id?: string;
   user_id?: string;
@@ -71,6 +83,10 @@ export type ChatMessage = {
  * @property {Object} [profile] - Optional profile information of the user.
  * @property {string} profile.picture - The profile picture URL of the user.
  * @property {string} profile.status - The status message of the user.
+ * @property {string} profile.bio - The bio of the user.
+ * @property {string} profile.location - The location of the user.
+ * @property {string} profile.website - The website of the user.
+ * @property {string} profile.social_media_links - The social media links of the user.
  * @property {string} [session_id] - Optional session ID associated with the message.
  * @property {string} [user_id] - Optional user ID associated with the message.
  * @property {string} [thread_id] - Optional thread ID associated with the message.
@@ -87,7 +103,11 @@ export type ChatMessage = {
  *   attachments: ["image.png"],
  *   profile: {
  *     picture: "https://example.com/profile.png",
- *     status: "Online"
+ *     status: "Online",
+ *     bio: "Software Developer",
+ *     location: "San Francisco",
+ *     website: "https://example.com",
+ *     social_media_links: "https://twitter.com/example"
  *   },
  *   session_id: "session1",
  *   user_id: "user1",
@@ -104,7 +124,11 @@ export type ChatMessage = {
  *   attachments: ["image.png"],
  *   profile: {
  *     picture: "https://example.com/profile.png",
- *     status: "Online"
+ *     status: "Online",
+ *     bio: "Software Developer",
+ *     location: "San Francisco",
+ *     website: "https://example.com",
+ *     social_media_links: "https://twitter.com/example"
  *   },
  *   session_id: "session1",
  *   user_id: "user1",
@@ -128,6 +152,10 @@ export type Message =
       profile?: {
         picture: string;
         status: string;
+        bio: string;
+        location: string;
+        website: string;
+        social_media_links: string;
       };
       session_id?: string;
       user_id?: string;
@@ -144,6 +172,10 @@ export type Message =
       profile?: {
         picture: string;
         status: string;
+        bio: string;
+        location: string;
+        website: string;
+        social_media_links: string;
       };
       session_id?: string;
       user_id?: string;
@@ -157,7 +189,7 @@ export type Message =
 
 /**
  * Represents a user session in the application.
- * Each session has an ID, user ID, timestamps, messages, IP address, user agent, user activity timestamps, device information, and session duration.
+ * Each session has an ID, user ID, timestamps, messages, IP address, user agent, user activity timestamps, device information, session duration, and optional profile information.
  * 
  * @typedef {Object} Session
  * @property {string} session_id - The unique identifier for the session.
@@ -170,6 +202,13 @@ export type Message =
  * @property {string[]} user_activity_timestamps - The timestamps of user activities during the session.
  * @property {string} device_information - The device information of the user's device.
  * @property {number} session_duration - The duration of the session in seconds.
+ * @property {Object} [profile] - Optional profile information of the user.
+ * @property {string} profile.picture - The profile picture URL of the user.
+ * @property {string} profile.status - The status message of the user.
+ * @property {string} profile.bio - The bio of the user.
+ * @property {string} profile.location - The location of the user.
+ * @property {string} profile.website - The website of the user.
+ * @property {string} profile.social_media_links - The social media links of the user.
  * 
  * @example
  * const session = {
@@ -182,7 +221,15 @@ export type Message =
  *   user_agent: "Mozilla/5.0",
  *   user_activity_timestamps: ["2023-01-01T00:00:00Z", "2023-01-01T00:30:00Z"],
  *   device_information: "Windows 10",
- *   session_duration: 3600
+ *   session_duration: 3600,
+ *   profile: {
+ *     picture: "https://example.com/profile.png",
+ *     status: "Online",
+ *     bio: "Software Developer",
+ *     location: "San Francisco",
+ *     website: "https://example.com",
+ *     social_media_links: "https://twitter.com/example"
+ *   }
  * };
  */
 export type Session = {
@@ -196,6 +243,14 @@ export type Session = {
   user_activity_timestamps: string[];
   device_information: string;
   session_duration: number;
+  profile?: {
+    picture: string;
+    status: string;
+    bio: string;
+    location: string;
+    website: string;
+    social_media_links: string;
+  };
 };
 
 /**
