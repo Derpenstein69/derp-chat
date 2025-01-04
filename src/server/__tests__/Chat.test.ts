@@ -791,4 +791,109 @@ describe("Chat", () => {
     expect(chat.broadcast).toHaveBeenCalledWith(JSON.stringify({ type: "add", ...newMessage }));
     expect(chat.ctx.storage.sql.exec).toHaveBeenCalled();
   });
+
+  /**
+   * Test to check if the Chat class handles caching mechanism.
+   * 
+   * @remarks
+   * This test verifies that the Chat class caches messages to reduce database load and improve response times.
+   * 
+   * @example
+   * test("should handle caching mechanism", () => {
+   *   const newMessage = {
+   *     id: nanoid(8),
+   *     user: "Alice",
+   *     role: "user",
+   *     content: "Hello",
+   *     attachments: [],
+   *     session_id: "session1",
+   *     user_id: "user1",
+   *   };
+   *   chat.saveMessage(newMessage);
+   * 
+   *   expect(chat.cache.get(newMessage.id)).toEqual([newMessage]);
+   * });
+   */
+  test("should handle caching mechanism", () => {
+    const newMessage = {
+      id: nanoid(8),
+      user: "Alice",
+      role: "user",
+      content: "Hello",
+      attachments: [],
+      session_id: "session1",
+      user_id: "user1",
+    };
+    chat.saveMessage(newMessage);
+
+    expect(chat.cache.get(newMessage.id)).toEqual([newMessage]);
+  });
+
+  /**
+   * Test to check if the Chat class handles performance monitoring.
+   * 
+   * @remarks
+   * This test verifies that the Chat class logs message processing time to identify and address performance bottlenecks.
+   * 
+   * @example
+   * test("should handle performance monitoring", async () => {
+   *   const newMessage = {
+   *     id: nanoid(8),
+   *     user: "Alice",
+   *     role: "user",
+   *     content: "Hello",
+   *     attachments: [],
+   *     session_id: "session1",
+   *     user_id: "user1",
+   *   };
+   *   console.log = jest.fn();
+   * 
+   *   await chat.onMessage(connection, JSON.stringify({ type: "add", ...newMessage }));
+   * 
+   *   expect(console.log).toHaveBeenCalledWith(expect.stringContaining("Message processing time"));
+   * });
+   */
+  test("should handle performance monitoring", async () => {
+    const newMessage = {
+      id: nanoid(8),
+      user: "Alice",
+      role: "user",
+      content: "Hello",
+      attachments: [],
+      session_id: "session1",
+      user_id: "user1",
+    };
+    console.log = jest.fn();
+
+    await chat.onMessage(connection, JSON.stringify({ type: "add", ...newMessage }));
+
+    expect(console.log).toHaveBeenCalledWith(expect.stringContaining("Message processing time"));
+  });
+
+  /**
+   * Test to check if the Chat class handles optimized database queries.
+   * 
+   * @remarks
+   * This test verifies that the Chat class uses optimized database queries to ensure efficiency and performance.
+   * 
+   * @example
+   * test("should handle optimized database queries", () => {
+   *   chat.ctx.storage.sql.exec = jest.fn().mockReturnValue({
+   *     toArray: () => [],
+   *   });
+   * 
+   *   chat.onStart();
+   * 
+   *   expect(chat.ctx.storage.sql.exec).toHaveBeenCalledWith("SELECT * FROM messages LIMIT 50 OFFSET 0");
+   * });
+   */
+  test("should handle optimized database queries", () => {
+    chat.ctx.storage.sql.exec = jest.fn().mockReturnValue({
+      toArray: () => [],
+    });
+
+    chat.onStart();
+
+    expect(chat.ctx.storage.sql.exec).toHaveBeenCalledWith("SELECT * FROM messages LIMIT 50 OFFSET 0");
+  });
 });

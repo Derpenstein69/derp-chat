@@ -22,6 +22,7 @@ import { GithubAdapter } from "@openauthjs/openauth/adapter/github";
 import { AppleAdapter } from "@openauthjs/openauth/adapter/apple";
 import { DiscordAdapter } from "@openauthjs/openauth/adapter/discord";
 import jwt from "jsonwebtoken";
+import { performance } from "perf_hooks"; // P8d37
 
 import type { ChatMessage, Message, Session } from "../shared";
 
@@ -181,6 +182,7 @@ export class Chat extends Server<Env> {
    * @param {WSMessage} message - The message received from the client.
    */
   async onMessage(connection: Connection, message: WSMessage) {
+    const startTime = performance.now(); // P8d37
     try {
       // let's broadcast the raw message to everyone else
       this.broadcast(message);
@@ -300,6 +302,9 @@ export class Chat extends Server<Env> {
       console.error("Error processing message", error);
       // Implement a logging mechanism to log errors to an external logging service
       // Example: logErrorToService(error);
+    } finally {
+      const endTime = performance.now(); // P8d37
+      console.log(`Message processing time: ${endTime - startTime}ms`); // P8d37
     }
   }
 

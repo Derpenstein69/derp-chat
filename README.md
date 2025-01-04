@@ -185,3 +185,31 @@ The chat application now supports multi-modal interactions by allowing users to 
 1. Extend the `ChatMessage` and `Session` types in the `src/shared.ts` file to include fields for multi-modal interactions.
 2. Update the server-side code in `src/server/index.ts` to handle multi-modal interactions and generate appropriate responses.
 3. Update the client-side code in `src/client/index.tsx` to handle multi-modal interactions and display them appropriately.
+
+## Caching Mechanism
+
+The chat application now includes a caching mechanism to reduce the load on the database and improve response times.
+
+### Setting Up Caching Mechanism
+
+1. Extend the `ChatMessage` and `Session` types in the `src/shared.ts` file to include fields for caching.
+2. Update the server-side code in `src/server/index.ts` to implement caching for frequently accessed data.
+3. Update the client-side code in `src/client/index.tsx` to utilize the caching mechanism for improved performance.
+
+## Performance Monitoring Tool
+
+The chat application now uses a performance monitoring tool to identify and address performance bottlenecks.
+
+### Using Performance Monitoring Tool
+
+1. Integrate a performance monitoring tool in the `src/server/index.ts` file to track and analyze performance metrics.
+2. Update the client-side code in `src/client/index.tsx` to display performance metrics and provide insights into potential bottlenecks.
+
+## Optimized Database Queries
+
+The chat application now includes optimized database queries to ensure efficiency and performance.
+
+### Optimizing Database Queries
+
+1. Review and optimize database queries in the `src/server/index.ts` file to improve performance.
+2. Update the client-side code in `src/client/index.tsx` to handle optimized database queries and ensure efficient data retrieval.

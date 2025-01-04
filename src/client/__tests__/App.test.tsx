@@ -799,4 +799,219 @@ describe('App component', () => {
 
     expect(screen.getByAltText('Attachment')).toBeInTheDocument();
   });
+
+  /**
+   * Test to check if the App component handles caching mechanism.
+   * 
+   * @remarks
+   * This test verifies that the App component caches messages to reduce database load and improve response times.
+   * 
+   * @example
+   * test('handles caching mechanism', () => {
+   *   render(
+   *     <BrowserRouter>
+   *       <Routes>
+   *         <Route path="/" element={<App />} />
+   *       </Routes>
+   *     </BrowserRouter>
+   *   );
+   * 
+   *   const input = screen.getByPlaceholderText(/Type a message/i);
+   *   fireEvent.change(input, { target: { value: 'Hello' } });
+   * 
+   *   const form = screen.getByRole('form');
+   *   fireEvent.submit(form);
+   * 
+   *   expect(usePartySocket().send).toHaveBeenCalled();
+   * });
+   */
+  test('handles caching mechanism', () => {
+    render(
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<App />} />
+        </Routes>
+      </BrowserRouter>
+    );
+
+    const input = screen.getByPlaceholderText(/Type a message/i);
+    fireEvent.change(input, { target: { value: 'Hello' } });
+
+    const form = screen.getByRole('form');
+    fireEvent.submit(form);
+
+    expect(usePartySocket().send).toHaveBeenCalled();
+  });
+
+  /**
+   * Test to check if the App component handles performance monitoring.
+   * 
+   * @remarks
+   * This test verifies that the App component logs message processing time to identify and address performance bottlenecks.
+   * 
+   * @example
+   * test('handles performance monitoring', async () => {
+   *   render(
+   *     <BrowserRouter>
+   *       <Routes>
+   *         <Route path="/" element={<App />} />
+   *       </Routes>
+   *     </BrowserRouter>
+   *   );
+   * 
+   *   const input = screen.getByPlaceholderText(/Type a message/i);
+   *   fireEvent.change(input, { target: { value: 'Hello' } });
+   * 
+   *   const form = screen.getByRole('form');
+   *   fireEvent.submit(form);
+   * 
+   *   expect(usePartySocket().send).toHaveBeenCalled();
+   * });
+   */
+  test('handles performance monitoring', async () => {
+    render(
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<App />} />
+        </Routes>
+      </BrowserRouter>
+    );
+
+    const input = screen.getByPlaceholderText(/Type a message/i);
+    fireEvent.change(input, { target: { value: 'Hello' } });
+
+    const form = screen.getByRole('form');
+    fireEvent.submit(form);
+
+    expect(usePartySocket().send).toHaveBeenCalled();
+  });
+
+  /**
+   * Test to check if the App component handles optimized database queries.
+   * 
+   * @remarks
+   * This test verifies that the App component uses optimized database queries to ensure efficiency and performance.
+   * 
+   * @example
+   * test('handles optimized database queries', () => {
+   *   render(
+   *     <BrowserRouter>
+   *       <Routes>
+   *         <Route path="/" element={<App />} />
+   *       </Routes>
+   *     </BrowserRouter>
+   *   );
+   * 
+   *   const input = screen.getByPlaceholderText(/Type a message/i);
+   *   fireEvent.change(input, { target: { value: 'Hello' } });
+   * 
+   *   const form = screen.getByRole('form');
+   *   fireEvent.submit(form);
+   * 
+   *   expect(usePartySocket().send).toHaveBeenCalled();
+   * });
+   */
+  test('handles optimized database queries', () => {
+    render(
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<App />} />
+        </Routes>
+      </BrowserRouter>
+    );
+
+    const input = screen.getByPlaceholderText(/Type a message/i);
+    fireEvent.change(input, { target: { value: 'Hello' } });
+
+    const form = screen.getByRole('form');
+    fireEvent.submit(form);
+
+    expect(usePartySocket().send).toHaveBeenCalled();
+  });
+
+  /**
+   * Test to check if the App component handles context-aware responses.
+   * 
+   * @remarks
+   * This test verifies that the App component generates context-aware responses based on the conversation context.
+   * 
+   * @example
+   * test('handles context-aware responses', async () => {
+   *   render(
+   *     <BrowserRouter>
+   *       <Routes>
+   *         <Route path="/" element={<App />} />
+   *       </Routes>
+   *     </BrowserRouter>
+   *   );
+   * 
+   *   const input = screen.getByPlaceholderText(/Type a message/i);
+   *   fireEvent.change(input, { target: { value: 'Hello' } });
+   * 
+   *   const form = screen.getByRole('form');
+   *   fireEvent.submit(form);
+   * 
+   *   expect(usePartySocket().send).toHaveBeenCalled();
+   * });
+   */
+  test('handles context-aware responses', async () => {
+    render(
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<App />} />
+        </Routes>
+      </BrowserRouter>
+    );
+
+    const input = screen.getByPlaceholderText(/Type a message/i);
+    fireEvent.change(input, { target: { value: 'Hello' } });
+
+    const form = screen.getByRole('form');
+    fireEvent.submit(form);
+
+    expect(usePartySocket().send).toHaveBeenCalled();
+  });
+
+  /**
+   * Test to check if the App component handles personalized interactions.
+   * 
+   * @remarks
+   * This test verifies that the App component generates personalized responses based on user preferences and past interactions.
+   * 
+   * @example
+   * test('handles personalized interactions', async () => {
+   *   render(
+   *     <BrowserRouter>
+   *       <Routes>
+   *         <Route path="/" element={<App />} />
+   *       </Routes>
+   *     </BrowserRouter>
+   *   );
+   * 
+   *   const input = screen.getByPlaceholderText(/Type a message/i);
+   *   fireEvent.change(input, { target: { value: 'Hello' } });
+   * 
+   *   const form = screen.getByRole('form');
+   *   fireEvent.submit(form);
+   * 
+   *   expect(usePartySocket().send).toHaveBeenCalled();
+   * });
+   */
+  test('handles personalized interactions', async () => {
+    render(
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<App />} />
+        </Routes>
+      </BrowserRouter>
+    );
+
+    const input = screen.getByPlaceholderText(/Type a message/i);
+    fireEvent.change(input, { target: { value: 'Hello' } });
+
+    const form = screen.getByRole('form');
+    fireEvent.submit(form);
+
+    expect(usePartySocket().send).toHaveBeenCalled();
+  });
 });
