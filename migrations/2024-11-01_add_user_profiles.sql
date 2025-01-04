@@ -10,7 +10,10 @@ CREATE TABLE IF NOT EXISTS users (
   location TEXT,
   website TEXT,
   social_media_links TEXT,
-  role TEXT -- Add role column to store user roles
+  role TEXT, -- Add role column to store user roles
+  theme TEXT, -- Add theme column to store user theme preferences
+  avatar TEXT, -- Add avatar column to store user avatar preferences
+  interaction_style TEXT -- Add interaction_style column to store user interaction style preferences
 );
 
 -- Update messages table to include user_id foreign key

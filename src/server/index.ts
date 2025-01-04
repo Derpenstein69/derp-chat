@@ -245,6 +245,12 @@ export class Chat extends Server<Env> {
               content: m.content,
               role: m.role,
             })),
+            context: session.messages.map((m) => ({
+              content: m.content,
+              role: m.role,
+            })),
+            knowledgeSources: ["https://api.example.com/knowledge"], // P4bea
+            nlpModel: "advanced-nlp-model", // P8d37
           },
         )) as ReadableStream;
 
