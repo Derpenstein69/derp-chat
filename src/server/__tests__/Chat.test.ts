@@ -1108,4 +1108,198 @@ describe("Chat", () => {
     const sentiment = chat.analyzeConversationSentiment(sessionId);
     expect(sentiment).toBe("positive");
   });
+
+  /**
+   * Test to check if the Chat class handles scoped prompts.
+   * 
+   * @remarks
+   * This test verifies that the Chat class handles scoped prompts by processing messages with roles such as system, user, and assistant.
+   * 
+   * @example
+   * test("should handle scoped prompts", async () => {
+   *   const scopedMessage = {
+   *     id: nanoid(8),
+   *     user: "Alice",
+   *     role: "system",
+   *     content: "Set the AI's personality and rules for behavior.",
+   *     attachments: [],
+   *     session_id: "session1",
+   *     user_id: "user1",
+   *   };
+   *   chat.broadcast = jest.fn();
+   *   chat.ctx.storage.sql.exec = jest.fn();
+   * 
+   *   await chat.onMessage(connection, JSON.stringify({ type: "add", ...scopedMessage }));
+   * 
+   *   expect(chat.messages).toContainEqual(scopedMessage);
+   *   expect(chat.broadcast).toHaveBeenCalledWith(JSON.stringify({ type: "add", ...scopedMessage }));
+   *   expect(chat.ctx.storage.sql.exec).toHaveBeenCalled();
+   * });
+   */
+  test("should handle scoped prompts", async () => {
+    const scopedMessage = {
+      id: nanoid(8),
+      user: "Alice",
+      role: "system",
+      content: "Set the AI's personality and rules for behavior.",
+      attachments: [],
+      session_id: "session1",
+      user_id: "user1",
+    };
+    chat.broadcast = jest.fn();
+    chat.ctx.storage.sql.exec = jest.fn();
+
+    await chat.onMessage(connection, JSON.stringify({ type: "add", ...scopedMessage }));
+
+    expect(chat.messages).toContainEqual(scopedMessage);
+    expect(chat.broadcast).toHaveBeenCalledWith(JSON.stringify({ type: "add", ...scopedMessage }));
+    expect(chat.ctx.storage.sql.exec).toHaveBeenCalled();
+  });
+
+  /**
+   * Test to check if the Chat class handles unscoped prompts.
+   * 
+   * @remarks
+   * This test verifies that the Chat class handles unscoped prompts by processing single questions without additional context.
+   * 
+   * @example
+   * test("should handle unscoped prompts", async () => {
+   *   const unscopedMessage = {
+   *     id: nanoid(8),
+   *     user: "Alice",
+   *     role: "user",
+   *     content: "What is the weather today?",
+   *     attachments: [],
+   *     session_id: "session1",
+   *     user_id: "user1",
+   *   };
+   *   chat.broadcast = jest.fn();
+   *   chat.ctx.storage.sql.exec = jest.fn();
+   * 
+   *   await chat.onMessage(connection, JSON.stringify({ type: "add", ...unscopedMessage }));
+   * 
+   *   expect(chat.messages).toContainEqual(unscopedMessage);
+   *   expect(chat.broadcast).toHaveBeenCalledWith(JSON.stringify({ type: "add", ...unscopedMessage }));
+   *   expect(chat.ctx.storage.sql.exec).toHaveBeenCalled();
+   * });
+   */
+  test("should handle unscoped prompts", async () => {
+    const unscopedMessage = {
+      id: nanoid(8),
+      user: "Alice",
+      role: "user",
+      content: "What is the weather today?",
+      attachments: [],
+      session_id: "session1",
+      user_id: "user1",
+    };
+    chat.broadcast = jest.fn();
+    chat.ctx.storage.sql.exec = jest.fn();
+
+    await chat.onMessage(connection, JSON.stringify({ type: "add", ...unscopedMessage }));
+
+    expect(chat.messages).toContainEqual(unscopedMessage);
+    expect(chat.broadcast).toHaveBeenCalledWith(JSON.stringify({ type: "add", ...unscopedMessage }));
+    expect(chat.ctx.storage.sql.exec).toHaveBeenCalled();
+  });
+
+  /**
+   * Test to check if the Chat class handles context management.
+   * 
+   * @remarks
+   * This test verifies that the Chat class maintains conversation history and context-aware responses.
+   * 
+   * @example
+   * test("should handle context management", async () => {
+   *   const contextMessage = {
+   *     id: nanoid(8),
+   *     user: "Alice",
+   *     role: "user",
+   *     content: "Hello",
+   *     attachments: [],
+   *     session_id: "session1",
+   *     user_id: "user1",
+   *   };
+   *   chat.broadcast = jest.fn();
+   *   chat.ctx.storage.sql.exec = jest.fn();
+   * 
+   *   await chat.onMessage(connection, JSON.stringify({ type: "add", ...contextMessage }));
+   * 
+   *   const session = chat.sessions.get("session1");
+   *   expect(session).toBeDefined();
+   *   expect(session.messages).toContainEqual(contextMessage);
+   *   expect(session.updated_at).toBeDefined();
+   * });
+   */
+  test("should handle context management", async () => {
+    const contextMessage = {
+      id: nanoid(8),
+      user: "Alice",
+      role: "user",
+      content: "Hello",
+      attachments: [],
+      session_id: "session1",
+      user_id: "user1",
+    };
+    chat.broadcast = jest.fn();
+    chat.ctx.storage.sql.exec = jest.fn();
+
+    await chat.onMessage(connection, JSON.stringify({ type: "add", ...contextMessage }));
+
+    const session = chat.sessions.get("session1");
+    expect(session).toBeDefined();
+    expect(session.messages).toContainEqual(contextMessage);
+    expect(session.updated_at).toBeDefined();
+  });
+
+  /**
+   * Test to check if the Chat class handles error handling and logging.
+   * 
+   * @remarks
+   * This test verifies that the Chat class has robust error handling and logging mechanisms in place.
+   * 
+   * @example
+   * test("should handle error handling and logging", async () => {
+   *   const errorMessage = {
+   *     id: nanoid(8),
+   *     user: "Alice",
+   *     role: "user",
+   *     content: "Hello",
+   *     attachments: [],
+   *     session_id: "session1",
+   *     user_id: "user1",
+   *   };
+   *   chat.broadcast = jest.fn();
+   *   chat.ctx.storage.sql.exec = jest.fn().mockImplementation(() => {
+   *     throw new Error("Test error");
+   *   });
+   *   console.error = jest.fn();
+   * 
+   *   await chat.onMessage(connection, JSON.stringify({ type: "add", ...errorMessage }));
+   * 
+   *   expect(console.error).toHaveBeenCalledWith("Error processing message", expect.any(Error));
+   *   expect(chat.messages).not.toContainEqual(errorMessage);
+   * });
+   */
+  test("should handle error handling and logging", async () => {
+    const errorMessage = {
+      id: nanoid(8),
+      user: "Alice",
+      role: "user",
+      content: "Hello",
+      attachments: [],
+      session_id: "session1",
+      user_id: "user1",
+    };
+    chat.broadcast = jest.fn();
+    chat.ctx.storage.sql.exec = jest.fn().mockImplementation(() => {
+      throw new Error("Test error");
+    });
+    console.error = jest.fn();
+
+    await chat.onMessage(connection, JSON.stringify({ type: "add", ...errorMessage }));
+
+    expect(console.error).toHaveBeenCalledWith("Error processing message", expect.any(Error));
+    expect(chat.messages).not.toContainEqual(errorMessage);
+  });
 });

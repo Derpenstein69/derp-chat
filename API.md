@@ -328,6 +328,47 @@ This document provides an overview of the API endpoints, request/response format
   - 400 Bad Request: Invalid input data.
   - 500 Internal Server Error: An error occurred while analyzing sentiment.
 
+### Scoped Prompts
+
+#### POST /scoped-prompts
+- Description: Handle messages with roles such as system, user, and assistant.
+- Request Body:
+  ```json
+  {
+    "role": "system",
+    "content": "Set the AI's personality and rules for behavior."
+  }
+  ```
+- Response Body:
+  ```json
+  {
+    "message": "Scoped prompt processed successfully"
+  }
+  ```
+- Error Responses:
+  - 400 Bad Request: Invalid input data.
+  - 500 Internal Server Error: An error occurred while processing the scoped prompt.
+
+### Unscoped Prompts
+
+#### POST /unscoped-prompts
+- Description: Handle single questions without additional context.
+- Request Body:
+  ```json
+  {
+    "question": "What is the weather today?"
+  }
+  ```
+- Response Body:
+  ```json
+  {
+    "answer": "The weather today is sunny."
+  }
+  ```
+- Error Responses:
+  - 400 Bad Request: Invalid input data.
+  - 500 Internal Server Error: An error occurred while processing the unscoped prompt.
+
 ## Request/Response Formats
 
 - All requests and responses use JSON format.

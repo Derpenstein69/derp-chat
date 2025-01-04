@@ -1273,4 +1273,102 @@ describe('App component', () => {
       sessionId: expect.any(String),
     }));
   });
+
+  /**
+   * Test to check if the App component handles user profiles and preferences.
+   * 
+   * @remarks
+   * This test verifies that the App component correctly handles user profiles and preferences for personalized interactions.
+   * 
+   * @example
+   * test('handles user profiles and preferences', async () => {
+   *   render(
+   *     <BrowserRouter>
+   *       <Routes>
+   *         <Route path="/" element={<App />} />
+   *       </Routes>
+   *     </BrowserRouter>
+   *   );
+   * 
+   *   const input = screen.getByPlaceholderText(/Type a message/i);
+   *   fireEvent.change(input, { target: { value: 'Hello' } });
+   * 
+   *   const form = screen.getByRole('form');
+   *   fireEvent.submit(form);
+   * 
+   *   expect(usePartySocket().send).toHaveBeenCalledWith(expect.objectContaining({
+   *     type: 'user-profiles-and-preferences',
+   *     userProfile: expect.any(Object),
+   *   }));
+   * });
+   */
+  test('handles user profiles and preferences', async () => {
+    render(
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<App />} />
+        </Routes>
+      </BrowserRouter>
+    );
+
+    const input = screen.getByPlaceholderText(/Type a message/i);
+    fireEvent.change(input, { target: { value: 'Hello' } });
+
+    const form = screen.getByRole('form');
+    fireEvent.submit(form);
+
+    expect(usePartySocket().send).toHaveBeenCalledWith(expect.objectContaining({
+      type: 'user-profiles-and-preferences',
+      userProfile: expect.any(Object),
+    }));
+  });
+
+  /**
+   * Test to check if the App component handles error handling and logging mechanisms.
+   * 
+   * @remarks
+   * This test verifies that the App component correctly handles error handling and logging mechanisms in the client-side code.
+   * 
+   * @example
+   * test('handles error handling and logging mechanisms', async () => {
+   *   render(
+   *     <BrowserRouter>
+   *       <Routes>
+   *         <Route path="/" element={<App />} />
+   *       </Routes>
+   *     </BrowserRouter>
+   *   );
+   * 
+   *   const input = screen.getByPlaceholderText(/Type a message/i);
+   *   fireEvent.change(input, { target: { value: 'Hello' } });
+   * 
+   *   const form = screen.getByRole('form');
+   *   fireEvent.submit(form);
+   * 
+   *   expect(usePartySocket().send).toHaveBeenCalledWith(expect.objectContaining({
+   *     type: 'error-handling-and-logging',
+   *     error: expect.any(Object),
+   *   }));
+   * });
+   */
+  test('handles error handling and logging mechanisms', async () => {
+    render(
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<App />} />
+        </Routes>
+      </BrowserRouter>
+    );
+
+    const input = screen.getByPlaceholderText(/Type a message/i);
+    fireEvent.change(input, { target: { value: 'Hello' } });
+
+    const form = screen.getByRole('form');
+    fireEvent.submit(form);
+
+    expect(usePartySocket().send).toHaveBeenCalledWith(expect.objectContaining({
+      type: 'error-handling-and-logging',
+      error: expect.any(Object),
+    }));
+  });
 });
