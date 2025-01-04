@@ -896,4 +896,216 @@ describe("Chat", () => {
 
     expect(chat.ctx.storage.sql.exec).toHaveBeenCalledWith("SELECT * FROM messages LIMIT 50 OFFSET 0");
   });
+
+  /**
+   * Test to check if the Chat class performs sentiment analysis on incoming messages.
+   * 
+   * @remarks
+   * This test verifies that the Chat class performs sentiment analysis on incoming messages and updates the sentiment field accordingly.
+   * 
+   * @example
+   * test("should perform sentiment analysis on incoming messages", async () => {
+   *   const newMessage = {
+   *     id: nanoid(8),
+   *     user: "Alice",
+   *     role: "user",
+   *     content: "I am happy",
+   *     attachments: [],
+   *     session_id: "session1",
+   *     user_id: "user1",
+   *   };
+   *   chat.broadcast = jest.fn();
+   *   chat.ctx.storage.sql.exec = jest.fn();
+   * 
+   *   await chat.onMessage(connection, JSON.stringify({ type: "add", ...newMessage }));
+   * 
+   *   const savedMessage = chat.messages.find((m) => m.id === newMessage.id);
+   *   expect(savedMessage).toBeDefined();
+   *   expect(savedMessage.sentiment).toBe("positive");
+   * });
+   */
+  test("should perform sentiment analysis on incoming messages", async () => {
+    const newMessage = {
+      id: nanoid(8),
+      user: "Alice",
+      role: "user",
+      content: "I am happy",
+      attachments: [],
+      session_id: "session1",
+      user_id: "user1",
+    };
+    chat.broadcast = jest.fn();
+    chat.ctx.storage.sql.exec = jest.fn();
+
+    await chat.onMessage(connection, JSON.stringify({ type: "add", ...newMessage }));
+
+    const savedMessage = chat.messages.find((m) => m.id === newMessage.id);
+    expect(savedMessage).toBeDefined();
+    expect(savedMessage.sentiment).toBe("positive");
+  });
+
+  /**
+   * Test to check if the Chat class generates context-aware message summaries.
+   * 
+   * @remarks
+   * This test verifies that the Chat class generates context-aware message summaries based on the conversation history.
+   * 
+   * @example
+   * test("should generate context-aware message summaries", () => {
+   *   const sessionId = "session1";
+   *   const session = {
+   *     session_id: sessionId,
+   *     user_id: "user1",
+   *     created_at: new Date().toISOString(),
+   *     updated_at: new Date().toISOString(),
+   *     messages: [
+   *       { id: "1", content: "Hello", user: "Alice", role: "user" },
+   *       { id: "2", content: "Hi", user: "Bob", role: "assistant" },
+   *     ],
+   *     ip_address: "127.0.0.1",
+   *     user_agent: "Mozilla/5.0",
+   *     user_activity_timestamps: [],
+   *     device_information: "Windows 10",
+   *     session_duration: 0,
+   *   };
+   *   chat.sessions.set(sessionId, session);
+   * 
+   *   const summary = chat.generateMessageSummary(sessionId);
+   *   expect(summary).toBe("Summary: Hello Hi");
+   * });
+   */
+  test("should generate context-aware message summaries", () => {
+    const sessionId = "session1";
+    const session = {
+      session_id: sessionId,
+      user_id: "user1",
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+      messages: [
+        { id: "1", content: "Hello", user: "Alice", role: "user" },
+        { id: "2", content: "Hi", user: "Bob", role: "assistant" },
+      ],
+      ip_address: "127.0.0.1",
+      user_agent: "Mozilla/5.0",
+      user_activity_timestamps: [],
+      device_information: "Windows 10",
+      session_duration: 0,
+    };
+    chat.sessions.set(sessionId, session);
+
+    const summary = chat.generateMessageSummary(sessionId);
+    expect(summary).toBe("Summary: Hello Hi");
+  });
+
+  /**
+   * Test to check if the Chat class provides context-aware suggestions.
+   * 
+   * @remarks
+   * This test verifies that the Chat class provides context-aware suggestions based on the conversation history and user preferences.
+   * 
+   * @example
+   * test("should provide context-aware suggestions", () => {
+   *   const sessionId = "session1";
+   *   const session = {
+   *     session_id: sessionId,
+   *     user_id: "user1",
+   *     created_at: new Date().toISOString(),
+   *     updated_at: new Date().toISOString(),
+   *     messages: [
+   *       { id: "1", content: "Hello", user: "Alice", role: "user" },
+   *       { id: "2", content: "Hi", user: "Bob", role: "assistant" },
+   *     ],
+   *     ip_address: "127.0.0.1",
+   *     user_agent: "Mozilla/5.0",
+   *     user_activity_timestamps: [],
+   *     device_information: "Windows 10",
+   *     session_duration: 0,
+   *   };
+   *   chat.sessions.set(sessionId, session);
+   * 
+   *   const suggestions = chat.generateSuggestions(sessionId);
+   *   expect(suggestions).toEqual([
+   *     "Suggestion 1 based on: Hello Hi",
+   *     "Suggestion 2 based on: Hello Hi",
+   *   ]);
+   * });
+   */
+  test("should provide context-aware suggestions", () => {
+    const sessionId = "session1";
+    const session = {
+      session_id: sessionId,
+      user_id: "user1",
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+      messages: [
+        { id: "1", content: "Hello", user: "Alice", role: "user" },
+        { id: "2", content: "Hi", user: "Bob", role: "assistant" },
+      ],
+      ip_address: "127.0.0.1",
+      user_agent: "Mozilla/5.0",
+      user_activity_timestamps: [],
+      device_information: "Windows 10",
+      session_duration: 0,
+    };
+    chat.sessions.set(sessionId, session);
+
+    const suggestions = chat.generateSuggestions(sessionId);
+    expect(suggestions).toEqual([
+      "Suggestion 1 based on: Hello Hi",
+      "Suggestion 2 based on: Hello Hi",
+    ]);
+  });
+
+  /**
+   * Test to check if the Chat class performs context-aware sentiment analysis.
+   * 
+   * @remarks
+   * This test verifies that the Chat class performs context-aware sentiment analysis on the conversation history and updates the sentiment field accordingly.
+   * 
+   * @example
+   * test("should perform context-aware sentiment analysis", () => {
+   *   const sessionId = "session1";
+   *   const session = {
+   *     session_id: sessionId,
+   *     user_id: "user1",
+   *     created_at: new Date().toISOString(),
+   *     updated_at: new Date().toISOString(),
+   *     messages: [
+   *       { id: "1", content: "I am happy", user: "Alice", role: "user" },
+   *       { id: "2", content: "That's great!", user: "Bob", role: "assistant" },
+   *     ],
+   *     ip_address: "127.0.0.1",
+   *     user_agent: "Mozilla/5.0",
+   *     user_activity_timestamps: [],
+   *     device_information: "Windows 10",
+   *     session_duration: 0,
+   *   };
+   *   chat.sessions.set(sessionId, session);
+   * 
+   *   const sentiment = chat.analyzeConversationSentiment(sessionId);
+   *   expect(sentiment).toBe("positive");
+   * });
+   */
+  test("should perform context-aware sentiment analysis", () => {
+    const sessionId = "session1";
+    const session = {
+      session_id: sessionId,
+      user_id: "user1",
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+      messages: [
+        { id: "1", content: "I am happy", user: "Alice", role: "user" },
+        { id: "2", content: "That's great!", user: "Bob", role: "assistant" },
+      ],
+      ip_address: "127.0.0.1",
+      user_agent: "Mozilla/5.0",
+      user_activity_timestamps: [],
+      device_information: "Windows 10",
+      session_duration: 0,
+    };
+    chat.sessions.set(sessionId, session);
+
+    const sentiment = chat.analyzeConversationSentiment(sessionId);
+    expect(sentiment).toBe("positive");
+  });
 });

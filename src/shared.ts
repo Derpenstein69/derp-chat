@@ -31,6 +31,7 @@
  * @property {string} [preferences.avatar] - The avatar preference of the user.
  * @property {string} [preferences.interaction_style] - The interaction style preference of the user.
  * @property {string[]} [multi_modal_attachments] - Optional multi-modal attachments associated with the message.
+ * @property {string} [sentiment] - Optional sentiment analysis result of the message.
  * 
  * @example
  * const message = {
@@ -57,7 +58,8 @@
  *     avatar: "robot",
  *     interaction_style: "friendly"
  *   },
- *   multi_modal_attachments: ["video.mp4"]
+ *   multi_modal_attachments: ["video.mp4"],
+ *   sentiment: "positive"
  * };
  */
 export type ChatMessage = {
@@ -85,6 +87,7 @@ export type ChatMessage = {
     interaction_style: string;
   };
   multi_modal_attachments?: string[];
+  sentiment?: string;
 };
 
 /**
@@ -117,6 +120,7 @@ export type ChatMessage = {
  * @property {string} [preferences.avatar] - The avatar preference of the user.
  * @property {string} [preferences.interaction_style] - The interaction style preference of the user.
  * @property {string[]} [multi_modal_attachments] - Optional multi-modal attachments associated with the message.
+ * @property {string} [sentiment] - Optional sentiment analysis result of the message.
  * @property {ChatMessage[]} [messages] - Array of chat messages (used for "all" type).
  * 
  * @example
@@ -145,7 +149,8 @@ export type ChatMessage = {
  *     avatar: "robot",
  *     interaction_style: "friendly"
  *   },
- *   multi_modal_attachments: ["video.mp4"]
+ *   multi_modal_attachments: ["video.mp4"],
+ *   sentiment: "positive"
  * };
  * 
  * const updateMessage = {
@@ -173,7 +178,8 @@ export type ChatMessage = {
  *     avatar: "robot",
  *     interaction_style: "friendly"
  *   },
- *   multi_modal_attachments: ["video.mp4"]
+ *   multi_modal_attachments: ["video.mp4"],
+ *   sentiment: "positive"
  * };
  * 
  * const allMessages = {
@@ -208,6 +214,7 @@ export type Message =
         interaction_style: string;
       };
       multi_modal_attachments?: string[];
+      sentiment?: string;
     }
   | {
       type: "update";
@@ -235,6 +242,7 @@ export type Message =
         interaction_style: string;
       };
       multi_modal_attachments?: string[];
+      sentiment?: string;
     }
   | {
       type: "all";
@@ -269,6 +277,7 @@ export type Message =
  * @property {string} [preferences.avatar] - The avatar preference of the user.
  * @property {string} [preferences.interaction_style] - The interaction style preference of the user.
  * @property {string[]} [multi_modal_attachments] - Optional multi-modal attachments associated with the session.
+ * @property {string} [sentiment] - Optional sentiment analysis result of the session.
  * 
  * @example
  * const session = {
@@ -296,7 +305,8 @@ export type Message =
  *     avatar: "robot",
  *     interaction_style: "friendly"
  *   },
- *   multi_modal_attachments: ["video.mp4"]
+ *   multi_modal_attachments: ["video.mp4"],
+ *   sentiment: "positive"
  * };
  */
 export type Session = {
@@ -325,6 +335,82 @@ export type Session = {
     interaction_style: string;
   };
   multi_modal_attachments?: string[];
+  sentiment?: string;
+};
+
+/**
+ * Represents a context-aware message summary.
+ * Each summary has an ID, session ID, summary content, and timestamp.
+ * 
+ * @typedef {Object} ContextAwareMessageSummary
+ * @property {string} summary_id - The unique identifier for the summary.
+ * @property {string} session_id - The unique identifier for the session.
+ * @property {string} summary - The summary content of the conversation history.
+ * @property {string} timestamp - The timestamp when the summary was generated.
+ * 
+ * @example
+ * const summary = {
+ *   summary_id: "summary1",
+ *   session_id: "session1",
+ *   summary: "Summary of the conversation history",
+ *   timestamp: "2023-01-01T01:00:00Z"
+ * };
+ */
+export type ContextAwareMessageSummary = {
+  summary_id: string;
+  session_id: string;
+  summary: string;
+  timestamp: string;
+};
+
+/**
+ * Represents context-aware suggestions.
+ * Each suggestion has an ID, session ID, suggestions content, and timestamp.
+ * 
+ * @typedef {Object} ContextAwareSuggestions
+ * @property {string} suggestion_id - The unique identifier for the suggestion.
+ * @property {string} session_id - The unique identifier for the session.
+ * @property {string[]} suggestions - The suggestions content based on conversation history and user preferences.
+ * @property {string} timestamp - The timestamp when the suggestions were generated.
+ * 
+ * @example
+ * const suggestions = {
+ *   suggestion_id: "suggestion1",
+ *   session_id: "session1",
+ *   suggestions: ["Suggestion 1", "Suggestion 2"],
+ *   timestamp: "2023-01-01T01:00:00Z"
+ * };
+ */
+export type ContextAwareSuggestions = {
+  suggestion_id: string;
+  session_id: string;
+  suggestions: string[];
+  timestamp: string;
+};
+
+/**
+ * Represents context-aware sentiment analysis.
+ * Each analysis has an ID, session ID, sentiment result, and timestamp.
+ * 
+ * @typedef {Object} ContextAwareSentimentAnalysis
+ * @property {string} analysis_id - The unique identifier for the analysis.
+ * @property {string} session_id - The unique identifier for the session.
+ * @property {string} sentiment - The sentiment analysis result of the conversation history.
+ * @property {string} timestamp - The timestamp when the analysis was performed.
+ * 
+ * @example
+ * const analysis = {
+ *   analysis_id: "analysis1",
+ *   session_id: "session1",
+ *   sentiment: "positive",
+ *   timestamp: "2023-01-01T01:00:00Z"
+ * };
+ */
+export type ContextAwareSentimentAnalysis = {
+  analysis_id: string;
+  session_id: string;
+  sentiment: string;
+  timestamp: string;
 };
 
 /**

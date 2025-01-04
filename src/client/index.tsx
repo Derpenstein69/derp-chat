@@ -223,6 +223,27 @@ function App(): JSX.Element {
     message.content.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  // Voice recognition setup
+  const [isListening, setIsListening] = useState(false);
+  const [voiceInput, setVoiceInput] = useState("");
+
+  useEffect(() => {
+    if (isListening) {
+      const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+      recognition.continuous = true;
+      recognition.interimResults = true;
+      recognition.onresult = (event) => {
+        const transcript = Array.from(event.results)
+          .map((result) => result[0])
+          .map((result) => result.transcript)
+          .join("");
+        setVoiceInput(transcript);
+      };
+      recognition.start();
+      return () => recognition.stop();
+    }
+  }, [isListening]);
+
   return (
     <div className="chat container">
       <form className="row search-form">
@@ -348,10 +369,18 @@ function App(): JSX.Element {
           className="ten columns my-input-text"
           placeholder={`Hello ${name || "Anonymous"}! Type a message...`}
           autoComplete="off"
+          value={voiceInput}
         />
         <input type="file" name="attachment" className="ten columns" />
         <button type="submit" className="send-message two columns">
           Send
+        </button>
+        <button
+          type="button"
+          className="voice-input two columns"
+          onClick={() => setIsListening((prev) => !prev)}
+        >
+          {isListening ? "Stop Listening" : "Start Listening"}
         </button>
       </form>
       <SurveyLink />

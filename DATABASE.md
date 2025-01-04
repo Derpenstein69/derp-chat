@@ -39,6 +39,7 @@ The `messages` table stores chat messages and related information.
 | `thread_id`   | TEXT   | Identifier for the message thread.               |
 | `reply_to`    | TEXT   | Identifier for the message being replied to.     |
 | `session_id`  | TEXT   | Foreign key, references `sessions(session_id)`.  |
+| `sentiment`   | TEXT   | Sentiment analysis result of the message.        |
 
 ### Sessions Table
 
@@ -58,6 +59,7 @@ The `sessions` table stores session information and related data.
 | `session_duration`        | INTEGER   | Duration of the session in seconds.              |
 | `conversation_history`    | TEXT      | Conversation history for context-aware responses.|
 | `user_preferences`        | TEXT      | User preferences for personalized interactions.  |
+| `sentiment`               | TEXT      | Sentiment analysis result of the session.        |
 
 ### Ratings Table
 
@@ -91,3 +93,36 @@ The `performance_metrics` table stores performance metrics to identify and addre
 | `metric_name` | TEXT      | Name of the performance metric.                  |
 | `value`       | TEXT      | Value of the performance metric.                 |
 | `timestamp`   | TIMESTAMP | Timestamp when the metric was recorded.          |
+
+### Context-aware Message Summary Table
+
+The `context_aware_message_summary` table stores summaries of conversation history for context-aware responses.
+
+| Column        | Type      | Description                                      |
+|---------------|-----------|--------------------------------------------------|
+| `summary_id`  | TEXT      | Primary key, unique identifier for the summary.  |
+| `session_id`  | TEXT      | Foreign key, references `sessions(session_id)`.  |
+| `summary`     | TEXT      | Summary of the conversation history.             |
+| `timestamp`   | TIMESTAMP | Timestamp when the summary was generated.        |
+
+### Context-aware Suggestions Table
+
+The `context_aware_suggestions` table stores suggestions for responses based on conversation history and user preferences.
+
+| Column        | Type      | Description                                      |
+|---------------|-----------|--------------------------------------------------|
+| `suggestion_id`| TEXT     | Primary key, unique identifier for the suggestion.|
+| `session_id`  | TEXT      | Foreign key, references `sessions(session_id)`.  |
+| `suggestions` | TEXT      | Suggestions for responses.                       |
+| `timestamp`   | TIMESTAMP | Timestamp when the suggestions were generated.   |
+
+### Context-aware Sentiment Analysis Table
+
+The `context_aware_sentiment_analysis` table stores sentiment analysis results of conversation history.
+
+| Column        | Type      | Description                                      |
+|---------------|-----------|--------------------------------------------------|
+| `analysis_id` | TEXT      | Primary key, unique identifier for the analysis. |
+| `session_id`  | TEXT      | Foreign key, references `sessions(session_id)`.  |
+| `sentiment`   | TEXT      | Sentiment analysis result.                       |
+| `timestamp`   | TIMESTAMP | Timestamp when the analysis was performed.       |

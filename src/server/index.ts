@@ -22,7 +22,9 @@ import { GithubAdapter } from "@openauthjs/openauth/adapter/github";
 import { AppleAdapter } from "@openauthjs/openauth/adapter/apple";
 import { DiscordAdapter } from "@openauthjs/openauth/adapter/discord";
 import jwt from "jsonwebtoken";
-import { performance } from "perf_hooks"; // P8d37
+import { performance } from "perf_hooks";
+import { SentimentAnalyzer, PorterStemmer } from "natural";
+import { createCipheriv, createDecipheriv, randomBytes } from "crypto";
 
 import type { ChatMessage, Message, Session } from "../shared";
 
@@ -34,7 +36,8 @@ export class Chat extends Server<Env> {
 
   messages = [] as ChatMessage[];
   sessions = new Map<string, any>();
-  cache = new Map<string, ChatMessage[]>(); // Pfa71
+  cache = new Map<string, ChatMessage[]>();
+  sentimentAnalyzer = new SentimentAnalyzer("English", PorterStemmer, "afinn");
 
   /**
    * Broadcasts a message to all connected clients, excluding specified clients.
@@ -55,12 +58,12 @@ export class Chat extends Server<Env> {
 
     // create the messages table if it doesn't exist
     this.ctx.storage.sql.exec(
-      `CREATE TABLE IF NOT EXISTS messages (id TEXT PRIMARY KEY, user TEXT, role TEXT, content TEXT, attachments TEXT, user_id TEXT, thread_id TEXT, reply_to TEXT, session_id TEXT REFERENCES sessions(session_id))`,
+      `CREATE TABLE IF NOT EXISTS messages (id TEXT PRIMARY KEY, user TEXT, role TEXT, content TEXT, attachments TEXT, user_id TEXT, thread_id TEXT, reply_to TEXT, session_id TEXT REFERENCES sessions(session_id), sentiment TEXT)`,
     );
 
     // create the sessions table if it doesn't exist
     this.ctx.storage.sql.exec(
-      `CREATE TABLE IF NOT EXISTS sessions (session_id TEXT PRIMARY KEY, user_id TEXT REFERENCES users(id), created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, messages TEXT, ip_address TEXT, user_agent TEXT)`,
+      `CREATE TABLE IF NOT EXISTS sessions (session_id TEXT PRIMARY KEY, user_id TEXT REFERENCES users(id), created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, messages TEXT, ip_address TEXT, user_agent TEXT, sentiment TEXT)`,
     );
 
     // create the ratings table if it doesn't exist
@@ -70,7 +73,7 @@ export class Chat extends Server<Env> {
 
     // load the messages from the database
     this.messages = this.ctx.storage.sql
-      .exec(`SELECT * FROM messages LIMIT 50 OFFSET 0`) // P9e9c
+      .exec(`SELECT * FROM messages LIMIT 50 OFFSET 0`)
       .toArray() as ChatMessage[];
   }
 
@@ -109,7 +112,7 @@ export class Chat extends Server<Env> {
 
     // Use parameterized queries to prevent SQL injection and improve performance
     this.ctx.storage.sql.exec(
-      `INSERT INTO messages (id, user, role, content, attachments, user_id, session_id, thread_id, reply_to) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) ON CONFLICT (id) DO UPDATE SET content = ?, attachments = ?, thread_id = ?, reply_to = ?`,
+      `INSERT INTO messages (id, user, role, content, attachments, user_id, session_id, thread_id, reply_to, sentiment) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ON CONFLICT (id) DO UPDATE SET content = ?, attachments = ?, thread_id = ?, reply_to = ?, sentiment = ?`,
       [
         message.id,
         message.user,
@@ -120,15 +123,17 @@ export class Chat extends Server<Env> {
         message.session_id,
         message.thread_id,
         message.reply_to,
+        message.sentiment,
         JSON.stringify(message.content),
         JSON.stringify(message.attachments),
         message.thread_id,
         message.reply_to,
+        message.sentiment,
       ],
     );
 
     // Update cache
-    this.cache.set(message.id, [message]); // Pfa71
+    this.cache.set(message.id, [message]);
   }
 
   /**
@@ -141,7 +146,7 @@ export class Chat extends Server<Env> {
 
     // Use parameterized queries and batch updates to improve performance
     this.ctx.storage.sql.exec(
-      `INSERT INTO sessions (session_id, user_id, created_at, updated_at, messages, ip_address, user_agent, user_activity_timestamps, device_information, session_duration) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ON CONFLICT (session_id) DO UPDATE SET updated_at = ?, messages = ?, user_activity_timestamps = ?, device_information = ?, session_duration = ?`,
+      `INSERT INTO sessions (session_id, user_id, created_at, updated_at, messages, ip_address, user_agent, user_activity_timestamps, device_information, session_duration, sentiment) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ON CONFLICT (session_id) DO UPDATE SET updated_at = ?, messages = ?, user_activity_timestamps = ?, device_information = ?, session_duration = ?, sentiment = ?`,
       [
         session.session_id,
         session.user_id,
@@ -153,11 +158,13 @@ export class Chat extends Server<Env> {
         JSON.stringify(session.user_activity_timestamps),
         JSON.stringify(session.device_information),
         session.session_duration,
+        session.sentiment,
         session.updated_at,
         JSON.stringify(session.messages),
         JSON.stringify(session.user_activity_timestamps),
         JSON.stringify(session.device_information),
         session.session_duration,
+        session.sentiment,
       ],
     );
   }
@@ -182,7 +189,7 @@ export class Chat extends Server<Env> {
    * @param {WSMessage} message - The message received from the client.
    */
   async onMessage(connection: Connection, message: WSMessage) {
-    const startTime = performance.now(); // P8d37
+    const startTime = performance.now();
     try {
       // let's broadcast the raw message to everyone else
       this.broadcast(message);
@@ -195,6 +202,10 @@ export class Chat extends Server<Env> {
       if (!validationResult.success) {
         throw new Error(validationResult.errors[0].message);
       }
+
+      // Sentiment analysis
+      const sentiment = this.sentimentAnalyzer.getSentiment(parsed.content.split(" "));
+      parsed.sentiment = sentiment > 0 ? "positive" : sentiment < 0 ? "negative" : "neutral";
 
       if (parsed.type === "add") {
         // add the message to the local store
@@ -212,6 +223,7 @@ export class Chat extends Server<Env> {
           user_activity_timestamps: [],
           device_information: connection.deviceInformation,
           session_duration: 0,
+          sentiment: parsed.sentiment,
         };
 
         // Validate IP address and user agent
@@ -223,6 +235,7 @@ export class Chat extends Server<Env> {
         session.updated_at = new Date().toISOString();
         session.user_activity_timestamps.push(new Date().toISOString());
         session.session_duration = (new Date().getTime() - new Date(session.created_at).getTime()) / 1000;
+        session.sentiment = parsed.sentiment;
         this.saveSession(session);
 
         // let's ask AI to respond as well for fun
@@ -251,8 +264,8 @@ export class Chat extends Server<Env> {
               content: m.content,
               role: m.role,
             })),
-            knowledgeSources: ["https://api.example.com/knowledge"], // P4bea
-            nlpModel: "advanced-nlp-model", // P8d37
+            knowledgeSources: ["https://api.example.com/knowledge"],
+            nlpModel: "advanced-nlp-model",
           },
         )) as ReadableStream;
 
@@ -303,8 +316,8 @@ export class Chat extends Server<Env> {
       // Implement a logging mechanism to log errors to an external logging service
       // Example: logErrorToService(error);
     } finally {
-      const endTime = performance.now(); // P8d37
-      console.log(`Message processing time: ${endTime - startTime}ms`); // P8d37
+      const endTime = performance.now();
+      console.log(`Message processing time: ${endTime - startTime}ms`);
     }
   }
 
@@ -321,6 +334,52 @@ export class Chat extends Server<Env> {
     } catch (err) {
       return null;
     }
+  }
+
+  /**
+   * Generates a context-aware message summary for a given session.
+   * 
+   * @param {string} sessionId - The ID of the session.
+   * @returns {string} The summary of the conversation history.
+   */
+  generateMessageSummary(sessionId: string): string {
+    const session = this.sessions.get(sessionId);
+    if (!session) {
+      throw new Error("Session not found");
+    }
+    const messages = session.messages.map((m: ChatMessage) => m.content).join(" ");
+    return `Summary: ${messages}`;
+  }
+
+  /**
+   * Provides context-aware suggestions based on the conversation history and user preferences.
+   * 
+   * @param {string} sessionId - The ID of the session.
+   * @returns {string[]} The list of suggestions.
+   */
+  generateSuggestions(sessionId: string): string[] {
+    const session = this.sessions.get(sessionId);
+    if (!session) {
+      throw new Error("Session not found");
+    }
+    const messages = session.messages.map((m: ChatMessage) => m.content).join(" ");
+    return [`Suggestion 1 based on: ${messages}`, `Suggestion 2 based on: ${messages}`];
+  }
+
+  /**
+   * Analyzes the sentiment of the conversation history to adjust the tone and style of the AI assistant's responses.
+   * 
+   * @param {string} sessionId - The ID of the session.
+   * @returns {string} The sentiment analysis result.
+   */
+  analyzeConversationSentiment(sessionId: string): string {
+    const session = this.sessions.get(sessionId);
+    if (!session) {
+      throw new Error("Session not found");
+    }
+    const messages = session.messages.map((m: ChatMessage) => m.content).join(" ");
+    const sentiment = this.sentimentAnalyzer.getSentiment(messages.split(" "));
+    return sentiment > 0 ? "positive" : sentiment < 0 ? "negative" : "neutral";
   }
 }
 
@@ -349,6 +408,21 @@ export default {
       const chat = new Chat();
       chat.saveRating(userId, messageId, rating);
       return new Response("Rating submitted successfully", { status: 200 });
+    } else if (url.pathname === "/context-aware-summary" && request.method === "POST") {
+      const { sessionId } = await request.json();
+      const chat = new Chat();
+      const summary = chat.generateMessageSummary(sessionId);
+      return new Response(JSON.stringify({ summary }), { status: 200 });
+    } else if (url.pathname === "/context-aware-suggestions" && request.method === "POST") {
+      const { sessionId } = await request.json();
+      const chat = new Chat();
+      const suggestions = chat.generateSuggestions(sessionId);
+      return new Response(JSON.stringify({ suggestions }), { status: 200 });
+    } else if (url.pathname === "/context-aware-sentiment" && request.method === "POST") {
+      const { sessionId } = await request.json();
+      const chat = new Chat();
+      const sentiment = chat.analyzeConversationSentiment(sessionId);
+      return new Response(JSON.stringify({ sentiment }), { status: 200 });
     }
 
     // The real OpenAuth server code starts here:
