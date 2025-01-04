@@ -401,6 +401,47 @@ This document provides an overview of the API endpoints, request/response format
   }
   ```
 
+### Knowledge Seeding
+
+#### POST /seed-knowledge
+- Description: Seed knowledge documents into the system.
+- Request Body:
+  ```json
+  {
+    "documents": [
+      {
+        "id": "doc1",
+        "content": "This is a knowledge document."
+      }
+    ]
+  }
+  ```
+- Response Body:
+  ```json
+  {
+    "message": "Knowledge seeded successfully"
+  }
+  ```
+- Error Responses:
+  - 400 Bad Request: Invalid input data.
+  - 500 Internal Server Error: An error occurred while seeding knowledge.
+
+### Knowledge Queries
+
+#### GET /query-knowledge
+- Description: Query knowledge documents based on a query string.
+- Query Parameters:
+  - `query`: The query string.
+- Response Body:
+  ```json
+  {
+    "response": "Generated response based on knowledge documents."
+  }
+  ```
+- Error Responses:
+  - 400 Bad Request: Query parameter is required.
+  - 500 Internal Server Error: An error occurred while querying knowledge.
+
 ## Request/Response Formats
 
 - All requests and responses use JSON format.

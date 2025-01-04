@@ -469,6 +469,87 @@ export class Chat extends Server<Env> {
   async storeClassificationMetadata(imageUrl: string, classification: string) {
     await this.env.CLASSIFICATION_METADATA.put(imageUrl, classification);
   }
+
+  /**
+   * Seeds knowledge documents into the system.
+   * 
+   * @param {Array<{ id: string, content: string }>} documents - The documents to seed.
+   */
+  async seedKnowledge(documents: Array<{ id: string, content: string }>) {
+    // Batch processing
+    const batchSize = 10;
+    for (let i = 0; i < documents.length; i += batchSize) {
+      const batch = documents.slice(i, i + batchSize);
+      try {
+        // Generate embedding vectors
+        const embeddings = await Promise.all(
+          batch.map(async (doc) => {
+            const embedding = await this.env.AI.run("@cf/meta/text-embedding", {
+              text: doc.content,
+            });
+            return { id: doc.id, embedding };
+          }),
+        );
+
+        // Store embeddings in Vectorize
+        await this.env.VECTORIZE.store(embeddings);
+
+        // Store original documents in D1
+        await Promise.all(
+          batch.map(async (doc) => {
+            await this.ctx.storage.sql.exec(
+              `INSERT INTO documents (id, content) VALUES (?, ?)`,
+              [doc.id, doc.content],
+            );
+          }),
+        );
+      } catch (error) {
+        console.error("Error processing batch", error);
+        // Retry logic with exponential backoff
+        setTimeout(() => this.seedKnowledge(batch), 1000 * Math.pow(2, i / batchSize));
+      }
+    }
+  }
+
+  /**
+   * Queries knowledge documents based on a query string.
+   * 
+   * @param {string} query - The query string.
+   * @returns {Promise<string>} The generated response.
+   */
+  async queryKnowledge(query: string): Promise<string> {
+    try {
+      // Generate embedding vector for the query
+      const queryEmbedding = await this.env.AI.run("@cf/meta/text-embedding", {
+        text: query,
+      });
+
+      // Perform vector search in Vectorize
+      const searchResults = await this.env.VECTORIZE.search(queryEmbedding);
+
+      // Retrieve related documents from D1
+      const relatedDocuments = await Promise.all(
+        searchResults.map(async (result) => {
+          const doc = await this.ctx.storage.sql.exec(
+            `SELECT content FROM documents WHERE id = ?`,
+            [result.id],
+          );
+          return doc[0].content;
+        }),
+      );
+
+      // Generate contextual response using Workers AI
+      const response = await this.env.AI.run("@cf/meta/text-generation", {
+        context: relatedDocuments.join(" "),
+        query,
+      });
+
+      return response;
+    } catch (error) {
+      console.error("Error querying knowledge", error);
+      throw new Error("Failed to query knowledge");
+    }
+  }
 }
 
 const subjects = createSubjects({
@@ -517,6 +598,19 @@ export default {
       const classification = await chat.classifyImage(imageUrl);
       await chat.storeClassificationMetadata(imageUrl, classification);
       return new Response(JSON.stringify({ classification }), { status: 200 });
+    } else if (url.pathname === "/seed-knowledge" && request.method === "POST") {
+      const { documents } = await request.json();
+      const chat = new Chat();
+      await chat.seedKnowledge(documents);
+      return new Response("Knowledge seeded successfully", { status: 200 });
+    } else if (url.pathname === "/query-knowledge" && request.method === "GET") {
+      const query = url.searchParams.get("query");
+      if (!query) {
+        return new Response("Query parameter is required", { status: 400 });
+      }
+      const chat = new Chat();
+      const response = await chat.queryKnowledge(query);
+      return new Response(JSON.stringify({ response }), { status: 200 });
     }
 
     // The real OpenAuth server code starts here:

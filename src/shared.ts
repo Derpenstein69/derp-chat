@@ -414,6 +414,44 @@ export type ContextAwareSentimentAnalysis = {
 };
 
 /**
+ * Represents a knowledge document to be seeded into the system.
+ * Each document has an ID and content.
+ * 
+ * @typedef {Object} KnowledgeDocument
+ * @property {string} id - The unique identifier for the document.
+ * @property {string} content - The content of the document.
+ * 
+ * @example
+ * const document = {
+ *   id: "doc1",
+ *   content: "This is a knowledge document."
+ * };
+ */
+export type KnowledgeDocument = {
+  id: string;
+  content: string;
+};
+
+/**
+ * Represents a knowledge query to retrieve related documents.
+ * Each query has a query string and an array of related documents.
+ * 
+ * @typedef {Object} KnowledgeQuery
+ * @property {string} query - The query string.
+ * @property {string[]} relatedDocuments - The array of related documents.
+ * 
+ * @example
+ * const query = {
+ *   query: "What is the capital of France?",
+ *   relatedDocuments: ["Paris is the capital of France."]
+ * };
+ */
+export type KnowledgeQuery = {
+  query: string;
+  relatedDocuments: string[];
+};
+
+/**
  * List of predefined user names for the chat application.
  * These names are used to assign default names to users.
  * 
