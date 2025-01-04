@@ -1014,4 +1014,263 @@ describe('App component', () => {
 
     expect(usePartySocket().send).toHaveBeenCalled();
   });
+
+  /**
+   * Test to check if the App component handles voice recognition.
+   * 
+   * @remarks
+   * This test verifies that the App component correctly handles voice recognition and updates the input value with the recognized speech.
+   * 
+   * @example
+   * test('handles voice recognition', () => {
+   *   render(
+   *     <BrowserRouter>
+   *       <Routes>
+   *         <Route path="/" element={<App />} />
+   *       </Routes>
+   *     </BrowserRouter>
+   *   );
+   * 
+   *   const voiceInputButton = screen.getByText('Start Listening');
+   *   fireEvent.click(voiceInputButton);
+   * 
+   *   // Simulate voice recognition result
+   *   const recognitionEvent = new Event('result');
+   *   Object.assign(recognitionEvent, {
+   *     results: [
+   *       {
+   *         isFinal: true,
+   *         0: { transcript: 'Hello' },
+   *       },
+   *     ],
+   *   });
+   *   window.SpeechRecognition.mock.instances[0].onresult(recognitionEvent);
+   * 
+   *   expect(screen.getByPlaceholderText(/Type a message/i).value).toBe('Hello');
+   * });
+   */
+  test('handles voice recognition', () => {
+    render(
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<App />} />
+        </Routes>
+      </BrowserRouter>
+    );
+
+    const voiceInputButton = screen.getByText('Start Listening');
+    fireEvent.click(voiceInputButton);
+
+    // Simulate voice recognition result
+    const recognitionEvent = new Event('result');
+    Object.assign(recognitionEvent, {
+      results: [
+        {
+          isFinal: true,
+          0: { transcript: 'Hello' },
+        },
+      ],
+    });
+    window.SpeechRecognition.mock.instances[0].onresult(recognitionEvent);
+
+    expect(screen.getByPlaceholderText(/Type a message/i).value).toBe('Hello');
+  });
+
+  /**
+   * Test to check if the App component integrates sentiment analysis.
+   * 
+   * @remarks
+   * This test verifies that the App component correctly integrates sentiment analysis and adjusts the AI assistant's tone and style based on the sentiment.
+   * 
+   * @example
+   * test('integrates sentiment analysis', async () => {
+   *   render(
+   *     <BrowserRouter>
+   *       <Routes>
+   *         <Route path="/" element={<App />} />
+   *       </Routes>
+   *     </BrowserRouter>
+   *   );
+   * 
+   *   const input = screen.getByPlaceholderText(/Type a message/i);
+   *   fireEvent.change(input, { target: { value: 'I am happy' } });
+   * 
+   *   const form = screen.getByRole('form');
+   *   fireEvent.submit(form);
+   * 
+   *   expect(usePartySocket().send).toHaveBeenCalledWith(expect.objectContaining({
+   *     content: 'I am happy',
+   *     sentiment: 'positive',
+   *   }));
+   * });
+   */
+  test('integrates sentiment analysis', async () => {
+    render(
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<App />} />
+        </Routes>
+      </BrowserRouter>
+    );
+
+    const input = screen.getByPlaceholderText(/Type a message/i);
+    fireEvent.change(input, { target: { value: 'I am happy' } });
+
+    const form = screen.getByRole('form');
+    fireEvent.submit(form);
+
+    expect(usePartySocket().send).toHaveBeenCalledWith(expect.objectContaining({
+      content: 'I am happy',
+      sentiment: 'positive',
+    }));
+  });
+
+  /**
+   * Test to check if the App component handles context-aware message summary.
+   * 
+   * @remarks
+   * This test verifies that the App component correctly handles context-aware message summary and provides a summary of the conversation history.
+   * 
+   * @example
+   * test('handles context-aware message summary', async () => {
+   *   render(
+   *     <BrowserRouter>
+   *       <Routes>
+   *         <Route path="/" element={<App />} />
+   *       </Routes>
+   *     </BrowserRouter>
+   *   );
+   * 
+   *   const input = screen.getByPlaceholderText(/Type a message/i);
+   *   fireEvent.change(input, { target: { value: 'Hello' } });
+   * 
+   *   const form = screen.getByRole('form');
+   *   fireEvent.submit(form);
+   * 
+   *   expect(usePartySocket().send).toHaveBeenCalledWith(expect.objectContaining({
+   *     type: 'context-aware-message-summary',
+   *     sessionId: expect.any(String),
+   *   }));
+   * });
+   */
+  test('handles context-aware message summary', async () => {
+    render(
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<App />} />
+        </Routes>
+      </BrowserRouter>
+    );
+
+    const input = screen.getByPlaceholderText(/Type a message/i);
+    fireEvent.change(input, { target: { value: 'Hello' } });
+
+    const form = screen.getByRole('form');
+    fireEvent.submit(form);
+
+    expect(usePartySocket().send).toHaveBeenCalledWith(expect.objectContaining({
+      type: 'context-aware-message-summary',
+      sessionId: expect.any(String),
+    }));
+  });
+
+  /**
+   * Test to check if the App component handles context-aware suggestions.
+   * 
+   * @remarks
+   * This test verifies that the App component correctly handles context-aware suggestions and offers suggestions for responses based on the conversation history and user preferences.
+   * 
+   * @example
+   * test('handles context-aware suggestions', async () => {
+   *   render(
+   *     <BrowserRouter>
+   *       <Routes>
+   *         <Route path="/" element={<App />} />
+   *       </Routes>
+   *     </BrowserRouter>
+   *   );
+   * 
+   *   const input = screen.getByPlaceholderText(/Type a message/i);
+   *   fireEvent.change(input, { target: { value: 'Hello' } });
+   * 
+   *   const form = screen.getByRole('form');
+   *   fireEvent.submit(form);
+   * 
+   *   expect(usePartySocket().send).toHaveBeenCalledWith(expect.objectContaining({
+   *     type: 'context-aware-suggestions',
+   *     sessionId: expect.any(String),
+   *     userPreferences: expect.any(Object),
+   *   }));
+   * });
+   */
+  test('handles context-aware suggestions', async () => {
+    render(
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<App />} />
+        </Routes>
+      </BrowserRouter>
+    );
+
+    const input = screen.getByPlaceholderText(/Type a message/i);
+    fireEvent.change(input, { target: { value: 'Hello' } });
+
+    const form = screen.getByRole('form');
+    fireEvent.submit(form);
+
+    expect(usePartySocket().send).toHaveBeenCalledWith(expect.objectContaining({
+      type: 'context-aware-suggestions',
+      sessionId: expect.any(String),
+      userPreferences: expect.any(Object),
+    }));
+  });
+
+  /**
+   * Test to check if the App component handles context-aware sentiment analysis.
+   * 
+   * @remarks
+   * This test verifies that the App component correctly handles context-aware sentiment analysis and adjusts the tone and style of the AI assistant's responses based on the sentiment of the conversation history.
+   * 
+   * @example
+   * test('handles context-aware sentiment analysis', async () => {
+   *   render(
+   *     <BrowserRouter>
+   *       <Routes>
+   *         <Route path="/" element={<App />} />
+   *       </Routes>
+   *     </BrowserRouter>
+   *   );
+   * 
+   *   const input = screen.getByPlaceholderText(/Type a message/i);
+   *   fireEvent.change(input, { target: { value: 'Hello' } });
+   * 
+   *   const form = screen.getByRole('form');
+   *   fireEvent.submit(form);
+   * 
+   *   expect(usePartySocket().send).toHaveBeenCalledWith(expect.objectContaining({
+   *     type: 'context-aware-sentiment-analysis',
+   *     sessionId: expect.any(String),
+   *   }));
+   * });
+   */
+  test('handles context-aware sentiment analysis', async () => {
+    render(
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<App />} />
+        </Routes>
+      </BrowserRouter>
+    );
+
+    const input = screen.getByPlaceholderText(/Type a message/i);
+    fireEvent.change(input, { target: { value: 'Hello' } });
+
+    const form = screen.getByRole('form');
+    fireEvent.submit(form);
+
+    expect(usePartySocket().send).toHaveBeenCalledWith(expect.objectContaining({
+      type: 'context-aware-sentiment-analysis',
+      sessionId: expect.any(String),
+    }));
+  });
 });

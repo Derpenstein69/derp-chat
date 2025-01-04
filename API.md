@@ -21,6 +21,9 @@ This document provides an overview of the API endpoints, request/response format
     "token": "jwt-token"
   }
   ```
+- Error Responses:
+  - 400 Bad Request: Invalid email or password.
+  - 500 Internal Server Error: An error occurred while processing the request.
 
 #### POST /auth/register
 - Description: Register a new user.
@@ -38,6 +41,9 @@ This document provides an overview of the API endpoints, request/response format
     "message": "User registered successfully"
   }
   ```
+- Error Responses:
+  - 400 Bad Request: Invalid input data.
+  - 500 Internal Server Error: An error occurred while processing the request.
 
 ### Chat Messages
 
@@ -54,6 +60,8 @@ This document provides an overview of the API endpoints, request/response format
     }
   ]
   ```
+- Error Responses:
+  - 500 Internal Server Error: An error occurred while retrieving messages.
 
 #### POST /messages
 - Description: Send a new chat message.
@@ -73,6 +81,9 @@ This document provides an overview of the API endpoints, request/response format
     "attachments": []
   }
   ```
+- Error Responses:
+  - 400 Bad Request: Invalid input data.
+  - 500 Internal Server Error: An error occurred while sending the message.
 
 ### User Profiles
 
@@ -92,6 +103,9 @@ This document provides an overview of the API endpoints, request/response format
     "social_media_links": "https://twitter.com/alice"
   }
   ```
+- Error Responses:
+  - 404 Not Found: User not found.
+  - 500 Internal Server Error: An error occurred while retrieving the profile.
 
 #### PUT /profiles/:userId
 - Description: Update a user's profile.
@@ -113,6 +127,10 @@ This document provides an overview of the API endpoints, request/response format
     "message": "Profile updated successfully"
   }
   ```
+- Error Responses:
+  - 400 Bad Request: Invalid input data.
+  - 404 Not Found: User not found.
+  - 500 Internal Server Error: An error occurred while updating the profile.
 
 ### Ratings
 
@@ -131,6 +149,9 @@ This document provides an overview of the API endpoints, request/response format
     "message": "Rating submitted successfully"
   }
   ```
+- Error Responses:
+  - 400 Bad Request: Invalid input data.
+  - 500 Internal Server Error: An error occurred while submitting the rating.
 
 ### Caching Mechanism
 
@@ -143,6 +164,9 @@ This document provides an overview of the API endpoints, request/response format
     "data": "cached-data"
   }
   ```
+- Error Responses:
+  - 404 Not Found: Cache key not found.
+  - 500 Internal Server Error: An error occurred while retrieving cached data.
 
 #### POST /cache
 - Description: Store data in the cache.
@@ -159,6 +183,9 @@ This document provides an overview of the API endpoints, request/response format
     "message": "Data cached successfully"
   }
   ```
+- Error Responses:
+  - 400 Bad Request: Invalid input data.
+  - 500 Internal Server Error: An error occurred while storing data in the cache.
 
 ### Performance Monitoring
 
@@ -173,6 +200,8 @@ This document provides an overview of the API endpoints, request/response format
     }
   }
   ```
+- Error Responses:
+  - 500 Internal Server Error: An error occurred while retrieving performance metrics.
 
 ### Optimized Database Queries
 
@@ -189,6 +218,8 @@ This document provides an overview of the API endpoints, request/response format
     }
   ]
   ```
+- Error Responses:
+  - 500 Internal Server Error: An error occurred while retrieving messages.
 
 ### Context-aware Responses
 
@@ -207,6 +238,9 @@ This document provides an overview of the API endpoints, request/response format
     "response": "context-aware-response"
   }
   ```
+- Error Responses:
+  - 400 Bad Request: Invalid input data.
+  - 500 Internal Server Error: An error occurred while generating context-aware responses.
 
 ### Personalized Responses
 
@@ -225,6 +259,74 @@ This document provides an overview of the API endpoints, request/response format
     "response": "personalized-response"
   }
   ```
+- Error Responses:
+  - 400 Bad Request: Invalid input data.
+  - 500 Internal Server Error: An error occurred while generating personalized responses.
+
+### Context-aware Message Summary
+
+#### POST /context-aware-message-summary
+- Description: Provide a summary of the conversation history for a given session.
+- Request Body:
+  ```json
+  {
+    "sessionId": "session-id"
+  }
+  ```
+- Response Body:
+  ```json
+  {
+    "summary": "conversation-summary"
+  }
+  ```
+- Error Responses:
+  - 400 Bad Request: Invalid input data.
+  - 500 Internal Server Error: An error occurred while generating the conversation summary.
+
+### Context-aware Suggestions
+
+#### POST /context-aware-suggestions
+- Description: Offer suggestions for responses based on the conversation history and user preferences.
+- Request Body:
+  ```json
+  {
+    "sessionId": "session-id",
+    "userPreferences": {
+      "theme": "dark",
+      "avatar": "robot",
+      "interaction_style": "friendly"
+    }
+  }
+  ```
+- Response Body:
+  ```json
+  {
+    "suggestions": ["suggestion1", "suggestion2"]
+  }
+  ```
+- Error Responses:
+  - 400 Bad Request: Invalid input data.
+  - 500 Internal Server Error: An error occurred while generating suggestions.
+
+### Context-aware Sentiment Analysis
+
+#### POST /context-aware-sentiment-analysis
+- Description: Analyze the sentiment of the conversation history to adjust the tone and style of the AI assistant's responses.
+- Request Body:
+  ```json
+  {
+    "sessionId": "session-id"
+  }
+  ```
+- Response Body:
+  ```json
+  {
+    "sentiment": "positive"
+  }
+  ```
+- Error Responses:
+  - 400 Bad Request: Invalid input data.
+  - 500 Internal Server Error: An error occurred while analyzing sentiment.
 
 ## Request/Response Formats
 
