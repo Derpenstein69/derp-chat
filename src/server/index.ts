@@ -24,7 +24,8 @@ import { DiscordAdapter } from "@openauthjs/openauth/adapter/discord";
 import jwt from "jsonwebtoken";
 import { performance } from "perf_hooks";
 import { SentimentAnalyzer, PorterStemmer } from "natural";
-import { createCipheriv, createDecipheriv, randomBytes } from "crypto";
+import { createCipheriv, createDecipheriv, randomBytes, createHmac } from "crypto";
+import { S3Client, PutObjectCommand, GetObjectCommand } from "@aws-sdk/client-s3";
 
 import type { ChatMessage, Message, Session } from "../shared";
 
@@ -38,6 +39,15 @@ export class Chat extends Server<Env> {
   sessions = new Map<string, any>();
   cache = new Map<string, ChatMessage[]>();
   sentimentAnalyzer = new SentimentAnalyzer("English", PorterStemmer, "afinn");
+
+  r2Client = new S3Client({
+    region: process.env.R2_REGION,
+    credentials: {
+      accessKeyId: process.env.R2_ACCESS_KEY_ID,
+      secretAccessKey: process.env.R2_SECRET_ACCESS_KEY,
+    },
+    endpoint: `https://${process.env.R2_REGION}.r2.cloudflarestorage.com`,
+  });
 
   /**
    * Broadcasts a message to all connected clients, excluding specified clients.
@@ -206,6 +216,20 @@ export class Chat extends Server<Env> {
       // Sentiment analysis
       const sentiment = this.sentimentAnalyzer.getSentiment(parsed.content.split(" "));
       parsed.sentiment = sentiment > 0 ? "positive" : sentiment < 0 ? "negative" : "neutral";
+
+      // HMAC signature validation
+      const hmac = createHmac('sha256', process.env.HMAC_SECRET_KEY!);
+      hmac.update(parsed.content);
+      const signature = hmac.digest('hex');
+      if (parsed.signature !== signature) {
+        throw new Error("Invalid HMAC signature");
+      }
+
+      // Expiration date enforcement
+      const currentTime = new Date().getTime();
+      if (parsed.expiration && currentTime > parsed.expiration) {
+        throw new Error("Link has expired");
+      }
 
       if (parsed.type === "add") {
         // add the message to the local store
@@ -380,6 +404,36 @@ export class Chat extends Server<Env> {
     const messages = session.messages.map((m: ChatMessage) => m.content).join(" ");
     const sentiment = this.sentimentAnalyzer.getSentiment(messages.split(" "));
     return sentiment > 0 ? "positive" : sentiment < 0 ? "negative" : "neutral";
+  }
+
+  /**
+   * Uploads an image to Cloudflare R2.
+   * 
+   * @param {string} key - The key for the image in R2.
+   * @param {Buffer} body - The image data.
+   */
+  async uploadImageToR2(key: string, body: Buffer) {
+    const command = new PutObjectCommand({
+      Bucket: process.env.R2_BUCKET_NAME,
+      Key: key,
+      Body: body,
+    });
+    await this.r2Client.send(command);
+  }
+
+  /**
+   * Retrieves an image from Cloudflare R2.
+   * 
+   * @param {string} key - The key for the image in R2.
+   * @returns {Promise<Buffer>} The image data.
+   */
+  async getImageFromR2(key: string): Promise<Buffer> {
+    const command = new GetObjectCommand({
+      Bucket: process.env.R2_BUCKET_NAME,
+      Key: key,
+    });
+    const response = await this.r2Client.send(command);
+    return response.Body as Buffer;
   }
 }
 

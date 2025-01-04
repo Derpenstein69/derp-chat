@@ -1302,4 +1302,177 @@ describe("Chat", () => {
     expect(console.error).toHaveBeenCalledWith("Error processing message", expect.any(Error));
     expect(chat.messages).not.toContainEqual(errorMessage);
   });
+
+  /**
+   * Test to check if the Chat class validates HMAC signatures.
+   * 
+   * @remarks
+   * This test verifies that the Chat class validates HMAC signatures on incoming messages and throws an error if validation fails.
+   * 
+   * @example
+   * test("should validate HMAC signatures", async () => {
+   *   const validMessage = {
+   *     id: nanoid(8),
+   *     user: "Alice",
+   *     role: "user",
+   *     content: "Hello",
+   *     attachments: [],
+   *     session_id: "session1",
+   *     user_id: "user1",
+   *     signature: "valid-signature",
+   *   };
+   *   const invalidMessage = {
+   *     ...validMessage,
+   *     signature: "invalid-signature",
+   *   };
+   *   chat.broadcast = jest.fn();
+   *   chat.ctx.storage.sql.exec = jest.fn();
+   *   console.error = jest.fn();
+   * 
+   *   await chat.onMessage(connection, JSON.stringify({ type: "add", ...validMessage }));
+   *   expect(chat.messages).toContainEqual(validMessage);
+   * 
+   *   await chat.onMessage(connection, JSON.stringify({ type: "add", ...invalidMessage }));
+   *   expect(console.error).toHaveBeenCalledWith("Error processing message", expect.any(Error));
+   *   expect(chat.messages).not.toContainEqual(invalidMessage);
+   * });
+   */
+  test("should validate HMAC signatures", async () => {
+    const validMessage = {
+      id: nanoid(8),
+      user: "Alice",
+      role: "user",
+      content: "Hello",
+      attachments: [],
+      session_id: "session1",
+      user_id: "user1",
+      signature: "valid-signature",
+    };
+    const invalidMessage = {
+      ...validMessage,
+      signature: "invalid-signature",
+    };
+    chat.broadcast = jest.fn();
+    chat.ctx.storage.sql.exec = jest.fn();
+    console.error = jest.fn();
+
+    await chat.onMessage(connection, JSON.stringify({ type: "add", ...validMessage }));
+    expect(chat.messages).toContainEqual(validMessage);
+
+    await chat.onMessage(connection, JSON.stringify({ type: "add", ...invalidMessage }));
+    expect(console.error).toHaveBeenCalledWith("Error processing message", expect.any(Error));
+    expect(chat.messages).not.toContainEqual(invalidMessage);
+  });
+
+  /**
+   * Test to check if the Chat class enforces expiration dates on links.
+   * 
+   * @remarks
+   * This test verifies that the Chat class enforces expiration dates on incoming messages and throws an error if the link has expired.
+   * 
+   * @example
+   * test("should enforce expiration dates on links", async () => {
+   *   const validMessage = {
+   *     id: nanoid(8),
+   *     user: "Alice",
+   *     role: "user",
+   *     content: "Hello",
+   *     attachments: [],
+   *     session_id: "session1",
+   *     user_id: "user1",
+   *     expiration: new Date().getTime() + 10000, // 10 seconds in the future
+   *   };
+   *   const expiredMessage = {
+   *     ...validMessage,
+   *     expiration: new Date().getTime() - 10000, // 10 seconds in the past
+   *   };
+   *   chat.broadcast = jest.fn();
+   *   chat.ctx.storage.sql.exec = jest.fn();
+   *   console.error = jest.fn();
+   * 
+   *   await chat.onMessage(connection, JSON.stringify({ type: "add", ...validMessage }));
+   *   expect(chat.messages).toContainEqual(validMessage);
+   * 
+   *   await chat.onMessage(connection, JSON.stringify({ type: "add", ...expiredMessage }));
+   *   expect(console.error).toHaveBeenCalledWith("Error processing message", expect.any(Error));
+   *   expect(chat.messages).not.toContainEqual(expiredMessage);
+   * });
+   */
+  test("should enforce expiration dates on links", async () => {
+    const validMessage = {
+      id: nanoid(8),
+      user: "Alice",
+      role: "user",
+      content: "Hello",
+      attachments: [],
+      session_id: "session1",
+      user_id: "user1",
+      expiration: new Date().getTime() + 10000, // 10 seconds in the future
+    };
+    const expiredMessage = {
+      ...validMessage,
+      expiration: new Date().getTime() - 10000, // 10 seconds in the past
+    };
+    chat.broadcast = jest.fn();
+    chat.ctx.storage.sql.exec = jest.fn();
+    console.error = jest.fn();
+
+    await chat.onMessage(connection, JSON.stringify({ type: "add", ...validMessage }));
+    expect(chat.messages).toContainEqual(validMessage);
+
+    await chat.onMessage(connection, JSON.stringify({ type: "add", ...expiredMessage }));
+    expect(console.error).toHaveBeenCalledWith("Error processing message", expect.any(Error));
+    expect(chat.messages).not.toContainEqual(expiredMessage);
+  });
+
+  /**
+   * Test to check if the Chat class handles error handling and logging.
+   * 
+   * @remarks
+   * This test verifies that the Chat class has robust error handling and logging mechanisms in place.
+   * 
+   * @example
+   * test("should handle error handling and logging", async () => {
+   *   const errorMessage = {
+   *     id: nanoid(8),
+   *     user: "Alice",
+   *     role: "user",
+   *     content: "Hello",
+   *     attachments: [],
+   *     session_id: "session1",
+   *     user_id: "user1",
+   *   };
+   *   chat.broadcast = jest.fn();
+   *   chat.ctx.storage.sql.exec = jest.fn().mockImplementation(() => {
+   *     throw new Error("Test error");
+   *   });
+   *   console.error = jest.fn();
+   * 
+   *   await chat.onMessage(connection, JSON.stringify({ type: "add", ...errorMessage }));
+   * 
+   *   expect(console.error).toHaveBeenCalledWith("Error processing message", expect.any(Error));
+   *   expect(chat.messages).not.toContainEqual(errorMessage);
+   * });
+   */
+  test("should handle error handling and logging", async () => {
+    const errorMessage = {
+      id: nanoid(8),
+      user: "Alice",
+      role: "user",
+      content: "Hello",
+      attachments: [],
+      session_id: "session1",
+      user_id: "user1",
+    };
+    chat.broadcast = jest.fn();
+    chat.ctx.storage.sql.exec = jest.fn().mockImplementation(() => {
+      throw new Error("Test error");
+    });
+    console.error = jest.fn();
+
+    await chat.onMessage(connection, JSON.stringify({ type: "add", ...errorMessage }));
+
+    expect(console.error).toHaveBeenCalledWith("Error processing message", expect.any(Error));
+    expect(chat.messages).not.toContainEqual(errorMessage);
+  });
 });
