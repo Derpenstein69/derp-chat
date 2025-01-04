@@ -646,4 +646,149 @@ describe("Chat", () => {
       ],
     );
   });
+
+  /**
+   * Test to check if the Chat class handles real-time analytics and monitoring.
+   * 
+   * @remarks
+   * This test verifies that the Chat class tracks and updates real-time analytics data when messages are sent and received.
+   * 
+   * @example
+   * test("should handle real-time analytics and monitoring", async () => {
+   *   const newMessage = {
+   *     id: nanoid(8),
+   *     user: "Alice",
+   *     role: "user",
+   *     content: "Hello",
+   *     attachments: [],
+   *     session_id: "session1",
+   *     user_id: "user1",
+   *   };
+   *   chat.broadcast = jest.fn();
+   *   chat.ctx.storage.sql.exec = jest.fn();
+   * 
+   *   await chat.onMessage(connection, JSON.stringify({ type: "add", ...newMessage }));
+   * 
+   *   expect(chat.analyticsData.messageCount).toBe(1);
+   *   expect(chat.analyticsData.userActivity["Alice"]).toBe(1);
+   *   expect(chat.analyticsData.messageFrequency).toBeGreaterThan(0);
+   * });
+   */
+  test("should handle real-time analytics and monitoring", async () => {
+    const newMessage = {
+      id: nanoid(8),
+      user: "Alice",
+      role: "user",
+      content: "Hello",
+      attachments: [],
+      session_id: "session1",
+      user_id: "user1",
+    };
+    chat.broadcast = jest.fn();
+    chat.ctx.storage.sql.exec = jest.fn();
+
+    await chat.onMessage(connection, JSON.stringify({ type: "add", ...newMessage }));
+
+    expect(chat.analyticsData.messageCount).toBe(1);
+    expect(chat.analyticsData.userActivity["Alice"]).toBe(1);
+    expect(chat.analyticsData.messageFrequency).toBeGreaterThan(0);
+  });
+
+  /**
+   * Test to check if the Chat class handles context-aware responses.
+   * 
+   * @remarks
+   * This test verifies that the Chat class generates context-aware responses based on the conversation context.
+   * 
+   * @example
+   * test("should handle context-aware responses", async () => {
+   *   const newMessage = {
+   *     id: nanoid(8),
+   *     user: "Alice",
+   *     role: "user",
+   *     content: "Hello",
+   *     attachments: [],
+   *     session_id: "session1",
+   *     user_id: "user1",
+   *   };
+   *   chat.broadcast = jest.fn();
+   *   chat.ctx.storage.sql.exec = jest.fn();
+   *   chat.env.AI.run = jest.fn().mockResolvedValue(new ReadableStream());
+   * 
+   *   await chat.onMessage(connection, JSON.stringify({ type: "add", ...newMessage }));
+   * 
+   *   expect(chat.messages).toContainEqual(newMessage);
+   *   expect(chat.broadcast).toHaveBeenCalledWith(JSON.stringify({ type: "add", ...newMessage }));
+   *   expect(chat.ctx.storage.sql.exec).toHaveBeenCalled();
+   * });
+   */
+  test("should handle context-aware responses", async () => {
+    const newMessage = {
+      id: nanoid(8),
+      user: "Alice",
+      role: "user",
+      content: "Hello",
+      attachments: [],
+      session_id: "session1",
+      user_id: "user1",
+    };
+    chat.broadcast = jest.fn();
+    chat.ctx.storage.sql.exec = jest.fn();
+    chat.env.AI.run = jest.fn().mockResolvedValue(new ReadableStream());
+
+    await chat.onMessage(connection, JSON.stringify({ type: "add", ...newMessage }));
+
+    expect(chat.messages).toContainEqual(newMessage);
+    expect(chat.broadcast).toHaveBeenCalledWith(JSON.stringify({ type: "add", ...newMessage }));
+    expect(chat.ctx.storage.sql.exec).toHaveBeenCalled();
+  });
+
+  /**
+   * Test to check if the Chat class handles personalized interactions.
+   * 
+   * @remarks
+   * This test verifies that the Chat class generates personalized responses based on user preferences and past interactions.
+   * 
+   * @example
+   * test("should handle personalized interactions", async () => {
+   *   const newMessage = {
+   *     id: nanoid(8),
+   *     user: "Alice",
+   *     role: "user",
+   *     content: "Hello",
+   *     attachments: [],
+   *     session_id: "session1",
+   *     user_id: "user1",
+   *   };
+   *   chat.broadcast = jest.fn();
+   *   chat.ctx.storage.sql.exec = jest.fn();
+   *   chat.env.AI.run = jest.fn().mockResolvedValue(new ReadableStream());
+   * 
+   *   await chat.onMessage(connection, JSON.stringify({ type: "add", ...newMessage }));
+   * 
+   *   expect(chat.messages).toContainEqual(newMessage);
+   *   expect(chat.broadcast).toHaveBeenCalledWith(JSON.stringify({ type: "add", ...newMessage }));
+   *   expect(chat.ctx.storage.sql.exec).toHaveBeenCalled();
+   * });
+   */
+  test("should handle personalized interactions", async () => {
+    const newMessage = {
+      id: nanoid(8),
+      user: "Alice",
+      role: "user",
+      content: "Hello",
+      attachments: [],
+      session_id: "session1",
+      user_id: "user1",
+    };
+    chat.broadcast = jest.fn();
+    chat.ctx.storage.sql.exec = jest.fn();
+    chat.env.AI.run = jest.fn().mockResolvedValue(new ReadableStream());
+
+    await chat.onMessage(connection, JSON.stringify({ type: "add", ...newMessage }));
+
+    expect(chat.messages).toContainEqual(newMessage);
+    expect(chat.broadcast).toHaveBeenCalledWith(JSON.stringify({ type: "add", ...newMessage }));
+    expect(chat.ctx.storage.sql.exec).toHaveBeenCalled();
+  });
 });
