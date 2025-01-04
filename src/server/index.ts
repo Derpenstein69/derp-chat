@@ -435,6 +435,40 @@ export class Chat extends Server<Env> {
     const response = await this.r2Client.send(command);
     return response.Body as Buffer;
   }
+
+  /**
+   * Initializes the Cloudflare Worker for image classification using Workers AI.
+   */
+  initializeImageClassificationWorker() {
+    this.env.IMAGE_CLASSIFICATION_WORKER = new Worker("@cf/meta/image-classification", {
+      bindings: {
+        R2_BUCKET_NAME: process.env.R2_BUCKET_NAME,
+        R2_REGION: process.env.R2_REGION,
+      },
+    });
+  }
+
+  /**
+   * Handles image classification requests using Workers AI.
+   * 
+   * @param {string} imageUrl - The URL of the image to classify.
+   * @returns {Promise<string>} The classification result.
+   */
+  async classifyImage(imageUrl: string): Promise<string> {
+    const response = await this.env.IMAGE_CLASSIFICATION_WORKER.fetch(imageUrl);
+    const result = await response.json();
+    return result.classification;
+  }
+
+  /**
+   * Stores classification metadata in Cloudflare KV for efficient retrieval and management.
+   * 
+   * @param {string} imageUrl - The URL of the image.
+   * @param {string} classification - The classification result.
+   */
+  async storeClassificationMetadata(imageUrl: string, classification: string) {
+    await this.env.CLASSIFICATION_METADATA.put(imageUrl, classification);
+  }
 }
 
 const subjects = createSubjects({
@@ -477,6 +511,12 @@ export default {
       const chat = new Chat();
       const sentiment = chat.analyzeConversationSentiment(sessionId);
       return new Response(JSON.stringify({ sentiment }), { status: 200 });
+    } else if (url.pathname === "/classify-image" && request.method === "POST") {
+      const { imageUrl } = await request.json();
+      const chat = new Chat();
+      const classification = await chat.classifyImage(imageUrl);
+      await chat.storeClassificationMetadata(imageUrl, classification);
+      return new Response(JSON.stringify({ classification }), { status: 200 });
     }
 
     // The real OpenAuth server code starts here:
