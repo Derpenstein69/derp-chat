@@ -369,6 +369,38 @@ This document provides an overview of the API endpoints, request/response format
   - 400 Bad Request: Invalid input data.
   - 500 Internal Server Error: An error occurred while processing the unscoped prompt.
 
+### Secure Image Request Links
+
+#### HMAC Signature Validation
+- Description: Validate HMAC signatures on image request links to ensure authenticity.
+- Implementation:
+  - Generate an HMAC signature using a secret key and the request parameters.
+  - Compare the generated signature with the signature provided in the request.
+  - If the signatures do not match, reject the request with an error response.
+- Example:
+  ```javascript
+  const hmac = createHmac('sha256', process.env.HMAC_SECRET_KEY);
+  hmac.update(requestParams);
+  const signature = hmac.digest('hex');
+  if (providedSignature !== signature) {
+    throw new Error("Invalid HMAC signature");
+  }
+  ```
+
+#### Expiration Date Enforcement
+- Description: Enforce expiration dates on image request links to prevent unauthorized access.
+- Implementation:
+  - Include an expiration timestamp in the request parameters.
+  - Compare the current time with the expiration timestamp.
+  - If the current time is greater than the expiration timestamp, reject the request with an error response.
+- Example:
+  ```javascript
+  const currentTime = new Date().getTime();
+  if (currentTime > expirationTimestamp) {
+    throw new Error("Link has expired");
+  }
+  ```
+
 ## Request/Response Formats
 
 - All requests and responses use JSON format.
