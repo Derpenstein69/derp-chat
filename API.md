@@ -442,6 +442,26 @@ This document provides an overview of the API endpoints, request/response format
   - 400 Bad Request: Query parameter is required.
   - 500 Internal Server Error: An error occurred while querying knowledge.
 
+### Image Classification
+
+#### POST /classify-image
+- Description: Classify an image using Workers AI.
+- Request Body:
+  ```json
+  {
+    "imageUrl": "https://example.com/image.jpg"
+  }
+  ```
+- Response Body:
+  ```json
+  {
+    "classification": "cat"
+  }
+  ```
+- Error Responses:
+  - 400 Bad Request: Invalid input data.
+  - 500 Internal Server Error: An error occurred while classifying the image.
+
 ## Request/Response Formats
 
 - All requests and responses use JSON format.
