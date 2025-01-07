@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Added
+
 - Initial release of the Durable Chat Template.
 - User authentication and profiles.
 - Chat with an AI assistant.
@@ -22,14 +23,17 @@ All notable changes to this project will be documented in this file.
 - Multi-modal interactions.
 
 ### Changed
+
 - N/A
 
 ### Fixed
+
 - N/A
 
 ## [1.0.1] - 2024-11-01
 
 ### Added
+
 - Added detailed comments and documentation to the code.
 - Created a `CONTRIBUTING.md` file to guide contributors.
 - Updated the `README.md` file with more detailed setup instructions and usage examples.
@@ -42,7 +46,9 @@ All notable changes to this project will be documented in this file.
 - Added descriptions for each environment variable in the `.env.example` file.
 
 ### Changed
+
 - N/A
 
 ### Fixed
+
 - N/A

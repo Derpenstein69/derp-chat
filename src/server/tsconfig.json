@@ -1,4 +1,6 @@
 {
+  "$schema": "https://json.schemastore.org/tsconfig",
+  
   // TypeScript configuration for the server-side code
   "extends": "../../tsconfig.json",
   "compilerOptions": {

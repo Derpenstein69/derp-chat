@@ -30,7 +30,7 @@ To optimize the performance of the chat application, consider the following tips
 - **Alerting**: Set up alerts to notify you of performance issues.
 - **Performance Dashboards**: Create dashboards to visualize performance metrics.
 
-### Optimizing Database Queries
+### Database Query Optimization
 
 - **Indexing**: Use indexes to speed up query performance.
 - **Query Optimization**: Analyze and optimize slow queries.

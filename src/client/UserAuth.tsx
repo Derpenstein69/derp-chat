@@ -6,16 +6,24 @@ const client = createClient({
   issuer: "https://auth.myserver.com",
 });
 
-export async function handleAuthCallback(location) {
+export async function handleAuthCallback(location: { search: string }) {
   try {
     const query = new URLSearchParams(location.search);
     const code = query.get("code");
     if (code) {
-      const tokens = await client.exchange(code, window.location.origin);
-      localStorage.setItem("access_token", tokens.access);
-      localStorage.setItem("refresh_token", tokens.refresh);
+      const exchangeResult = await client.exchange(code, window.location.origin);
+      if ("error" in exchangeResult) {
+        console.error(exchangeResult.error);
 
-      const userProfile = await client.getUserProfile(tokens.access);
+        alert("Authentication error");
+        return;
+      }
+
+      const successResult = exchangeResult as any;
+      localStorage.setItem("access_token", successResult.accessToken);
+      localStorage.setItem("refresh_token", successResult.refreshToken);
+
+      const userProfile = await client.userInfo(exchangeResult.accessToken);
       return {
         name: userProfile.name,
         profile: {

@@ -9,6 +9,7 @@ The project uses [Jest](https://jestjs.io/) as the testing framework. Jest is a 
 ## Running Tests
 
 To run the tests, use the following command:
+
 ```bash
 npm test
 ```

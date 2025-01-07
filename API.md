@@ -7,27 +7,34 @@ This document provides an overview of the API endpoints, request/response format
 ### User Authentication
 
 #### POST /auth/login
+
 - Description: Authenticate a user and obtain a JWT token.
 - Request Body:
+
   ```json
   {
     "email": "user@example.com",
     "password": "password123"
   }
   ```
+
 - Response Body:
+
   ```json
   {
     "token": "jwt-token"
   }
   ```
+
 - Error Responses:
   - 400 Bad Request: Invalid email or password.
   - 500 Internal Server Error: An error occurred while processing the request.
 
 #### POST /auth/register
+
 - Description: Register a new user.
 - Request Body:
+
   ```json
   {
     "name": "John Doe",
@@ -35,12 +42,15 @@ This document provides an overview of the API endpoints, request/response format
     "password": "password123"
   }
   ```
+
 - Response Body:
+
   ```json
   {
     "message": "User registered successfully"
   }
   ```
+  
 - Error Responses:
   - 400 Bad Request: Invalid input data.
   - 500 Internal Server Error: An error occurred while processing the request.

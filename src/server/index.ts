@@ -14,13 +14,13 @@ import { nanoid } from "nanoid";
 import { EventSourceParserStream } from "eventsource-parser/stream";
 import { authorizer, createSubjects } from "@openauthjs/openauth";
 import { CloudflareStorage } from "@openauthjs/openauth/storage/cloudflare";
-import { PasswordAdapter } from "@openauthjs/openauth/adapter/password";
+import { PasswordProvider } from "@openauthjs/openauth/provider/password";
 import { PasswordUI } from "@openauthjs/openauth/ui/password";
 import { object, string, validate } from "valibot";
-import { GoogleAdapter } from "@openauthjs/openauth/adapter/google";
-import { GithubAdapter } from "@openauthjs/openauth/adapter/github";
-import { AppleAdapter } from "@openauthjs/openauth/adapter/apple";
-import { DiscordAdapter } from "@openauthjs/openauth/adapter/discord";
+import { GoogleProvider } from "@openauthjs/openauth/provider/google";
+import { GithubProvider } from "@openauthjs/openauth/provider/github";
+import { AppleProvider } from "@openauthjs/openauth/provider/apple";
+import { DiscordProvider } from "@openauthjs/openauth/provider/discord";
 import jwt from "jsonwebtoken";
 import { performance } from "perf_hooks";
 import { SentimentAnalyzer, PorterStemmer } from "natural";
@@ -99,7 +99,7 @@ export default {
       }),
       subjects,
       providers: {
-        password: PasswordAdapter(
+        password: PasswordProvider(
           PasswordUI({
             // eslint-disable-next-line @typescript-eslint/require-await
             sendCode: async (email, code) => {
@@ -113,22 +113,22 @@ export default {
             },
           }),
         ),
-        google: GoogleAdapter({
+        google: GoogleProvider({
           clientID: env.GOOGLE_CLIENT_ID,
           clientSecret: env.GOOGLE_CLIENT_SECRET,
           scopes: ["profile", "email"],
         }),
-        github: GithubAdapter({
+        github: GithubProvider({
           clientID: env.GITHUB_CLIENT_ID,
           clientSecret: env.GITHUB_CLIENT_SECRET,
           scopes: ["user:email"],
         }),
-        apple: AppleAdapter({
+        apple: AppleProvider({
           clientID: env.APPLE_CLIENT_ID,
           clientSecret: env.APPLE_CLIENT_SECRET,
           scopes: ["name", "email"],
         }),
-        discord: DiscordAdapter({
+        discord: DiscordProvider({
           clientID: env.DISCORD_CLIENT_ID,
           clientSecret: env.DISCORD_CLIENT_SECRET,
           scopes: ["identify", "email"],

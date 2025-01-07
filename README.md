@@ -39,12 +39,14 @@ A chat application with an AI assistant backed by a Durable Object.
 ## Setup
 
 1. Clone the repository:
+
    ```bash
    git clone https://github.com/your-username/durable-chat-template.git
    cd durable-chat-template
    ```
 
 2. Install dependencies:
+
    ```bash
    npm install
    ```
@@ -52,6 +54,7 @@ A chat application with an AI assistant backed by a Durable Object.
 3. Configure environment variables:
    * Use Cloudflare secrets to securely store sensitive environment variables.
    * Set the following secrets using the `wrangler secret put` command:
+
      ```bash
      wrangler secret put GOOGLE_CLIENT_ID
      wrangler secret put GOOGLE_CLIENT_SECRET
@@ -74,6 +77,7 @@ A chat application with an AI assistant backed by a Durable Object.
      ```
 
 4. Example environment variable values:
+
    ```bash
    wrangler secret put GOOGLE_CLIENT_ID 1234567890-abcdefghijklmnopqrstuvwxyz.apps.googleusercontent.com
    wrangler secret put GOOGLE_CLIENT_SECRET your-google-client-secret
@@ -87,11 +91,13 @@ A chat application with an AI assistant backed by a Durable Object.
 
 5. Configure Cloudflare Worker for logging:
    * Add the following variables to the `.env` file:
+
      ```
      LOGS_KV_NAMESPACE_ID=your-logs-kv-namespace-id
      ```
 
 6. Update `wrangler.json` to include the new Cloudflare Worker:
+
    ```json
    {
      "routes": [
@@ -112,11 +118,13 @@ A chat application with an AI assistant backed by a Durable Object.
 ## Running the project
 
 1. Build the client:
+
    ```bash
    npm run build
    ```
 
 2. Start the development server:
+
    ```bash
    npm run dev
    ```
@@ -126,6 +134,7 @@ A chat application with an AI assistant backed by a Durable Object.
 ## Running Tests
 
 To run the tests, use the following command:
+
 ```bash
 npm test
 ```

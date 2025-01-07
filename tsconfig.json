@@ -1,8 +1,9 @@
 {
+  "$schema": "https://json.schemastore.org/tsconfig",
   // TypeScript configuration for the entire project
   "compilerOptions": {
     "target": "esnext", // Target the latest ECMAScript version
-    "lib": ["esnext"], // Include the latest ECMAScript library
+    "lib": ["esnext", "dom"], // Include the latest ECMAScript library
     "module": "esnext", // Use ECMAScript modules
     "moduleResolution": "bundler", // Resolve modules using bundler
     "noEmit": true, // Do not emit output files
@@ -10,7 +11,7 @@
     "forceConsistentCasingInFileNames": true, // Enforce consistent casing in file names
     "skipLibCheck": true, // Skip type checking of declaration files
     "strict": true, // Enable all strict type-checking options
-    "types": ["@cloudflare/workers-types", "./worker-configuration.d.ts"] // Include Cloudflare Workers types and custom worker configuration types
+    "types": ["@cloudflare/workers-types", "./worker-configuration.d.ts", "@types/react", "@types/react-dom"] // Include Cloudflare Workers types and custom worker configuration types
   },
   "include": ["src/shared.ts"] // Include specific files for compilation
 }

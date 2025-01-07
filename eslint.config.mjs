@@ -37,12 +37,12 @@ export default tseslint.config(
     },
   },
   {
-    /**
-     * Files and directories to ignore during linting.
-     * 
-     * @ignore **/*.js - Ignores all JavaScript files.
-     * @ignore **/*.mjs - Ignores all ECMAScript module files.
-     */
+    //**
+    // * Files and directories to ignore during linting.
+    // * 
+    // * @ignore **/*.js - Ignores all JavaScript files.
+    // * @ignore **/*.mjs - Ignores all ECMAScript module files.
+    // */
     ignores: ["**/*.js", "**/*.mjs"],
   },
 );
