@@ -338,7 +338,7 @@ export class Chat extends Server<Env> {
     } catch (error) {
       console.error("Error processing message", error);
       // Implement a logging mechanism to log errors to an external logging service
-      // Example: logErrorToService(error);
+      await this.logErrorToService(error, connection, message);
     } finally {
       const endTime = performance.now();
       console.log(`Message processing time: ${endTime - startTime}ms`);
@@ -564,6 +564,41 @@ export class Chat extends Server<Env> {
       console.error("Error querying knowledge", error);
       throw new Error("Failed to query knowledge");
     }
+  }
+
+  /**
+   * Logs error details to an external logging service.
+   * 
+   * @param {Error} error - The error object.
+   * @param {Connection} connection - The connection object representing the client.
+   * @param {WSMessage} message - The message received from the client.
+   */
+  async logErrorToService(error: Error, connection: Connection, message: WSMessage) {
+    const logData = {
+      timestamp: new Date().toISOString(),
+      level: "error",
+      message: error.message,
+      context: {
+        function: "onMessage",
+        file: "src/server/index.ts",
+        userId: connection.userId,
+        remoteAddress: connection.remoteAddress,
+        userAgent: connection.userAgent,
+        message: message,
+      },
+      error: {
+        message: error.message,
+        stack: error.stack,
+      },
+    };
+
+    await fetch("https://your-cloudflare-worker-url/logs", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(logData),
+    });
   }
 }
 

@@ -35,6 +35,10 @@
     {
       "binding": "AUTH_STORAGE",
       "id": "afec91ff3f7e4b0b9b9323fc6cf5ff85"
+    },
+    {
+      "binding": "LOGS",
+      "id": "your-logs-kv-namespace-id"
     }
   ],
   "d1_databases": [
@@ -44,5 +48,15 @@
       "database_id": "d4dfb2e9-2fd3-4d04-9c83-57b4336a5958"
     }
   ],
-  "compatibility_flags": ["nodejs_compat"]
+  "compatibility_flags": ["nodejs_compat"],
+  "workers_dev": true,
+  "triggers": {
+    "crons": ["0 0 * * *"]
+  },
+  "routes": [
+    {
+      "pattern": "/logs",
+      "script": "src/server/loggingWorker.ts"
+    }
+  ]
 }

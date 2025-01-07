@@ -75,6 +75,30 @@ A chat application with an AI assistant backed by a Durable Object.
    DISCORD_CLIENT_SECRET=your-discord-client-secret
    ```
 
+5. Configure Cloudflare Worker for logging:
+   * Add the following variables to the `.env` file:
+     ```
+     LOGS_KV_NAMESPACE_ID=your-logs-kv-namespace-id
+     ```
+
+6. Update `wrangler.json` to include the new Cloudflare Worker:
+   ```json
+   {
+     "routes": [
+       {
+         "pattern": "/logs",
+         "script": "src/server/loggingWorker.ts"
+       }
+     ],
+     "kv_namespaces": [
+       {
+         "binding": "LOGS",
+         "id": "your-logs-kv-namespace-id"
+       }
+     ]
+   }
+   ```
+
 ## Running the project
 
 1. Build the client:
@@ -213,3 +237,14 @@ The chat application now includes optimized database queries to ensure efficienc
 
 1. Review and optimize database queries in the `src/server/index.ts` file to improve performance.
 2. Update the client-side code in `src/client/index.tsx` to handle optimized database queries and ensure efficient data retrieval.
+
+## Logging Mechanism
+
+The chat application now includes a logging mechanism to log errors to an external logging service using a Cloudflare Worker.
+
+### Setting Up Logging Mechanism
+
+1. Create a Cloudflare Worker to handle logging requests and store them in Cloudflare KV.
+2. Update the `wrangler.json` file to include the new Cloudflare Worker and bind the Cloudflare KV namespace for logging.
+3. Modify the error handling code in `src/server/index.ts` to send log data to the Cloudflare Worker whenever an error occurs.
+4. Ensure that log entries are stored in Cloudflare KV in a structured JSON format, including timestamp, log level, message, context, and error details.
