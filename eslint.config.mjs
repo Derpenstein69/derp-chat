@@ -9,10 +9,13 @@
 
 import eslint from "@eslint/js";
 import tseslint from "typescript-eslint";
+import prettier from "eslint-plugin-prettier";
+import configPrettier from "eslint-config-prettier";
 
 export default tseslint.config(
   eslint.configs.recommended,
   ...tseslint.configs.strictTypeChecked,
+  configPrettier,
   {
     languageOptions: {
       parserOptions: {
@@ -30,6 +33,7 @@ export default tseslint.config(
        */
       "@typescript-eslint/restrict-template-expressions": "off",
       "@typescript-eslint/no-empty-object-type": "off",
+      "prettier/prettier": "error",
     },
   },
   {

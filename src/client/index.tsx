@@ -17,7 +17,7 @@ import {
 } from "react-router";
 import { nanoid } from "nanoid";
 import { createClient } from "@openauthjs/openauth/client";
-import { object, string, validate } from "valibot";
+import { z } from "zod";
 
 import { names, type ChatMessage, type Message } from "../shared";
 
@@ -27,9 +27,9 @@ const client = createClient({
   issuer: "https://auth.myserver.com",
 });
 
-// Define a schema for input validation using valibot
-const messageSchema = object({
-  content: string().min(1, "Content cannot be empty"),
+// Define a schema for input validation using Zod
+const messageSchema = z.object({
+  content: z.string().min(1, "Content cannot be empty"),
 });
 
 /**
@@ -309,9 +309,9 @@ function App(): JSX.Element {
           ) as HTMLInputElement;
 
           // Validate input data
-          const validationResult = validate(messageSchema, { content: content.value });
+          const validationResult = messageSchema.safeParse({ content: content.value });
           if (!validationResult.success) {
-            alert(validationResult.errors[0].message);
+            alert(validationResult.error.errors[0].message);
             return;
           }
 
