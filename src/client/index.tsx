@@ -156,6 +156,7 @@ function App(): JSX.Element {
                 context: message.context, // P3a7a
                 preferences: message.preferences, // P5238
                 multi_modal_attachments: message.multi_modal_attachments, // P1668
+                classification: message.classification, // P35d4
               },
             ]);
           } else {
@@ -175,6 +176,7 @@ function App(): JSX.Element {
                   context: message.context, // P3a7a
                   preferences: message.preferences, // P5238
                   multi_modal_attachments: message.multi_modal_attachments, // P1668
+                  classification: message.classification, // P35d4
                 })
                 .concat(messages.slice(foundIndex + 1));
             });
@@ -193,6 +195,7 @@ function App(): JSX.Element {
                     context: message.context, // P3a7a
                     preferences: message.preferences, // P5238
                     multi_modal_attachments: message.multi_modal_attachments, // P1668
+                    classification: message.classification, // P35d4
                   }
                 : m,
             ),
@@ -289,6 +292,11 @@ function App(): JSX.Element {
                   )}
                 </div>
               ))}
+            {message.classification && ( // P35d4
+              <div className="classification-result">
+                Classification: {message.classification}
+              </div>
+            )}
             <FeedbackButtons messageId={message.id} />
             {message.role === "assistant" && <RatingSystem messageId={message.id} />}
             <FeedbackForm messageId={message.id} />
@@ -329,6 +337,16 @@ function App(): JSX.Element {
 
             const { attachmentUrl } = await response.json();
 
+            const classificationResponse = await fetch("/classify-image", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ imageUrl: attachmentUrl }),
+            });
+
+            const { classification } = await classificationResponse.json();
+
             const chatMessage: ChatMessage = {
               id: nanoid(8),
               content: content.value,
@@ -343,6 +361,7 @@ function App(): JSX.Element {
                 interaction_style: profile.interaction_style,
               } : undefined,
               multi_modal_attachments: [], // P1668
+              classification, // P35d4
             };
 
             setMessages((messages) => [...messages, chatMessage]);
