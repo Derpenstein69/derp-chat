@@ -492,7 +492,14 @@ export class Chat extends Server<Env> {
         );
 
         // Store embeddings in Vectorize
-        await this.env.VECTORIZE.store(embeddings);
+        await fetch(`${process.env.VECTORIZE_ENDPOINT}/store`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${process.env.VECTORIZE_API_KEY}`,
+          },
+          body: JSON.stringify(embeddings),
+        });
 
         // Store original documents in D1
         await Promise.all(
@@ -506,7 +513,8 @@ export class Chat extends Server<Env> {
       } catch (error) {
         console.error("Error processing batch", error);
         // Retry logic with exponential backoff
-        setTimeout(() => this.seedKnowledge(batch), 1000 * Math.pow(2, i / batchSize));
+        const retryCount = Math.floor(i / batchSize);
+        setTimeout(() => this.seedKnowledge(batch), 1000 * Math.pow(2, retryCount));
       }
     }
   }
@@ -525,7 +533,14 @@ export class Chat extends Server<Env> {
       });
 
       // Perform vector search in Vectorize
-      const searchResults = await this.env.VECTORIZE.search(queryEmbedding);
+      const searchResults = await fetch(`${process.env.VECTORIZE_ENDPOINT}/search`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${process.env.VECTORIZE_API_KEY}`,
+        },
+        body: JSON.stringify({ embedding: queryEmbedding }),
+      }).then((res) => res.json());
 
       // Retrieve related documents from D1
       const relatedDocuments = await Promise.all(
