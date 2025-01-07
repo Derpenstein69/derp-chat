@@ -80,6 +80,66 @@ interface Env {
    * This environment variable stores the client secret for Discord OAuth authentication.
    */
   DISCORD_CLIENT_SECRET: string;
+
+  /**
+   * JWT secret for token validation.
+   * This environment variable stores the secret key used for JWT token validation.
+   */
+  JWT_SECRET: string;
+
+  /**
+   * HMAC secret key for signature validation.
+   * This environment variable stores the secret key used for HMAC signature validation.
+   */
+  HMAC_SECRET_KEY: string;
+
+  /**
+   * Cloudflare R2 access key ID.
+   * This environment variable stores the access key ID for Cloudflare R2.
+   */
+  R2_ACCESS_KEY_ID: string;
+
+  /**
+   * Cloudflare R2 secret access key.
+   * This environment variable stores the secret access key for Cloudflare R2.
+   */
+  R2_SECRET_ACCESS_KEY: string;
+
+  /**
+   * Cloudflare R2 bucket name.
+   * This environment variable stores the name of the Cloudflare R2 bucket.
+   */
+  R2_BUCKET_NAME: string;
+
+  /**
+   * Cloudflare R2 region.
+   * This environment variable stores the region of the Cloudflare R2 bucket.
+   */
+  R2_REGION: string;
+
+  /**
+   * Cloudflare Worker for image classification.
+   * This environment variable stores the Cloudflare Worker for image classification.
+   */
+  IMAGE_CLASSIFICATION_WORKER: string;
+
+  /**
+   * Cloudflare KV namespace for storing classification metadata.
+   * This environment variable stores the Cloudflare KV namespace for storing classification metadata.
+   */
+  CLASSIFICATION_METADATA: KVNamespace;
+
+  /**
+   * Vectorize API key.
+   * This environment variable stores the API key for Vectorize.
+   */
+  VECTORIZE_API_KEY: string;
+
+  /**
+   * Vectorize endpoint.
+   * This environment variable stores the endpoint for Vectorize.
+   */
+  VECTORIZE_ENDPOINT: string;
 }
 
 /**
