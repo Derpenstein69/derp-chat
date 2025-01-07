@@ -1371,4 +1371,249 @@ describe('App component', () => {
       error: expect.any(Object),
     }));
   });
+
+  /**
+   * Test to check if the CloudflareSecretsSettings component renders correctly.
+   * 
+   * @remarks
+   * This test verifies that the CloudflareSecretsSettings component renders the Cloudflare secrets settings form.
+   * 
+   * @example
+   * test('renders CloudflareSecretsSettings component', () => {
+   *   render(
+   *     <BrowserRouter>
+   *       <Routes>
+   *         <Route path="/cloudflare-secrets-settings" element={<CloudflareSecretsSettings />} />
+   *       </Routes>
+   *     </BrowserRouter>
+   *   );
+   *   expect(screen.getByLabelText('GOOGLE_CLIENT_ID:')).toBeInTheDocument();
+   *   expect(screen.getByLabelText('GOOGLE_CLIENT_SECRET:')).toBeInTheDocument();
+   *   expect(screen.getByLabelText('GITHUB_CLIENT_ID:')).toBeInTheDocument();
+   *   expect(screen.getByLabelText('GITHUB_CLIENT_SECRET:')).toBeInTheDocument();
+   *   expect(screen.getByLabelText('APPLE_CLIENT_ID:')).toBeInTheDocument();
+   *   expect(screen.getByLabelText('APPLE_CLIENT_SECRET:')).toBeInTheDocument();
+   *   expect(screen.getByLabelText('DISCORD_CLIENT_ID:')).toBeInTheDocument();
+   *   expect(screen.getByLabelText('DISCORD_CLIENT_SECRET:')).toBeInTheDocument();
+   *   expect(screen.getByLabelText('JWT_SECRET:')).toBeInTheDocument();
+   *   expect(screen.getByLabelText('HMAC_SECRET_KEY:')).toBeInTheDocument();
+   *   expect(screen.getByLabelText('R2_ACCESS_KEY_ID:')).toBeInTheDocument();
+   *   expect(screen.getByLabelText('R2_SECRET_ACCESS_KEY:')).toBeInTheDocument();
+   *   expect(screen.getByLabelText('R2_BUCKET_NAME:')).toBeInTheDocument();
+   *   expect(screen.getByLabelText('R2_REGION:')).toBeInTheDocument();
+   *   expect(screen.getByLabelText('IMAGE_CLASSIFICATION_WORKER:')).toBeInTheDocument();
+   *   expect(screen.getByLabelText('CLASSIFICATION_METADATA:')).toBeInTheDocument();
+   *   expect(screen.getByLabelText('VECTORIZE_API_KEY:')).toBeInTheDocument();
+   *   expect(screen.getByLabelText('VECTORIZE_ENDPOINT:')).toBeInTheDocument();
+   * });
+   */
+  test('renders CloudflareSecretsSettings component', () => {
+    render(
+      <BrowserRouter>
+        <Routes>
+          <Route path="/cloudflare-secrets-settings" element={<CloudflareSecretsSettings />} />
+        </Routes>
+      </BrowserRouter>
+    );
+    expect(screen.getByLabelText('GOOGLE_CLIENT_ID:')).toBeInTheDocument();
+    expect(screen.getByLabelText('GOOGLE_CLIENT_SECRET:')).toBeInTheDocument();
+    expect(screen.getByLabelText('GITHUB_CLIENT_ID:')).toBeInTheDocument();
+    expect(screen.getByLabelText('GITHUB_CLIENT_SECRET:')).toBeInTheDocument();
+    expect(screen.getByLabelText('APPLE_CLIENT_ID:')).toBeInTheDocument();
+    expect(screen.getByLabelText('APPLE_CLIENT_SECRET:')).toBeInTheDocument();
+    expect(screen.getByLabelText('DISCORD_CLIENT_ID:')).toBeInTheDocument();
+    expect(screen.getByLabelText('DISCORD_CLIENT_SECRET:')).toBeInTheDocument();
+    expect(screen.getByLabelText('JWT_SECRET:')).toBeInTheDocument();
+    expect(screen.getByLabelText('HMAC_SECRET_KEY:')).toBeInTheDocument();
+    expect(screen.getByLabelText('R2_ACCESS_KEY_ID:')).toBeInTheDocument();
+    expect(screen.getByLabelText('R2_SECRET_ACCESS_KEY:')).toBeInTheDocument();
+    expect(screen.getByLabelText('R2_BUCKET_NAME:')).toBeInTheDocument();
+    expect(screen.getByLabelText('R2_REGION:')).toBeInTheDocument();
+    expect(screen.getByLabelText('IMAGE_CLASSIFICATION_WORKER:')).toBeInTheDocument();
+    expect(screen.getByLabelText('CLASSIFICATION_METADATA:')).toBeInTheDocument();
+    expect(screen.getByLabelText('VECTORIZE_API_KEY:')).toBeInTheDocument();
+    expect(screen.getByLabelText('VECTORIZE_ENDPOINT:')).toBeInTheDocument();
+  });
+
+  /**
+   * Test to check if the CloudflareSecretsSettings component handles form submission correctly.
+   * 
+   * @remarks
+   * This test verifies that the CloudflareSecretsSettings component calls the handleSubmit function when the form is submitted.
+   * 
+   * @example
+   * test('handles form submission correctly', () => {
+   *   render(
+   *     <BrowserRouter>
+   *       <Routes>
+   *         <Route path="/cloudflare-secrets-settings" element={<CloudflareSecretsSettings />} />
+   *       </Routes>
+   *     </BrowserRouter>
+   *   );
+   * 
+   *   const input = screen.getByLabelText('GOOGLE_CLIENT_ID:');
+   *   fireEvent.change(input, { target: { value: 'new-client-id' } });
+   * 
+   *   const form = screen.getByRole('form');
+   *   fireEvent.submit(form);
+   * 
+   *   expect(screen.getByText('Secrets saved successfully')).toBeInTheDocument();
+   * });
+   */
+  test('handles form submission correctly', () => {
+    render(
+      <BrowserRouter>
+        <Routes>
+          <Route path="/cloudflare-secrets-settings" element={<CloudflareSecretsSettings />} />
+        </Routes>
+      </BrowserRouter>
+    );
+
+    const input = screen.getByLabelText('GOOGLE_CLIENT_ID:');
+    fireEvent.change(input, { target: { value: 'new-client-id' } });
+
+    const form = screen.getByRole('form');
+    fireEvent.submit(form);
+
+    expect(screen.getByText('Secrets saved successfully')).toBeInTheDocument();
+  });
+
+  /**
+   * Test to check if the CloudflareSecretsSettings component handles input validation.
+   * 
+   * @remarks
+   * This test verifies that the CloudflareSecretsSettings component validates the input fields and displays error messages for invalid fields.
+   * 
+   * @example
+   * test('handles input validation', () => {
+   *   render(
+   *     <BrowserRouter>
+   *       <Routes>
+   *         <Route path="/cloudflare-secrets-settings" element={<CloudflareSecretsSettings />} />
+   *       </Routes>
+   *     </BrowserRouter>
+   *   );
+   * 
+   *   const input = screen.getByLabelText('GOOGLE_CLIENT_ID:');
+   *   fireEvent.change(input, { target: { value: '' } });
+   * 
+   *   const form = screen.getByRole('form');
+   *   fireEvent.submit(form);
+   * 
+   *   expect(screen.getByText('GOOGLE_CLIENT_ID is required')).toBeInTheDocument();
+   * });
+   */
+  test('handles input validation', () => {
+    render(
+      <BrowserRouter>
+        <Routes>
+          <Route path="/cloudflare-secrets-settings" element={<CloudflareSecretsSettings />} />
+        </Routes>
+      </BrowserRouter>
+    );
+
+    const input = screen.getByLabelText('GOOGLE_CLIENT_ID:');
+    fireEvent.change(input, { target: { value: '' } });
+
+    const form = screen.getByRole('form');
+    fireEvent.submit(form);
+
+    expect(screen.getByText('GOOGLE_CLIENT_ID is required')).toBeInTheDocument();
+  });
+
+  /**
+   * Test to check if the CloudflareSecretsSettings component provides feedback messages.
+   * 
+   * @remarks
+   * This test verifies that the CloudflareSecretsSettings component provides feedback messages to inform users about the success or failure of saving the secrets.
+   * 
+   * @example
+   * test('provides feedback messages', () => {
+   *   render(
+   *     <BrowserRouter>
+   *       <Routes>
+   *         <Route path="/cloudflare-secrets-settings" element={<CloudflareSecretsSettings />} />
+   *       </Routes>
+   *     </BrowserRouter>
+   *   );
+   * 
+   *   const input = screen.getByLabelText('GOOGLE_CLIENT_ID:');
+   *   fireEvent.change(input, { target: { value: 'new-client-id' } });
+   * 
+   *   const form = screen.getByRole('form');
+   *   fireEvent.submit(form);
+   * 
+   *   expect(screen.getByText('Secrets saved successfully')).toBeInTheDocument();
+   * });
+   */
+  test('provides feedback messages', () => {
+    render(
+      <BrowserRouter>
+        <Routes>
+          <Route path="/cloudflare-secrets-settings" element={<CloudflareSecretsSettings />} />
+        </Routes>
+      </BrowserRouter>
+    );
+
+    const input = screen.getByLabelText('GOOGLE_CLIENT_ID:');
+    fireEvent.change(input, { target: { value: 'new-client-id' } });
+
+    const form = screen.getByRole('form');
+    fireEvent.submit(form);
+
+    expect(screen.getByText('Secrets saved successfully')).toBeInTheDocument();
+  });
+
+  /**
+   * Test to check if the CloudflareSecretsSettings component uses masked input fields.
+   * 
+   * @remarks
+   * This test verifies that the CloudflareSecretsSettings component uses masked input fields to hide the secrets from view.
+   * 
+   * @example
+   * test('uses masked input fields', () => {
+   *   render(
+   *     <BrowserRouter>
+   *       <Routes>
+   *         <Route path="/cloudflare-secrets-settings" element={<CloudflareSecretsSettings />} />
+   *       </Routes>
+   *     </BrowserRouter>
+   *   );
+   *   expect(screen.getByLabelText('GOOGLE_CLIENT_ID:').type).toBe('password');
+   *   expect(screen.getByLabelText('GOOGLE_CLIENT_SECRET:').type).toBe('password');
+   *   expect(screen.getByLabelText('GITHUB_CLIENT_ID:').type).toBe('password');
+   *   expect(screen.getByLabelText('GITHUB_CLIENT_SECRET:').type).toBe('password');
+   *   expect(screen.getByLabelText('APPLE_CLIENT_ID:').type).toBe('password');
+   *   expect(screen.getByLabelText('APPLE_CLIENT_SECRET:').type).toBe('password');
+   *   expect(screen.getByLabelText('DISCORD_CLIENT_ID:').type).toBe('password');
+   *   expect(screen.getByLabelText('DISCORD_CLIENT_SECRET:').type).toBe('password');
+   *   expect(screen.getByLabelText('JWT_SECRET:').type).toBe('password');
+   *   expect(screen.getByLabelText('HMAC_SECRET_KEY:').type).toBe('password');
+   *   expect(screen.getByLabelText('R2_ACCESS_KEY_ID:').type).toBe('password');
+   *   expect(screen.getByLabelText('R2_SECRET_ACCESS_KEY:').type).toBe('password');
+   *   expect(screen.getByLabelText('VECTORIZE_API_KEY:').type).toBe('password');
+   * });
+   */
+  test('uses masked input fields', () => {
+    render(
+      <BrowserRouter>
+        <Routes>
+          <Route path="/cloudflare-secrets-settings" element={<CloudflareSecretsSettings />} />
+        </Routes>
+      </BrowserRouter>
+    );
+    expect(screen.getByLabelText('GOOGLE_CLIENT_ID:').type).toBe('password');
+    expect(screen.getByLabelText('GOOGLE_CLIENT_SECRET:').type).toBe('password');
+    expect(screen.getByLabelText('GITHUB_CLIENT_ID:').type).toBe('password');
+    expect(screen.getByLabelText('GITHUB_CLIENT_SECRET:').type).toBe('password');
+    expect(screen.getByLabelText('APPLE_CLIENT_ID:').type).toBe('password');
+    expect(screen.getByLabelText('APPLE_CLIENT_SECRET:').type).toBe('password');
+    expect(screen.getByLabelText('DISCORD_CLIENT_ID:').type).toBe('password');
+    expect(screen.getByLabelText('DISCORD_CLIENT_SECRET:').type).toBe('password');
+    expect(screen.getByLabelText('JWT_SECRET:').type).toBe('password');
+    expect(screen.getByLabelText('HMAC_SECRET_KEY:').type).toBe('password');
+    expect(screen.getByLabelText('R2_ACCESS_KEY_ID:').type).toBe('password');
+    expect(screen.getByLabelText('R2_SECRET_ACCESS_KEY:').type).toBe('password');
+    expect(screen.getByLabelText('VECTORIZE_API_KEY:').type).toBe('password');
+  });
 });

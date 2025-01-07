@@ -258,3 +258,15 @@ The chat application now includes a logging mechanism to log errors to an extern
 2. Update the `wrangler.json` file to include the new Cloudflare Worker and bind the Cloudflare KV namespace for logging.
 3. Modify the error handling code in `src/server/index.ts` to send log data to the Cloudflare Worker whenever an error occurs.
 4. Ensure that log entries are stored in Cloudflare KV in a structured JSON format, including timestamp, log level, message, context, and error details.
+
+## Cloudflare Secrets Settings
+
+The chat application now includes a settings menu for entering and saving Cloudflare secrets.
+
+### Using Cloudflare Secrets Settings
+
+1. Navigate to the settings menu in the application.
+2. Enter the required Cloudflare secrets in the labeled input fields.
+3. Click the "Save" button to save the secrets to Cloudflare.
+4. The application will automatically validate the input and provide feedback messages to inform you about the success or failure of saving the secrets.
+5. The secrets will be securely transmitted to Cloudflare and stored as environment variables.
