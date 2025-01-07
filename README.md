@@ -50,29 +50,39 @@ A chat application with an AI assistant backed by a Durable Object.
    ```
 
 3. Configure environment variables:
-   * Create a `.env` file in the root directory.
-   * Add the following variables:
-     ```
-     GOOGLE_CLIENT_ID=your-google-client-id
-     GOOGLE_CLIENT_SECRET=your-google-client-secret
-     GITHUB_CLIENT_ID=your-github-client-id
-     GITHUB_CLIENT_SECRET=your-github-client-secret
-     APPLE_CLIENT_ID=your-apple-client-id
-     APPLE_CLIENT_SECRET=your-apple-client-secret
-     DISCORD_CLIENT_ID=your-discord-client-id
-     DISCORD_CLIENT_SECRET=your-discord-client-secret
+   * Use Cloudflare secrets to securely store sensitive environment variables.
+   * Set the following secrets using the `wrangler secret put` command:
+     ```bash
+     wrangler secret put GOOGLE_CLIENT_ID
+     wrangler secret put GOOGLE_CLIENT_SECRET
+     wrangler secret put GITHUB_CLIENT_ID
+     wrangler secret put GITHUB_CLIENT_SECRET
+     wrangler secret put APPLE_CLIENT_ID
+     wrangler secret put APPLE_CLIENT_SECRET
+     wrangler secret put DISCORD_CLIENT_ID
+     wrangler secret put DISCORD_CLIENT_SECRET
+     wrangler secret put JWT_SECRET
+     wrangler secret put HMAC_SECRET_KEY
+     wrangler secret put R2_ACCESS_KEY_ID
+     wrangler secret put R2_SECRET_ACCESS_KEY
+     wrangler secret put R2_BUCKET_NAME
+     wrangler secret put R2_REGION
+     wrangler secret put IMAGE_CLASSIFICATION_WORKER
+     wrangler secret put CLASSIFICATION_METADATA
+     wrangler secret put VECTORIZE_API_KEY
+     wrangler secret put VECTORIZE_ENDPOINT
      ```
 
 4. Example environment variable values:
-   ```
-   GOOGLE_CLIENT_ID=1234567890-abcdefghijklmnopqrstuvwxyz.apps.googleusercontent.com
-   GOOGLE_CLIENT_SECRET=your-google-client-secret
-   GITHUB_CLIENT_ID=Iv1.1234567890abcdef
-   GITHUB_CLIENT_SECRET=your-github-client-secret
-   APPLE_CLIENT_ID=com.example.app
-   APPLE_CLIENT_SECRET=your-apple-client-secret
-   DISCORD_CLIENT_ID=123456789012345678
-   DISCORD_CLIENT_SECRET=your-discord-client-secret
+   ```bash
+   wrangler secret put GOOGLE_CLIENT_ID 1234567890-abcdefghijklmnopqrstuvwxyz.apps.googleusercontent.com
+   wrangler secret put GOOGLE_CLIENT_SECRET your-google-client-secret
+   wrangler secret put GITHUB_CLIENT_ID Iv1.1234567890abcdef
+   wrangler secret put GITHUB_CLIENT_SECRET your-github-client-secret
+   wrangler secret put APPLE_CLIENT_ID com.example.app
+   wrangler secret put APPLE_CLIENT_SECRET your-apple-client-secret
+   wrangler secret put DISCORD_CLIENT_ID 123456789012345678
+   wrangler secret put DISCORD_CLIENT_SECRET your-discord-client-secret
    ```
 
 5. Configure Cloudflare Worker for logging:

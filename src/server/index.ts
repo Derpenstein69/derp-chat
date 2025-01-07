@@ -41,12 +41,12 @@ export class Chat extends Server<Env> {
   sentimentAnalyzer = new SentimentAnalyzer("English", PorterStemmer, "afinn");
 
   r2Client = new S3Client({
-    region: process.env.R2_REGION,
+    region: this.env.R2_REGION,
     credentials: {
-      accessKeyId: process.env.R2_ACCESS_KEY_ID,
-      secretAccessKey: process.env.R2_SECRET_ACCESS_KEY,
+      accessKeyId: this.env.R2_ACCESS_KEY_ID,
+      secretAccessKey: this.env.R2_SECRET_ACCESS_KEY,
     },
-    endpoint: `https://${process.env.R2_REGION}.r2.cloudflarestorage.com`,
+    endpoint: `https://${this.env.R2_REGION}.r2.cloudflarestorage.com`,
   });
 
   /**
@@ -218,7 +218,7 @@ export class Chat extends Server<Env> {
       parsed.sentiment = sentiment > 0 ? "positive" : sentiment < 0 ? "negative" : "neutral";
 
       // HMAC signature validation
-      const hmac = createHmac('sha256', process.env.HMAC_SECRET_KEY!);
+      const hmac = createHmac('sha256', this.env.HMAC_SECRET_KEY);
       hmac.update(parsed.content);
       const signature = hmac.digest('hex');
       if (parsed.signature !== signature) {
@@ -353,7 +353,7 @@ export class Chat extends Server<Env> {
    */
   validateToken(token: string) {
     try {
-      const decoded = jwt.verify(token, process.env.JWT_SECRET!);
+      const decoded = jwt.verify(token, this.env.JWT_SECRET);
       return decoded;
     } catch (err) {
       return null;
@@ -414,7 +414,7 @@ export class Chat extends Server<Env> {
    */
   async uploadImageToR2(key: string, body: Buffer) {
     const command = new PutObjectCommand({
-      Bucket: process.env.R2_BUCKET_NAME,
+      Bucket: this.env.R2_BUCKET_NAME,
       Key: key,
       Body: body,
     });
@@ -429,7 +429,7 @@ export class Chat extends Server<Env> {
    */
   async getImageFromR2(key: string): Promise<Buffer> {
     const command = new GetObjectCommand({
-      Bucket: process.env.R2_BUCKET_NAME,
+      Bucket: this.env.R2_BUCKET_NAME,
       Key: key,
     });
     const response = await this.r2Client.send(command);
@@ -442,8 +442,8 @@ export class Chat extends Server<Env> {
   initializeImageClassificationWorker() {
     this.env.IMAGE_CLASSIFICATION_WORKER = new Worker("@cf/meta/image-classification", {
       bindings: {
-        R2_BUCKET_NAME: process.env.R2_BUCKET_NAME,
-        R2_REGION: process.env.R2_REGION,
+        R2_BUCKET_NAME: this.env.R2_BUCKET_NAME,
+        R2_REGION: this.env.R2_REGION,
       },
     });
   }
@@ -492,11 +492,11 @@ export class Chat extends Server<Env> {
         );
 
         // Store embeddings in Vectorize
-        await fetch(`${process.env.VECTORIZE_ENDPOINT}/store`, {
+        await fetch(`${this.env.VECTORIZE_ENDPOINT}/store`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            "Authorization": `Bearer ${process.env.VECTORIZE_API_KEY}`,
+            "Authorization": `Bearer ${this.env.VECTORIZE_API_KEY}`,
           },
           body: JSON.stringify(embeddings),
         });
@@ -533,11 +533,11 @@ export class Chat extends Server<Env> {
       });
 
       // Perform vector search in Vectorize
-      const searchResults = await fetch(`${process.env.VECTORIZE_ENDPOINT}/search`, {
+      const searchResults = await fetch(`${this.env.VECTORIZE_ENDPOINT}/search`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${process.env.VECTORIZE_API_KEY}`,
+          "Authorization": `Bearer ${this.env.VECTORIZE_API_KEY}`,
         },
         body: JSON.stringify({ embedding: queryEmbedding }),
       }).then((res) => res.json());
@@ -685,23 +685,23 @@ export default {
           }),
         ),
         google: GoogleAdapter({
-          clientID: process.env.GOOGLE_CLIENT_ID!,
-          clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+          clientID: env.GOOGLE_CLIENT_ID,
+          clientSecret: env.GOOGLE_CLIENT_SECRET,
           scopes: ["profile", "email"],
         }),
         github: GithubAdapter({
-          clientID: process.env.GITHUB_CLIENT_ID!,
-          clientSecret: process.env.GITHUB_CLIENT_SECRET!,
+          clientID: env.GITHUB_CLIENT_ID,
+          clientSecret: env.GITHUB_CLIENT_SECRET,
           scopes: ["user:email"],
         }),
         apple: AppleAdapter({
-          clientID: process.env.APPLE_CLIENT_ID!,
-          clientSecret: process.env.APPLE_CLIENT_SECRET!,
+          clientID: env.APPLE_CLIENT_ID,
+          clientSecret: env.APPLE_CLIENT_SECRET,
           scopes: ["name", "email"],
         }),
         discord: DiscordAdapter({
-          clientID: process.env.DISCORD_CLIENT_ID!,
-          clientSecret: process.env.DISCORD_CLIENT_SECRET!,
+          clientID: env.DISCORD_CLIENT_ID,
+          clientSecret: env.DISCORD_CLIENT_SECRET,
           scopes: ["identify", "email"],
         }),
       },
