@@ -514,7 +514,7 @@ export class Chat extends Server<Env> {
         console.error("Error processing batch", error);
         // Retry logic with exponential backoff
         const retryCount = Math.floor(i / batchSize);
-        setTimeout(() => this.seedKnowledge(batch), 1000 * Math.pow(2, retryCount)); // P5165
+        setTimeout(() => this.seedKnowledge(batch), 1000 * Math.pow(2, retryCount));
       }
     }
   }
