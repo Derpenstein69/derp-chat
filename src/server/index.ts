@@ -30,6 +30,8 @@ import { S3Client, PutObjectCommand, GetObjectCommand } from "@aws-sdk/client-s3
 import { Chat } from "./chatServer";
 import { onMessage } from "./messageHandler";
 import { generateMessageSummary, generateSuggestions, analyzeConversationSentiment } from "./sessionManager";
+import routing from "./routing";
+import serverSetup from "./serverSetup";
 
 const subjects = createSubjects({
   user: object({
