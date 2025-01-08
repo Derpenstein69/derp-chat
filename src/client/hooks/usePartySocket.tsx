@@ -75,14 +75,24 @@ export function usePartySocket(options) {
       }
     },
     onAuth: async () => {
-      const tokens = {
-        access: localStorage.getItem("access_token"),
-        refresh: localStorage.getItem("refresh_token"),
-      };
-      if (!tokens.access || !tokens.refresh) {
-        throw new Error("User is not authenticated");
+      try {
+        const tokens = {
+          access: localStorage.getItem("access_token"),
+          refresh: localStorage.getItem("refresh_token"),
+        };
+        if (!tokens.access || !tokens.refresh) {
+          throw new Error("User is not authenticated");
+        }
+        return tokens.access;
+      } catch (error) {
+        console.error("Error during authentication", error);
+        alert("An error occurred during authentication. Please try again.");
+        throw error;
       }
-      return tokens.access;
+    },
+    onError: (error) => {
+      console.error("WebSocket error", error);
+      alert("An error occurred with the WebSocket connection. Please try again.");
     },
   });
 
