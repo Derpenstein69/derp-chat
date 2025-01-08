@@ -179,4 +179,38 @@ export class Chat extends Server<Env> {
       `INSERT INTO ratings (rating_id, user_id, message_id, rating_value, timestamp) VALUES ('${nanoid(8)}', '${userId}', '${messageId}', ${ratingValue}, CURRENT_TIMESTAMP)`,
     );
   }
+
+  /**
+   * Logs an error to an external logging service.
+   * 
+   * @param {Error} error - The error to log.
+   * @param {Connection} connection - The connection object representing the client.
+   * @param {WSMessage} message - The message that caused the error.
+   */
+  async logErrorToService(error: Error, connection: Connection, message: WSMessage) {
+    try {
+      const logData = {
+        level: "error",
+        message: error.message,
+        context: {
+          connectionId: connection.id,
+          message,
+        },
+        error: {
+          name: error.name,
+          stack: error.stack,
+        },
+      };
+
+      await fetch("https://your-logging-service-endpoint", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(logData),
+      });
+    } catch (loggingError) {
+      console.error("Error logging to external service", loggingError);
+    }
+  }
 }

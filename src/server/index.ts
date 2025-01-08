@@ -46,7 +46,7 @@ export default {
     if (url.pathname === "/") {
       return Response.redirect(
         url.origin +
-          `/authorize?client_id=your-client-id&redirect_uri=${encodeURIComponent(url.origin + "/callback")}&response_type=code`,
+          `/authorize?client_id=${env.CLIENT_ID}&redirect_uri=${encodeURIComponent(url.origin + "/callback")}&response_type=code`,
       );
     } else if (url.pathname === "/callback") {
       return Response.json({

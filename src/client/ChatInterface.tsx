@@ -161,18 +161,24 @@ function App(): JSX.Element {
 
   useEffect(() => {
     if (isListening) {
-      const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-      recognition.continuous = true;
-      recognition.interimResults = true;
-      recognition.onresult = (event) => {
-        const transcript = Array.from(event.results)
-          .map((result) => result[0])
-          .map((result) => result.transcript)
-          .join("");
-        setVoiceInput(transcript);
-      };
-      recognition.start();
-      return () => recognition.stop();
+      try {
+        const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+        recognition.continuous = true;
+        recognition.interimResults = true;
+        recognition.onresult = (event) => {
+          const transcript = Array.from(event.results)
+            .map((result) => result[0])
+            .map((result) => result.transcript)
+            .join("");
+          setVoiceInput(transcript);
+        };
+        recognition.start();
+        return () => recognition.stop();
+      } catch (error) {
+        console.error("Error setting up voice recognition", error);
+        // Display user-friendly error message
+        alert("An error occurred while setting up voice recognition. Please try again.");
+      }
     }
   }, [isListening]);
 

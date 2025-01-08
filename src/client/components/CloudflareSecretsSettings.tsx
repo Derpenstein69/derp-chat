@@ -1,4 +1,27 @@
 import React, { useState } from "react";
+import * as z from "zod";
+
+// Define a schema for input validation using Zod
+const secretsSchema = z.object({
+  GOOGLE_CLIENT_ID: z.string().min(1, "GOOGLE_CLIENT_ID is required"),
+  GOOGLE_CLIENT_SECRET: z.string().min(1, "GOOGLE_CLIENT_SECRET is required"),
+  GITHUB_CLIENT_ID: z.string().min(1, "GITHUB_CLIENT_ID is required"),
+  GITHUB_CLIENT_SECRET: z.string().min(1, "GITHUB_CLIENT_SECRET is required"),
+  APPLE_CLIENT_ID: z.string().min(1, "APPLE_CLIENT_ID is required"),
+  APPLE_CLIENT_SECRET: z.string().min(1, "APPLE_CLIENT_SECRET is required"),
+  DISCORD_CLIENT_ID: z.string().min(1, "DISCORD_CLIENT_ID is required"),
+  DISCORD_CLIENT_SECRET: z.string().min(1, "DISCORD_CLIENT_SECRET is required"),
+  JWT_SECRET: z.string().min(1, "JWT_SECRET is required"),
+  HMAC_SECRET_KEY: z.string().min(1, "HMAC_SECRET_KEY is required"),
+  R2_ACCESS_KEY_ID: z.string().min(1, "R2_ACCESS_KEY_ID is required"),
+  R2_SECRET_ACCESS_KEY: z.string().min(1, "R2_SECRET_ACCESS_KEY is required"),
+  R2_BUCKET_NAME: z.string().min(1, "R2_BUCKET_NAME is required"),
+  R2_REGION: z.string().min(1, "R2_REGION is required"),
+  IMAGE_CLASSIFICATION_WORKER: z.string().min(1, "IMAGE_CLASSIFICATION_WORKER is required"),
+  CLASSIFICATION_METADATA: z.string().min(1, "CLASSIFICATION_METADATA is required"),
+  VECTORIZE_API_KEY: z.string().min(1, "VECTORIZE_API_KEY is required"),
+  VECTORIZE_ENDPOINT: z.string().min(1, "VECTORIZE_ENDPOINT is required"),
+});
 
 export function CloudflareSecretsSettings(): JSX.Element {
   const [secrets, setSecrets] = useState<{
@@ -51,6 +74,14 @@ export function CloudflareSecretsSettings(): JSX.Element {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    // Validate input data
+    const validationResult = secretsSchema.safeParse(secrets);
+    if (!validationResult.success) {
+      alert(validationResult.error.errors[0].message);
+      return;
+    }
+
     try {
       const response = await fetch("/save-secrets", {
         method: "POST",
