@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { nanoid } from "nanoid";
-import { ChatMessage } from "../shared";
+import { ChatMessage } from "../../types/ChatMessage";
 
 export function MessageThreads({ messageId }: { messageId: string }): JSX.Element {
   const [replies, setReplies] = useState<ChatMessage[]>([]);

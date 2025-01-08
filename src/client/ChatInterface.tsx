@@ -1,5 +1,5 @@
 import { createRoot } from "react-dom/client";
-import { usePartySocket } from "./RealTimeComm";
+import { usePartySocket } from "./hooks/usePartySocket";
 import React, { useState, useEffect } from "react";
 import { useParams, useLocation } from "react-router";
 import { nanoid } from "nanoid";
@@ -17,7 +17,7 @@ import {
   MessageThreads,
   AnalyticsDisplay,
   CloudflareSecretsSettings,
-} from "./UIComponents";
+} from "./components";
 
 // Define a schema for input validation using Zod
 const messageSchema = z.object({
