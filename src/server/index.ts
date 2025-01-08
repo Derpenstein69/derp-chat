@@ -39,6 +39,18 @@ const subjects = createSubjects({
   }),
 });
 
+/**
+ * Main server logic for handling fetch requests, managing user authentication, and integrating with external services.
+ * 
+ * @param {Request} request - The incoming request object.
+ * @param {Env} env - The environment variables.
+ * @param {ExecutionContext} ctx - The execution context.
+ * @returns {Promise<Response>} The response object.
+ * 
+ * @example
+ * const response = await fetch(request, env, ctx);
+ * console.log(response.status);
+ */
 export default {
   async fetch(request, env, ctx) {
     // TODO: Explain this stuff at the top (for demo purposes only)
@@ -190,13 +202,24 @@ export default {
   },
 } satisfies ExportedHandler<Env>;
 
+/**
+ * Retrieves or creates a user in the database based on the provided email.
+ * 
+ * @param {Env} env - The environment variables.
+ * @param {string} email - The email of the user.
+ * @returns {Promise<string>} The user ID.
+ * 
+ * @example
+ * const userId = await getOrCreateUser(env, "user@example.com");
+ * console.log(userId);
+ */
 async function getOrCreateUser(env: Env, email: string): Promise<string> {
   const result = await env.AUTH_DB.prepare(
     `
 		INSERT INTO user (email)
-		VALUES (?)
-		ON CONFLICT (email) DO UPDATE SET email = email
-		RETURNING id;
+			VALUES (?)
+			ON CONFLICT (email) DO UPDATE SET email = email
+			RETURNING id;
 		`,
   )
     .bind(email)

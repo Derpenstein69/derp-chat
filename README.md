@@ -279,3 +279,74 @@ The chat application now includes a settings menu for entering and saving Cloudf
 3. Click the "Save" button to save the secrets to Cloudflare.
 4. The application will automatically validate the input and provide feedback messages to inform you about the success or failure of saving the secrets.
 5. The secrets will be securely transmitted to Cloudflare and stored as environment variables.
+
+## Usage Examples
+
+### Chat with AI Assistant
+
+To start a chat with the AI assistant, simply type a message in the input field and press "Send". The AI assistant will respond based on the context of the conversation.
+
+Example interaction:
+
+```
+User: Hello, AI!
+AI: Hello! How can I assist you today?
+```
+
+### User Authentication
+
+To register or log in, click on the "Sign In" button and choose your preferred authentication provider (Google, GitHub, Apple, or Discord). Follow the prompts to complete the authentication process.
+
+### Profile Customization
+
+To customize your user profile, navigate to the profile settings page. Here, you can update your profile picture, status message, bio, location, website, and social media links.
+
+### Real-time Messaging
+
+To send a real-time message, type your message in the input field and press "Send". Your message will be instantly delivered to all connected users.
+
+### Context-aware Responses
+
+The AI assistant provides context-aware responses based on the conversation history. This ensures that the responses are relevant and coherent.
+
+Example interaction:
+
+```
+User: What's the weather like today?
+AI: The weather today is sunny with a high of 75°F.
+User: What about tomorrow?
+AI: Tomorrow's forecast is partly cloudy with a high of 72°F.
+```
+
+## Troubleshooting Tips
+
+### Common Issues
+
+1. **Installation Problems**: Ensure that you have the correct versions of Node.js and npm installed. Run `node -v` and `npm -v` to check the versions.
+2. **Environment Variable Misconfigurations**: Double-check that all required environment variables are set correctly using the `wrangler secret put` command.
+3. **Server Errors**: Check the server logs for any error messages and ensure that all dependencies are installed correctly.
+
+### Error Messages
+
+1. **Invalid Email or Password**: Ensure that you are entering the correct email and password. If you have forgotten your password, use the password reset feature.
+2. **Authentication Error**: Ensure that your authentication provider credentials are correctly configured in the environment variables.
+
+### Debugging Tips
+
+1. **Check Logs**: Review the server logs for any error messages or stack traces that can help identify the issue.
+2. **Browser Developer Tools**: Use the browser's developer tools to inspect network requests, console logs, and other debugging information.
+3. **Verify Environment Variable Values**: Ensure that all environment variables are set correctly and have the expected values.
+
+### Performance Issues
+
+1. **Optimize Database Queries**: Review and optimize database queries to ensure efficient data retrieval.
+2. **Implement Caching**: Use caching mechanisms to reduce the load on the database and improve response times.
+3. **Use Performance Monitoring Tools**: Identify and address performance bottlenecks using a performance monitoring tool.
+
+### Contact Support
+
+If you encounter any issues or need assistance, you can contact support or seek help from the community:
+
+* **Support Email**: support@example.com
+* **Community Forum**: https://community.example.com
+* **GitHub Issues**: https://github.com/your-username/durable-chat-template/issues
