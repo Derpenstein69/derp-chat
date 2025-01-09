@@ -26,6 +26,8 @@ import { performance } from "perf_hooks";
 import { SentimentAnalyzer, PorterStemmer } from "natural";
 import { createCipheriv, createDecipheriv, randomBytes, createHmac } from "crypto";
 import { S3Client, PutObjectCommand, GetObjectCommand } from "@aws-sdk/client-s3";
+import rateLimit from "express-rate-limit";
+import { z } from "zod";
 
 import { Chat } from "./chatServer";
 import { onMessage } from "./messageHandler";
@@ -139,6 +141,29 @@ export default {
         console.error("Error querying knowledge", error);
         return new Response("An error occurred while querying knowledge. Please try again.", { status: 500 });
       }
+    }
+
+    // Rate limiting middleware
+    const limiter = rateLimit({
+      windowMs: 15 * 60 * 1000, // 15 minutes
+      max: 100, // limit each IP to 100 requests per windowMs
+      message: "Too many requests from this IP, please try again later.",
+    });
+
+    // Apply rate limiting
+    limiter(request, env, ctx, () => {});
+
+    // Input validation using Zod
+    const requestSchema = z.object({
+      userId: z.string().uuid(),
+      messageId: z.string().uuid(),
+      rating: z.number().min(1).max(5),
+    });
+
+    try {
+      requestSchema.parse(request);
+    } catch (error) {
+      return new Response("Invalid request data", { status: 400 });
     }
 
     // The real OpenAuth server code starts here:
