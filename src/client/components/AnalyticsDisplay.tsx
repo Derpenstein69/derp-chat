@@ -1,5 +1,13 @@
 import React, { useState, useEffect } from "react";
 
+/**
+ * AnalyticsDisplay component to show real-time analytics data.
+ * 
+ * @returns {JSX.Element} The rendered analytics display component.
+ * 
+ * @example
+ * <AnalyticsDisplay />
+ */
 export function AnalyticsDisplay(): JSX.Element {
   const [analyticsData, setAnalyticsData] = useState<{
     messageCount: number;

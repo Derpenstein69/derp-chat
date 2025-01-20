@@ -70,6 +70,11 @@ export function CloudflareSecretsSettings(): JSX.Element {
     AI_MODEL_API_KEY: "",
   });
 
+  /**
+   * Handles input change events for the secrets form.
+   * 
+   * @param {React.ChangeEvent<HTMLInputElement>} e - The input change event.
+   */
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setSecrets((prevSecrets) => ({
@@ -78,6 +83,11 @@ export function CloudflareSecretsSettings(): JSX.Element {
     }));
   };
 
+  /**
+   * Handles form submission for saving secrets.
+   * 
+   * @param {React.FormEvent<HTMLFormElement>} e - The form submission event.
+   */
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
