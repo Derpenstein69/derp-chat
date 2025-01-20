@@ -280,6 +280,135 @@ The chat application now includes a settings menu for entering and saving Cloudf
 4. The application will automatically validate the input and provide feedback messages to inform you about the success or failure of saving the secrets.
 5. The secrets will be securely transmitted to Cloudflare and stored as environment variables.
 
+## Enhanced Setup Instructions
+
+To set up the chat application, follow these detailed steps:
+
+1. **Clone the repository**: Clone the repository to your local machine using the following command:
+
+   ```bash
+   git clone https://github.com/your-username/durable-chat-template.git
+   cd durable-chat-template
+   ```
+
+2. **Install dependencies**: Install the required dependencies using npm:
+
+   ```bash
+   npm install
+   ```
+
+3. **Configure environment variables**: Use Cloudflare secrets to securely store sensitive environment variables. Set the following secrets using the `wrangler secret put` command:
+
+   ```bash
+   wrangler secret put GOOGLE_CLIENT_ID
+   wrangler secret put GOOGLE_CLIENT_SECRET
+   wrangler secret put GITHUB_CLIENT_ID
+   wrangler secret put GITHUB_CLIENT_SECRET
+   wrangler secret put APPLE_CLIENT_ID
+   wrangler secret put APPLE_CLIENT_SECRET
+   wrangler secret put DISCORD_CLIENT_ID
+   wrangler secret put DISCORD_CLIENT_SECRET
+   wrangler secret put JWT_SECRET
+   wrangler secret put HMAC_SECRET_KEY
+   wrangler secret put R2_ACCESS_KEY_ID
+   wrangler secret put R2_SECRET_ACCESS_KEY
+   wrangler secret put R2_BUCKET_NAME
+   wrangler secret put R2_REGION
+   wrangler secret put IMAGE_CLASSIFICATION_WORKER
+   wrangler secret put CLASSIFICATION_METADATA
+   wrangler secret put VECTORIZE_API_KEY
+   wrangler secret put VECTORIZE_ENDPOINT
+   ```
+
+4. **Example environment variable values**: Here are some example values for the environment variables:
+
+   ```bash
+   wrangler secret put GOOGLE_CLIENT_ID 1234567890-abcdefghijklmnopqrstuvwxyz.apps.googleusercontent.com
+   wrangler secret put GOOGLE_CLIENT_SECRET your-google-client-secret
+   wrangler secret put GITHUB_CLIENT_ID Iv1.1234567890abcdef
+   wrangler secret put GITHUB_CLIENT_SECRET your-github-client-secret
+   wrangler secret put APPLE_CLIENT_ID com.example.app
+   wrangler secret put APPLE_CLIENT_SECRET your-apple-client-secret
+   wrangler secret put DISCORD_CLIENT_ID 123456789012345678
+   wrangler secret put DISCORD_CLIENT_SECRET your-discord-client-secret
+   ```
+
+5. **Configure Cloudflare Worker for logging**: Add the following variables to the `.env` file:
+
+   ```
+   LOGS_KV_NAMESPACE_ID=your-logs-kv-namespace-id
+   ```
+
+6. **Update `wrangler.json`**: Update the `wrangler.json` file to include the new Cloudflare Worker:
+
+   ```json
+   {
+     "routes": [
+       {
+         "pattern": "/logs",
+         "script": "src/server/loggingWorker.ts"
+       }
+     ],
+     "kv_namespaces": [
+       {
+         "binding": "LOGS",
+         "id": "your-logs-kv-namespace-id"
+       }
+     ]
+   }
+   ```
+
+7. **Build the client**: Build the client using the following command:
+
+   ```bash
+   npm run build
+   ```
+
+8. **Start the development server**: Start the development server using the following command:
+
+   ```bash
+   npm run dev
+   ```
+
+9. **Open the application**: Open your browser and navigate to `http://localhost:8787` to see the application in action.
+
+## Usage Examples
+
+Here are some usage examples to demonstrate how to use the chat application:
+
+### Sending Messages
+
+1. **Type a message**: In the chat input box, type your message.
+2. **Send the message**: Press the "Send" button or hit "Enter" to send the message.
+3. **View the message**: The message will appear in the chat window.
+
+### Uploading Attachments
+
+1. **Select a file**: Click the "Attachment" button to open the file picker.
+2. **Choose a file**: Select the file you want to upload.
+3. **Send the message**: Press the "Send" button or hit "Enter" to send the message with the attachment.
+4. **View the attachment**: The attachment will appear in the chat window.
+
+### Interacting with the AI Assistant
+
+1. **Type a message**: In the chat input box, type your message or question for the AI assistant.
+2. **Send the message**: Press the "Send" button or hit "Enter" to send the message.
+3. **View the response**: The AI assistant's response will appear in the chat window.
+
+## Expanded Explanations of Features and Components
+
+### Real-time Messaging
+
+The chat application supports real-time messaging, allowing users to send and receive messages instantly. This is achieved using WebSockets for real-time communication between the client and server.
+
+### Context-aware Responses
+
+The AI assistant provides context-aware responses by maintaining a conversation history for each user session. This allows the AI to generate more relevant and coherent responses based on the context of the conversation.
+
+### Personalized Interactions
+
+The AI assistant tailors its responses based on user profile information, such as preferences, interests, and past interactions. This enhances the user experience by providing more personalized and engaging interactions.
+=======
 ## Usage Examples
 
 ### Chat with AI Assistant

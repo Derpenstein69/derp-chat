@@ -61,4 +61,17 @@ To submit a pull request, follow these steps:
 
 8. **Address feedback**: Be responsive to any feedback or comments on your pull request. Make any necessary changes and update your pull request accordingly.
 
+## Contributing Guidelines
+
+To contribute to the project, please follow these guidelines:
+
+- **Coding Standards**: Adhere to the coding standards mentioned above to maintain a consistent codebase.
+- **Commit Message Guidelines**: Follow the commit message guidelines to write clear and concise commit messages.
+- **Pull Request Process**: Follow the pull request process mentioned above to submit your changes.
+- **Code Reviews**: Be open to feedback and suggestions during the code review process. Address any comments or concerns raised by the reviewers.
+- **Testing**: Ensure that your changes are thoroughly tested. Write unit tests and integration tests to verify the functionality of your code.
+- **Documentation**: Update the documentation to reflect any changes or new features introduced by your code. This includes updating the `README.md`, `API.md`, and other relevant documentation files.
+- **Issue Tracking**: Use the issue tracker to report bugs, request features, and track the progress of your contributions. Reference the relevant issue numbers in your commit messages and pull requests.
+- **Community Guidelines**: Be respectful and considerate towards other contributors. Follow the project's code of conduct and maintain a positive and inclusive community.
+
 Thank you for your contributions! We appreciate your help in making the Durable Chat Template project better.

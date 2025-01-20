@@ -13,14 +13,14 @@ import React from "react";
  *   <App />
  * </ErrorBoundary>
  */
-class ErrorBoundary extends React.Component<{ children: React.ReactNode }, { hasError: boolean }> {
+class ErrorBoundary extends React.Component<{ children: React.ReactNode }, { hasError: boolean, errorMessage: string }> {
   constructor(props: { children: React.ReactNode }) {
     super(props);
-    this.state = { hasError: false };
+    this.state = { hasError: false, errorMessage: "" };
   }
 
-  static getDerivedStateFromError() {
-    return { hasError: true };
+  static getDerivedStateFromError(error: Error) {
+    return { hasError: true, errorMessage: error.message };
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
@@ -31,7 +31,14 @@ class ErrorBoundary extends React.Component<{ children: React.ReactNode }, { has
 
   render() {
     if (this.state.hasError) {
-      return <h1>Something went wrong. Please try again later.</h1>;
+      return (
+        <div>
+          <h1>Something went wrong. Please try again later.</h1>
+          <details style={{ whiteSpace: "pre-wrap" }}>
+            {this.state.errorMessage}
+          </details>
+        </div>
+      );
     }
 
     return this.props.children;
