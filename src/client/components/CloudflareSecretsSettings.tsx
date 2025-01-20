@@ -25,6 +25,14 @@ const secretsSchema = z.object({
   AI_MODEL_API_KEY: z.string().min(1, "AI_MODEL_API_KEY is required"),
 });
 
+/**
+ * CloudflareSecretsSettings component to manage and save Cloudflare secrets.
+ * 
+ * @returns {JSX.Element} The rendered Cloudflare secrets settings component.
+ * 
+ * @example
+ * <CloudflareSecretsSettings />
+ */
 export function CloudflareSecretsSettings(): JSX.Element {
   const [secrets, setSecrets] = useState<{
     GOOGLE_CLIENT_ID: string;

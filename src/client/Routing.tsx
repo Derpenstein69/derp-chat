@@ -4,7 +4,15 @@ import { App } from "./ChatInterface";
 import { ProfileSettings } from "./UIComponents";
 import { CloudflareSecretsSettings } from "./UIComponents";
 
-export function Routing() {
+/**
+ * Routing component to manage application routes.
+ * 
+ * @returns {JSX.Element} The rendered routing component.
+ * 
+ * @example
+ * <Routing />
+ */
+export function Routing(): JSX.Element {
   return (
     <BrowserRouter>
       <Routes>
