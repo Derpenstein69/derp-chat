@@ -28,4 +28,32 @@ describe('MessageReactions component', () => {
     fireEvent.click(reactionButton);
     expect(console.log).toHaveBeenCalledWith(expect.stringContaining('👍'));
   });
+
+  test('handles new reaction types correctly', () => {
+    render(
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<MessageReactions messageId="1" />} />
+        </Routes>
+      </BrowserRouter>
+    );
+
+    const reactionButton = screen.getByText('❤️');
+    fireEvent.click(reactionButton);
+    expect(console.log).toHaveBeenCalledWith(expect.stringContaining('❤️'));
+  });
+
+  test('displays reaction counts correctly', () => {
+    render(
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<MessageReactions messageId="1" />} />
+        </Routes>
+      </BrowserRouter>
+    );
+
+    const reactionButton = screen.getByText('👍 0');
+    fireEvent.click(reactionButton);
+    expect(screen.getByText('👍 1')).toBeInTheDocument();
+  });
 });

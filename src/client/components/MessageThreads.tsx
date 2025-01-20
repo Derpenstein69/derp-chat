@@ -20,13 +20,18 @@ export function MessageThreads({ messageId }: { messageId: string }): JSX.Elemen
     console.log(`Reply for message ${messageId}: ${replyContent}`);
   };
 
+  const renderReplies = (replies: ChatMessage[]) => {
+    return replies.map((reply) => (
+      <div key={reply.id} className="reply">
+        {reply.content}
+        {reply.replies && renderReplies(reply.replies)}
+      </div>
+    ));
+  };
+
   return (
     <div className="message-threads">
-      {replies.map((reply) => (
-        <div key={reply.id} className="reply">
-          {reply.content}
-        </div>
-      ))}
+      {renderReplies(replies)}
       <form onSubmit={handleReplySubmit}>
         <input
           type="text"

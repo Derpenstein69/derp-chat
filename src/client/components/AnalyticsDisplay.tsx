@@ -9,6 +9,7 @@ export function AnalyticsDisplay(): JSX.Element {
     previousInteractions: { [key: string]: any };
     activeSessions: number;
     sessionDuration: number;
+    aiPerformanceMetrics: { [key: string]: any };
   }>({
     messageCount: 0,
     userActivity: {},
@@ -17,6 +18,7 @@ export function AnalyticsDisplay(): JSX.Element {
     previousInteractions: {},
     activeSessions: 0,
     sessionDuration: 0,
+    aiPerformanceMetrics: {},
   });
 
   useEffect(() => {
@@ -67,6 +69,14 @@ export function AnalyticsDisplay(): JSX.Element {
       <p>Active Sessions: {analyticsData.activeSessions}</p>
       <h4>Session Duration</h4>
       <p>Session Duration: {analyticsData.sessionDuration} minutes</p>
+      <h4>AI Performance Metrics</h4>
+      <ul>
+        {Object.entries(analyticsData.aiPerformanceMetrics).map(([metric, value]) => (
+          <li key={metric}>
+            {metric}: {JSON.stringify(value)}
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }

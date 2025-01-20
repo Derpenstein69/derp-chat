@@ -227,6 +227,23 @@ function App(): JSX.Element {
                   )}
                 </div>
               ))}
+            {message.multi_modal_attachments && // Paf2f
+              message.multi_modal_attachments.map((attachment, index) => (
+                <div key={index}>
+                  {attachment.match(/\.(jpeg|jpg|gif|png)$/) ? (
+                    <img src={attachment} alt="Attachment" className="attachment-image" />
+                  ) : attachment.match(/\.(mp4|webm)$/) ? (
+                    <video controls>
+                      <source src={attachment} type="video/mp4" />
+                      Your browser does not support the video tag.
+                    </video>
+                  ) : (
+                    <a href={attachment} target="_blank" rel="noopener noreferrer">
+                      {attachment}
+                    </a>
+                  )}
+                </div>
+              ))}
             {message.classification && ( // P35d4
               <div className="classification-result">
                 Classification: {message.classification}
