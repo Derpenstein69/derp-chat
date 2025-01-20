@@ -15,6 +15,7 @@ import { createHmac } from "crypto";
 import { S3Client, PutObjectCommand, GetObjectCommand } from "@aws-sdk/client-s3";
 import jwt from "jsonwebtoken";
 import { performance } from "perf_hooks";
+import Redis from "ioredis";
 import type { ChatMessage, Session } from "../shared";
 
 /**
@@ -37,11 +38,21 @@ export class Chat extends Server<Env> {
     endpoint: `https://${this.env.R2_REGION}.r2.cloudflarestorage.com`,
   });
 
+  redisClient = new Redis({
+    host: this.env.REDIS_HOST,
+    port: this.env.REDIS_PORT,
+    password: this.env.REDIS_PASSWORD,
+  });
+
   /**
    * Broadcasts a message to all connected clients, excluding specified clients.
    * 
    * @param {Message} message - The message to broadcast.
    * @param {string[]} [exclude] - List of client IDs to exclude from broadcasting.
+   * 
+   * @example
+   * const chat = new Chat();
+   * chat.broadcastMessage({ type: "add", content: "Hello, world!" });
    */
   broadcastMessage(message: Message, exclude?: string[]) {
     this.broadcast(JSON.stringify(message), exclude);
@@ -49,6 +60,10 @@ export class Chat extends Server<Env> {
 
   /**
    * Initializes the chat server, loads previous messages from the database.
+   * 
+   * @example
+   * const chat = new Chat();
+   * chat.onStart();
    */
   onStart() {
     // this is where you can initialize things that need to be done before the server starts
@@ -69,6 +84,14 @@ export class Chat extends Server<Env> {
       `CREATE TABLE IF NOT EXISTS ratings (rating_id TEXT PRIMARY KEY, user_id TEXT REFERENCES users(id), message_id TEXT REFERENCES messages(id), rating_value INTEGER CHECK (rating_value >= 1 AND RATING_VALUE <= 5), timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP)`,
     );
 
+    // create indexes for optimization
+    this.ctx.storage.sql.exec(
+      `CREATE INDEX IF NOT EXISTS idx_messages_user_id ON messages(user_id)`,
+    );
+    this.ctx.storage.sql.exec(
+      `CREATE INDEX IF NOT EXISTS idx_sessions_user_id ON sessions(user_id)`,
+    );
+
     // load the messages from the database
     this.messages = this.ctx.storage.sql
       .exec(`SELECT * FROM messages LIMIT 50 OFFSET 0`)
@@ -79,6 +102,10 @@ export class Chat extends Server<Env> {
    * Handles a new client connection, sends initial messages to the client.
    * 
    * @param {Connection} connection - The connection object representing the client.
+   * 
+   * @example
+   * const chat = new Chat();
+   * chat.onConnect(connection);
    */
   onConnect(connection: Connection) {
     connection.send(
@@ -93,8 +120,12 @@ export class Chat extends Server<Env> {
    * Saves a message to the local store and the database.
    * 
    * @param {ChatMessage} message - The message to save.
+   * 
+   * @example
+   * const chat = new Chat();
+   * chat.saveMessage({ id: "123", content: "Hello, world!", user: "Alice", role: "user" });
    */
-  saveMessage(message: ChatMessage) {
+  async saveMessage(message: ChatMessage) {
     // check if the message already exists
     const existingMessage = this.messages.find((m) => m.id === message.id);
     if (existingMessage) {
@@ -109,7 +140,7 @@ export class Chat extends Server<Env> {
     }
 
     // Use parameterized queries to prevent SQL injection and improve performance
-    this.ctx.storage.sql.exec(
+    await this.ctx.storage.sql.exec(
       `INSERT INTO messages (id, user, role, content, attachments, user_id, session_id, thread_id, reply_to, sentiment) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ON CONFLICT (id) DO UPDATE SET content = ?, attachments = ?, thread_id = ?, reply_to = ?, sentiment = ?`,
       [
         message.id,
@@ -132,18 +163,23 @@ export class Chat extends Server<Env> {
 
     // Update cache
     this.cache.set(message.id, [message]);
+    await this.redisClient.set(`message:${message.id}`, JSON.stringify(message));
   }
 
   /**
    * Saves a session to the local store and the database.
    * 
    * @param {Session} session - The session to save.
+   * 
+   * @example
+   * const chat = new Chat();
+   * chat.saveSession({ session_id: "session1", user_id: "user1", messages: [] });
    */
-  saveSession(session: Session) {
+  async saveSession(session: Session) {
     this.sessions.set(session.session_id, session);
 
     // Use parameterized queries and batch updates to improve performance
-    this.ctx.storage.sql.exec(
+    await this.ctx.storage.sql.exec(
       `INSERT INTO sessions (session_id, user_id, created_at, updated_at, messages, ip_address, user_agent, user_activity_timestamps, device_information, session_duration, sentiment) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ON CONFLICT (session_id) DO UPDATE SET updated_at = ?, messages = ?, user_activity_timestamps = ?, device_information = ?, session_duration = ?, sentiment = ?`,
       [
         session.session_id,
@@ -165,6 +201,8 @@ export class Chat extends Server<Env> {
         session.sentiment,
       ],
     );
+
+    await this.redisClient.set(`session:${session.session_id}`, JSON.stringify(session));
   }
 
   /**
@@ -173,11 +211,17 @@ export class Chat extends Server<Env> {
    * @param {string} userId - The ID of the user providing the rating.
    * @param {string} messageId - The ID of the message being rated.
    * @param {number} ratingValue - The rating value (1-5).
+   * 
+   * @example
+   * const chat = new Chat();
+   * chat.saveRating("user1", "message1", 5);
    */
-  saveRating(userId: string, messageId: string, ratingValue: number) {
-    this.ctx.storage.sql.exec(
+  async saveRating(userId: string, messageId: string, ratingValue: number) {
+    await this.ctx.storage.sql.exec(
       `INSERT INTO ratings (rating_id, user_id, message_id, rating_value, timestamp) VALUES ('${nanoid(8)}', '${userId}', '${messageId}', ${ratingValue}, CURRENT_TIMESTAMP)`,
     );
+
+    await this.redisClient.set(`rating:${nanoid(8)}`, JSON.stringify({ userId, messageId, ratingValue }));
   }
 
   /**
@@ -186,6 +230,10 @@ export class Chat extends Server<Env> {
    * @param {Error} error - The error to log.
    * @param {Connection} connection - The connection object representing the client.
    * @param {WSMessage} message - The message that caused the error.
+   * 
+   * @example
+   * const chat = new Chat();
+   * chat.logErrorToService(new Error("Test error"), connection, message);
    */
   async logErrorToService(error: Error, connection: Connection, message: WSMessage) {
     try {
@@ -212,5 +260,25 @@ export class Chat extends Server<Env> {
     } catch (loggingError) {
       console.error("Error logging to external service", loggingError);
     }
+  }
+
+  /**
+   * Adds performance monitoring tool integration.
+   * 
+   * @example
+   * const chat = new Chat();
+   * chat.addPerformanceMonitoring();
+   */
+  addPerformanceMonitoring() {
+    const monitoringTool = require("monitoring-tool");
+    monitoringTool.init({
+      apiKey: this.env.MONITORING_TOOL_API_KEY,
+      appName: "ChatApp",
+    });
+
+    monitoringTool.trackPerformance({
+      messages: this.messages.length,
+      sessions: this.sessions.size,
+    });
   }
 }

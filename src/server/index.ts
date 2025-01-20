@@ -26,6 +26,8 @@ import { performance } from "perf_hooks";
 import { SentimentAnalyzer, PorterStemmer } from "natural";
 import { createCipheriv, createDecipheriv, randomBytes, createHmac } from "crypto";
 import { S3Client, PutObjectCommand, GetObjectCommand } from "@aws-sdk/client-s3";
+import rateLimit from "express-rate-limit";
+import { z } from "zod";
 
 import { Chat } from "./chatServer";
 import { onMessage } from "./messageHandler";
@@ -39,6 +41,18 @@ const subjects = createSubjects({
   }),
 });
 
+/**
+ * Main server logic for handling fetch requests, managing user authentication, and integrating with external services.
+ * 
+ * @param {Request} request - The incoming request object.
+ * @param {Env} env - The environment variables.
+ * @param {ExecutionContext} ctx - The execution context.
+ * @returns {Promise<Response>} The response object.
+ * 
+ * @example
+ * const response = await fetch(request, env, ctx);
+ * console.log(response.status);
+ */
 export default {
   async fetch(request, env, ctx) {
     // TODO: Explain this stuff at the top (for demo purposes only)
@@ -54,44 +68,102 @@ export default {
         params: Object.fromEntries(url.searchParams.entries()),
       });
     } else if (url.pathname === "/rate" && request.method === "POST") {
-      const { userId, messageId, rating } = await request.json();
-      const chat = new Chat();
-      chat.saveRating(userId, messageId, rating);
-      return new Response("Rating submitted successfully", { status: 200 });
-    } else if (url.pathname === "/context-aware-summary" && request.method === "POST") {
-      const { sessionId } = await request.json();
-      const chat = new Chat();
-      const summary = generateMessageSummary(sessionId);
-      return new Response(JSON.stringify({ summary }), { status: 200 });
-    } else if (url.pathname === "/context-aware-suggestions" && request.method === "POST") {
-      const { sessionId } = await request.json();
-      const chat = new Chat();
-      const suggestions = generateSuggestions(sessionId);
-      return new Response(JSON.stringify({ suggestions }), { status: 200 });
-    } else if (url.pathname === "/context-aware-sentiment" && request.method === "POST") {
-      const { sessionId } = await request.json();
-      const chat = new Chat();
-      const sentiment = analyzeConversationSentiment(sessionId);
-      return new Response(JSON.stringify({ sentiment }), { status: 200 });
-    } else if (url.pathname === "/classify-image" && request.method === "POST") {
-      const { imageUrl } = await request.json();
-      const chat = new Chat();
-      const classification = await chat.classifyImage(imageUrl);
-      await chat.storeClassificationMetadata(imageUrl, classification);
-      return new Response(JSON.stringify({ classification }), { status: 200 });
-    } else if (url.pathname === "/seed-knowledge" && request.method === "POST") {
-      const { documents } = await request.json();
-      const chat = new Chat();
-      await chat.seedKnowledge(documents);
-      return new Response("Knowledge seeded successfully", { status: 200 });
-    } else if (url.pathname === "/query-knowledge" && request.method === "GET") {
-      const query = url.searchParams.get("query");
-      if (!query) {
-        return new Response("Query parameter is required", { status: 400 });
+      try {
+        const { userId, messageId, rating } = await request.json();
+        const chat = new Chat();
+        chat.saveRating(userId, messageId, rating);
+        return new Response("Rating submitted successfully", { status: 200 });
+      } catch (error) {
+        console.error("Error handling rating submission", error);
+        return new Response("An error occurred while submitting the rating. Please try again.", { status: 500 });
       }
-      const chat = new Chat();
-      const response = await chat.queryKnowledge(query);
-      return new Response(JSON.stringify({ response }), { status: 200 });
+    } else if (url.pathname === "/context-aware-summary" && request.method === "POST") {
+      try {
+        const { sessionId } = await request.json();
+        const chat = new Chat();
+        const summary = generateMessageSummary(sessionId);
+        return new Response(JSON.stringify({ summary }), { status: 200 });
+      } catch (error) {
+        console.error("Error generating context-aware summary", error);
+        return new Response("An error occurred while generating the summary. Please try again.", { status: 500 });
+      }
+    } else if (url.pathname === "/context-aware-suggestions" && request.method === "POST") {
+      try {
+        const { sessionId } = await request.json();
+        const chat = new Chat();
+        const suggestions = generateSuggestions(sessionId);
+        return new Response(JSON.stringify({ suggestions }), { status: 200 });
+      } catch (error) {
+        console.error("Error generating context-aware suggestions", error);
+        return new Response("An error occurred while generating the suggestions. Please try again.", { status: 500 });
+      }
+    } else if (url.pathname === "/context-aware-sentiment" && request.method === "POST") {
+      try {
+        const { sessionId } = await request.json();
+        const chat = new Chat();
+        const sentiment = analyzeConversationSentiment(sessionId);
+        return new Response(JSON.stringify({ sentiment }), { status: 200 });
+      } catch (error) {
+        console.error("Error analyzing conversation sentiment", error);
+        return new Response("An error occurred while analyzing the sentiment. Please try again.", { status: 500 });
+      }
+    } else if (url.pathname === "/classify-image" && request.method === "POST") {
+      try {
+        const { imageUrl } = await request.json();
+        const chat = new Chat();
+        const classification = await chat.classifyImage(imageUrl);
+        await chat.storeClassificationMetadata(imageUrl, classification);
+        return new Response(JSON.stringify({ classification }), { status: 200 });
+      } catch (error) {
+        console.error("Error classifying image", error);
+        return new Response("An error occurred while classifying the image. Please try again.", { status: 500 });
+      }
+    } else if (url.pathname === "/seed-knowledge" && request.method === "POST") {
+      try {
+        const { documents } = await request.json();
+        const chat = new Chat();
+        await chat.seedKnowledge(documents);
+        return new Response("Knowledge seeded successfully", { status: 200 });
+      } catch (error) {
+        console.error("Error seeding knowledge", error);
+        return new Response("An error occurred while seeding knowledge. Please try again.", { status: 500 });
+      }
+    } else if (url.pathname === "/query-knowledge" && request.method === "GET") {
+      try {
+        const query = url.searchParams.get("query");
+        if (!query) {
+          return new Response("Query parameter is required", { status: 400 });
+        }
+        const chat = new Chat();
+        const response = await chat.queryKnowledge(query);
+        return new Response(JSON.stringify({ response }), { status: 200 });
+      } catch (error) {
+        console.error("Error querying knowledge", error);
+        return new Response("An error occurred while querying knowledge. Please try again.", { status: 500 });
+      }
+    }
+
+    // Rate limiting middleware
+    const limiter = rateLimit({
+      windowMs: 15 * 60 * 1000, // 15 minutes
+      max: 100, // limit each IP to 100 requests per windowMs
+      message: "Too many requests from this IP, please try again later.",
+    });
+
+    // Apply rate limiting
+    limiter(request, env, ctx, () => {});
+
+    // Input validation using Zod
+    const requestSchema = z.object({
+      userId: z.string().uuid(),
+      messageId: z.string().uuid(),
+      rating: z.number().min(1).max(5),
+    });
+
+    try {
+      requestSchema.parse(request);
+    } catch (error) {
+      return new Response("Invalid request data", { status: 400 });
     }
 
     // The real OpenAuth server code starts here:
@@ -155,13 +227,24 @@ export default {
   },
 } satisfies ExportedHandler<Env>;
 
+/**
+ * Retrieves or creates a user in the database based on the provided email.
+ * 
+ * @param {Env} env - The environment variables.
+ * @param {string} email - The email of the user.
+ * @returns {Promise<string>} The user ID.
+ * 
+ * @example
+ * const userId = await getOrCreateUser(env, "user@example.com");
+ * console.log(userId);
+ */
 async function getOrCreateUser(env: Env, email: string): Promise<string> {
   const result = await env.AUTH_DB.prepare(
     `
 		INSERT INTO user (email)
-		VALUES (?)
-		ON CONFLICT (email) DO UPDATE SET email = email
-		RETURNING id;
+			VALUES (?)
+			ON CONFLICT (email) DO UPDATE SET email = email
+			RETURNING id;
 		`,
   )
     .bind(email)

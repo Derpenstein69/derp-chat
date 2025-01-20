@@ -72,6 +72,7 @@ export function usePartySocket(options) {
       } catch (error) {
         console.error("Error processing incoming message", error);
         alert("An error occurred while processing a message. Please try again.");
+        logErrorToService(error, evt);
       }
     },
     onAuth: async () => {
@@ -87,14 +88,42 @@ export function usePartySocket(options) {
       } catch (error) {
         console.error("Error during authentication", error);
         alert("An error occurred during authentication. Please try again.");
+        logErrorToService(error, null);
         throw error;
       }
     },
     onError: (error) => {
       console.error("WebSocket error", error);
       alert("An error occurred with the WebSocket connection. Please try again.");
+      logErrorToService(error, null);
     },
   });
+
+  const logErrorToService = async (error, evt) => {
+    try {
+      const logData = {
+        level: "error",
+        message: error.message,
+        context: {
+          event: evt,
+        },
+        error: {
+          name: error.name,
+          stack: error.stack,
+        },
+      };
+
+      await fetch("https://your-logging-service-endpoint", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(logData),
+      });
+    } catch (loggingError) {
+      console.error("Error logging to external service", loggingError);
+    }
+  };
 
   return socket;
 }

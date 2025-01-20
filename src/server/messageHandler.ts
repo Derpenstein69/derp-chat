@@ -16,12 +16,28 @@ import { S3Client, PutObjectCommand, GetObjectCommand } from "@aws-sdk/client-s3
 import type { ChatMessage, Message, Session } from "../shared";
 import { Chat } from "./chatServer";
 import { generateMessageSummary, generateSuggestions, analyzeConversationSentiment } from "./sessionManager";
+import { z } from "zod";
+
+// Define a schema for input validation using Valibot
+const messageSchema = object({
+  content: string().min(1, "Content cannot be empty"),
+});
+
+// Define a schema for input validation using Zod
+const zodMessageSchema = z.object({
+  content: z.string().min(1, "Content cannot be empty"),
+});
 
 /**
  * Handles incoming messages from clients, updates local store and broadcasts messages.
  * 
  * @param {Connection} connection - The connection object representing the client.
  * @param {WSMessage} message - The message received from the client.
+ * 
+ * @example
+ * const connection = new Connection();
+ * const message = new WSMessage();
+ * onMessage(connection, message);
  */
 export async function onMessage(connection: Connection, message: WSMessage) {
   const startTime = performance.now();
@@ -32,10 +48,16 @@ export async function onMessage(connection: Connection, message: WSMessage) {
     // let's update our local messages store
     const parsed = JSON.parse(message as string) as Message;
 
-    // Validate input data
+    // Validate input data using Valibot
     const validationResult = validate(messageSchema, { content: parsed.content });
     if (!validationResult.success) {
       throw new Error(validationResult.errors[0].message);
+    }
+
+    // Validate input data using Zod
+    const zodValidationResult = zodMessageSchema.safeParse({ content: parsed.content });
+    if (!zodValidationResult.success) {
+      throw new Error(zodValidationResult.error.errors[0].message);
     }
 
     // Sentiment analysis
