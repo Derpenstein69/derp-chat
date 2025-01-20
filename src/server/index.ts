@@ -1,6 +1,6 @@
 /**
  * @file index.ts
- * @description Chat server logic and main functionalities for managing messages and sessions.
+ * @description Main server logic for handling fetch requests, managing user authentication, and integrating with external services.
  * @module Server
  */
 
