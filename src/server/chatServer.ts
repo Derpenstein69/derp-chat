@@ -16,6 +16,8 @@ import { S3Client, PutObjectCommand, GetObjectCommand } from "@aws-sdk/client-s3
 import jwt from "jsonwebtoken";
 import { performance } from "perf_hooks";
 import Redis from "ioredis";
+import { z } from "zod";
+import rateLimit from "express-rate-limit";
 import type { ChatMessage, Session } from "../shared";
 
 /**

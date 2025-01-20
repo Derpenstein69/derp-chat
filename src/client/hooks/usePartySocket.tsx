@@ -7,6 +7,12 @@ export function usePartySocket(options) {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const socketRef = useRef(null);
   const messageQueue = useRef([]);
+  const [retryCount, setRetryCount] = useState(0);
+  const maxRetries = 5;
+  const retryDelay = 3000; // 3 seconds
+  const [rateLimit, setRateLimit] = useState(0);
+  const rateLimitInterval = 60000; // 1 minute
+  const maxMessagesPerInterval = 100;
 
   useEffect(() => {
     if (!socketRef.current) {
@@ -101,6 +107,24 @@ export function usePartySocket(options) {
           console.error("WebSocket error", error);
           alert("An error occurred with the WebSocket connection. Please try again.");
           logErrorToService(error, null);
+          if (retryCount < maxRetries) {
+            setTimeout(() => {
+              setRetryCount((prev) => prev + 1);
+              socketRef.current = null;
+            }, retryDelay);
+          } else {
+            alert("Max retry attempts reached. Please check your connection and try again later.");
+          }
+        },
+        onClose: () => {
+          if (retryCount < maxRetries) {
+            setTimeout(() => {
+              setRetryCount((prev) => prev + 1);
+              socketRef.current = null;
+            }, retryDelay);
+          } else {
+            alert("Max retry attempts reached. Please check your connection and try again later.");
+          }
         },
       });
     }
@@ -111,7 +135,7 @@ export function usePartySocket(options) {
         socketRef.current = null;
       }
     };
-  }, [options]);
+  }, [options, retryCount]);
 
   useEffect(() => {
     if (messageQueue.current.length > 0 && socketRef.current) {
@@ -119,6 +143,14 @@ export function usePartySocket(options) {
       batch.forEach((msg) => socketRef.current.send(msg));
     }
   }, [messages]);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setRateLimit(0);
+    }, rateLimitInterval);
+
+    return () => clearInterval(interval);
+  }, []);
 
   const logErrorToService = async (error, evt) => {
     try {
@@ -147,8 +179,14 @@ export function usePartySocket(options) {
   };
 
   const sendMessage = (msg) => {
+    if (rateLimit >= maxMessagesPerInterval) {
+      alert("Rate limit exceeded. Please wait before sending more messages.");
+      return;
+    }
+
     if (socketRef.current && socketRef.current.readyState === WebSocket.OPEN) {
       socketRef.current.send(msg);
+      setRateLimit((prev) => prev + 1);
     } else {
       messageQueue.current.push(msg);
     }
