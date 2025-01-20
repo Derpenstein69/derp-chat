@@ -42,6 +42,10 @@ export class Chat extends Server<Env> {
    * 
    * @param {Message} message - The message to broadcast.
    * @param {string[]} [exclude] - List of client IDs to exclude from broadcasting.
+   * 
+   * @example
+   * const chat = new Chat();
+   * chat.broadcastMessage({ type: "add", content: "Hello, world!" });
    */
   broadcastMessage(message: Message, exclude?: string[]) {
     this.broadcast(JSON.stringify(message), exclude);
@@ -49,6 +53,10 @@ export class Chat extends Server<Env> {
 
   /**
    * Initializes the chat server, loads previous messages from the database.
+   * 
+   * @example
+   * const chat = new Chat();
+   * chat.onStart();
    */
   onStart() {
     // this is where you can initialize things that need to be done before the server starts
@@ -79,6 +87,10 @@ export class Chat extends Server<Env> {
    * Handles a new client connection, sends initial messages to the client.
    * 
    * @param {Connection} connection - The connection object representing the client.
+   * 
+   * @example
+   * const chat = new Chat();
+   * chat.onConnect(connection);
    */
   onConnect(connection: Connection) {
     connection.send(
@@ -93,6 +105,10 @@ export class Chat extends Server<Env> {
    * Saves a message to the local store and the database.
    * 
    * @param {ChatMessage} message - The message to save.
+   * 
+   * @example
+   * const chat = new Chat();
+   * chat.saveMessage({ id: "123", content: "Hello, world!", user: "Alice", role: "user" });
    */
   saveMessage(message: ChatMessage) {
     // check if the message already exists
@@ -138,6 +154,10 @@ export class Chat extends Server<Env> {
    * Saves a session to the local store and the database.
    * 
    * @param {Session} session - The session to save.
+   * 
+   * @example
+   * const chat = new Chat();
+   * chat.saveSession({ session_id: "session1", user_id: "user1", messages: [] });
    */
   saveSession(session: Session) {
     this.sessions.set(session.session_id, session);
@@ -173,6 +193,10 @@ export class Chat extends Server<Env> {
    * @param {string} userId - The ID of the user providing the rating.
    * @param {string} messageId - The ID of the message being rated.
    * @param {number} ratingValue - The rating value (1-5).
+   * 
+   * @example
+   * const chat = new Chat();
+   * chat.saveRating("user1", "message1", 5);
    */
   saveRating(userId: string, messageId: string, ratingValue: number) {
     this.ctx.storage.sql.exec(
@@ -186,6 +210,10 @@ export class Chat extends Server<Env> {
    * @param {Error} error - The error to log.
    * @param {Connection} connection - The connection object representing the client.
    * @param {WSMessage} message - The message that caused the error.
+   * 
+   * @example
+   * const chat = new Chat();
+   * chat.logErrorToService(new Error("Test error"), connection, message);
    */
   async logErrorToService(error: Error, connection: Connection, message: WSMessage) {
     try {

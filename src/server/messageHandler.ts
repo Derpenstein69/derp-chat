@@ -27,6 +27,11 @@ const messageSchema = object({
  * 
  * @param {Connection} connection - The connection object representing the client.
  * @param {WSMessage} message - The message received from the client.
+ * 
+ * @example
+ * const connection = new Connection();
+ * const message = new WSMessage();
+ * onMessage(connection, message);
  */
 export async function onMessage(connection: Connection, message: WSMessage) {
   const startTime = performance.now();

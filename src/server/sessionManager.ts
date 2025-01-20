@@ -13,6 +13,10 @@ import { Chat } from "./chatServer";
  * 
  * @param {string} sessionId - The ID of the session.
  * @returns {string} The summary of the conversation history.
+ * 
+ * @example
+ * const summary = generateMessageSummary("session1");
+ * console.log(summary);
  */
 export function generateMessageSummary(sessionId: string): string {
   const session = Chat.prototype.sessions.get(sessionId);
@@ -28,6 +32,10 @@ export function generateMessageSummary(sessionId: string): string {
  * 
  * @param {string} sessionId - The ID of the session.
  * @returns {string[]} The list of suggestions.
+ * 
+ * @example
+ * const suggestions = generateSuggestions("session1");
+ * console.log(suggestions);
  */
 export function generateSuggestions(sessionId: string): string[] {
   const session = Chat.prototype.sessions.get(sessionId);
@@ -43,6 +51,10 @@ export function generateSuggestions(sessionId: string): string[] {
  * 
  * @param {string} sessionId - The ID of the session.
  * @returns {string} The sentiment analysis result.
+ * 
+ * @example
+ * const sentiment = analyzeConversationSentiment("session1");
+ * console.log(sentiment);
  */
 export function analyzeConversationSentiment(sessionId: string): string {
   const session = Chat.prototype.sessions.get(sessionId);
