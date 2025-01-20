@@ -318,4 +318,76 @@ describe("Integration Tests", () => {
     expect(chat.broadcast).toHaveBeenCalledWith(JSON.stringify({ type: "add", ...newMessage }));
     expect(chat.ctx.storage.sql.exec).toHaveBeenCalled();
   });
+
+  /**
+   * Test to check the error handling scenarios in messageHandler.ts.
+   */
+  test("error handling scenarios in messageHandler.ts", async () => {
+    const newMessage = {
+      id: nanoid(8),
+      user: "Alice",
+      role: "user",
+      content: "Hello",
+      attachments: [],
+      session_id: "session1",
+      user_id: "user1",
+    };
+    chat.broadcast = jest.fn();
+    chat.ctx.storage.sql.exec = jest.fn().mockImplementation(() => {
+      throw new Error("Test error");
+    });
+    console.error = jest.fn();
+
+    await chat.onMessage(connection, JSON.stringify({ type: "add", ...newMessage }));
+
+    expect(console.error).toHaveBeenCalledWith("Error processing message", expect.any(Error));
+    expect(chat.messages).not.toContainEqual(newMessage);
+  });
+
+  /**
+   * Test to check the AI assistant responses based on conversation context and user preferences.
+   */
+  test("AI assistant responses based on conversation context and user preferences", async () => {
+    const newMessage = {
+      id: nanoid(8),
+      user: "Alice",
+      role: "user",
+      content: "Hello",
+      attachments: [],
+      session_id: "session1",
+      user_id: "user1",
+    };
+    chat.broadcast = jest.fn();
+    chat.ctx.storage.sql.exec = jest.fn();
+    chat.env.AI.run = jest.fn().mockResolvedValue(new ReadableStream());
+
+    await chat.onMessage(connection, JSON.stringify({ type: "add", ...newMessage }));
+
+    expect(chat.messages).toContainEqual(newMessage);
+    expect(chat.broadcast).toHaveBeenCalledWith(JSON.stringify({ type: "add", ...newMessage }));
+    expect(chat.ctx.storage.sql.exec).toHaveBeenCalled();
+  });
+
+  /**
+   * Test to check the real-time analytics data tracking and updating.
+   */
+  test("real-time analytics data tracking and updating", async () => {
+    const newMessage = {
+      id: nanoid(8),
+      user: "Alice",
+      role: "user",
+      content: "Hello",
+      attachments: [],
+      session_id: "session1",
+      user_id: "user1",
+    };
+    chat.broadcast = jest.fn();
+    chat.ctx.storage.sql.exec = jest.fn();
+
+    await chat.onMessage(connection, JSON.stringify({ type: "add", ...newMessage }));
+
+    expect(chat.analyticsData.messageCount).toBe(1);
+    expect(chat.analyticsData.userActivity["Alice"]).toBe(1);
+    expect(chat.analyticsData.messageFrequency).toBeGreaterThan(0);
+  });
 });

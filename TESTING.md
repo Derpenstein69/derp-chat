@@ -132,6 +132,48 @@ When writing tests for personalized responses, follow these guidelines:
 
 5. **Test Profile Persistence**: Verify that the user profile information is persisted correctly across user sessions.
 
+## Guidelines for Writing Tests for Error Handling Scenarios
+
+When writing tests for error handling scenarios, follow these guidelines:
+
+1. **Test Server Unreachable**: Verify that the application displays an appropriate error message when the server is unreachable.
+
+2. **Test Message Send Failure**: Ensure that the application handles message send failures gracefully and provides feedback to the user.
+
+3. **Test Invalid Data Received**: Verify that the application handles invalid data received from the server and displays an appropriate error message.
+
+4. **Test Error Logging**: Ensure that errors are logged to an external logging service for better monitoring and debugging.
+
+5. **Test User-Friendly Error Messages**: Verify that the application displays user-friendly error messages for different error scenarios.
+
+## Guidelines for Writing Tests for AI Assistant Responses
+
+When writing tests for AI assistant responses, follow these guidelines:
+
+1. **Test Context-Aware Responses**: Verify that the AI assistant generates context-aware responses based on the conversation context.
+
+2. **Test Personalized Responses**: Ensure that the AI assistant generates personalized responses based on user preferences and past interactions.
+
+3. **Test Sentiment Analysis**: Verify that the AI assistant adjusts its tone and style based on the sentiment of the conversation.
+
+4. **Test Real-Time Updates**: Ensure that the AI assistant provides real-time updates and responses during the conversation.
+
+5. **Test Response Accuracy**: Verify that the AI assistant's responses are accurate and relevant to the user's queries.
+
+## Guidelines for Writing Tests for Real-Time Analytics
+
+When writing tests for real-time analytics, follow these guidelines:
+
+1. **Test Data Tracking**: Verify that real-time analytics data, such as message count, user activity, and message frequency, is accurately tracked.
+
+2. **Test Data Updating**: Ensure that real-time analytics data is updated correctly as new messages are sent and received.
+
+3. **Test Performance Metrics**: Measure the performance of real-time analytics data tracking and ensure that it meets the expected performance goals.
+
+4. **Test Data Visualization**: Verify that real-time analytics data is visualized correctly in the application's dashboard.
+
+5. **Test Alerts and Notifications**: Ensure that alerts and notifications are triggered based on real-time analytics data.
+
 ## Conclusion
 
 By following this testing strategy, you can ensure that your code is reliable, maintainable, and free of bugs. Regularly run tests and update them as your codebase evolves to maintain high quality standards.

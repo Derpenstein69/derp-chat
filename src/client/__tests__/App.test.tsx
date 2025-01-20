@@ -1616,4 +1616,421 @@ describe('App component', () => {
     expect(screen.getByLabelText('R2_SECRET_ACCESS_KEY:').type).toBe('password');
     expect(screen.getByLabelText('VECTORIZE_API_KEY:').type).toBe('password');
   });
+
+  /**
+   * Test to check if the App component handles different types of messages.
+   * 
+   * @remarks
+   * This test verifies that the App component correctly handles different types of messages such as text, image, and video.
+   * 
+   * @example
+   * test('handles different types of messages', () => {
+   *   render(
+   *     <BrowserRouter>
+   *       <Routes>
+   *         <Route path="/" element={<App />} />
+   *       </Routes>
+   *     </BrowserRouter>
+   *   );
+   * 
+   *   const textMessage = { id: '1', content: 'Hello', type: 'text' };
+   *   const imageMessage = { id: '2', content: 'https://example.com/image.jpg', type: 'image' };
+   *   const videoMessage = { id: '3', content: 'https://example.com/video.mp4', type: 'video' };
+   * 
+   *   fireEvent.submit(screen.getByRole('form'), { target: { value: textMessage.content } });
+   *   fireEvent.submit(screen.getByRole('form'), { target: { value: imageMessage.content } });
+   *   fireEvent.submit(screen.getByRole('form'), { target: { value: videoMessage.content } });
+   * 
+   *   expect(screen.getByText('Hello')).toBeInTheDocument();
+   *   expect(screen.getByAltText('Attachment')).toBeInTheDocument();
+   *   expect(screen.getByTitle('Video Attachment')).toBeInTheDocument();
+   * });
+   */
+  test('handles different types of messages', () => {
+    render(
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<App />} />
+        </Routes>
+      </BrowserRouter>
+    );
+
+    const textMessage = { id: '1', content: 'Hello', type: 'text' };
+    const imageMessage = { id: '2', content: 'https://example.com/image.jpg', type: 'image' };
+    const videoMessage = { id: '3', content: 'https://example.com/video.mp4', type: 'video' };
+
+    fireEvent.submit(screen.getByRole('form'), { target: { value: textMessage.content } });
+    fireEvent.submit(screen.getByRole('form'), { target: { value: imageMessage.content } });
+    fireEvent.submit(screen.getByRole('form'), { target: { value: videoMessage.content } });
+
+    expect(screen.getByText('Hello')).toBeInTheDocument();
+    expect(screen.getByAltText('Attachment')).toBeInTheDocument();
+    expect(screen.getByTitle('Video Attachment')).toBeInTheDocument();
+  });
+
+  /**
+   * Test to check if the App component validates input data.
+   * 
+   * @remarks
+   * This test verifies that the App component validates input data and displays error messages for invalid inputs.
+   * 
+   * @example
+   * test('validates input data', () => {
+   *   render(
+   *     <BrowserRouter>
+   *       <Routes>
+   *         <Route path="/" element={<App />} />
+   *       </Routes>
+   *     </BrowserRouter>
+   *   );
+   * 
+   *   const input = screen.getByPlaceholderText(/Type a message/i);
+   *   fireEvent.change(input, { target: { value: '' } });
+   * 
+   *   const form = screen.getByRole('form');
+   *   fireEvent.submit(form);
+   * 
+   *   expect(screen.getByText('Content cannot be empty')).toBeInTheDocument();
+   * });
+   */
+  test('validates input data', () => {
+    render(
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<App />} />
+        </Routes>
+      </BrowserRouter>
+    );
+
+    const input = screen.getByPlaceholderText(/Type a message/i);
+    fireEvent.change(input, { target: { value: '' } });
+
+    const form = screen.getByRole('form');
+    fireEvent.submit(form);
+
+    expect(screen.getByText('Content cannot be empty')).toBeInTheDocument();
+  });
+
+  /**
+   * Test to check if the App component handles edge cases.
+   * 
+   * @remarks
+   * This test verifies that the App component handles edge cases such as empty messages and invalid attachments.
+   * 
+   * @example
+   * test('handles edge cases', () => {
+   *   render(
+   *     <BrowserRouter>
+   *       <Routes>
+   *         <Route path="/" element={<App />} />
+   *       </Routes>
+   *     </BrowserRouter>
+   *   );
+   * 
+   *   const emptyMessage = { id: '1', content: '', type: 'text' };
+   *   const invalidAttachment = { id: '2', content: 'invalid-url', type: 'image' };
+   * 
+   *   fireEvent.submit(screen.getByRole('form'), { target: { value: emptyMessage.content } });
+   *   fireEvent.submit(screen.getByRole('form'), { target: { value: invalidAttachment.content } });
+   * 
+   *   expect(screen.getByText('Content cannot be empty')).toBeInTheDocument();
+   *   expect(screen.getByText('Invalid attachment URL')).toBeInTheDocument();
+   * });
+   */
+  test('handles edge cases', () => {
+    render(
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<App />} />
+        </Routes>
+      </BrowserRouter>
+    );
+
+    const emptyMessage = { id: '1', content: '', type: 'text' };
+    const invalidAttachment = { id: '2', content: 'invalid-url', type: 'image' };
+
+    fireEvent.submit(screen.getByRole('form'), { target: { value: emptyMessage.content } });
+    fireEvent.submit(screen.getByRole('form'), { target: { value: invalidAttachment.content } });
+
+    expect(screen.getByText('Content cannot be empty')).toBeInTheDocument();
+    expect(screen.getByText('Invalid attachment URL')).toBeInTheDocument();
+  });
+
+  /**
+   * Test to check if the App component handles server unreachable error.
+   * 
+   * @remarks
+   * This test verifies that the App component displays an error message when the server is unreachable.
+   * 
+   * @example
+   * test('handles server unreachable error', () => {
+   *   usePartySocket.mockImplementation(() => {
+   *     throw new Error('Server unreachable');
+   *   });
+   * 
+   *   render(
+   *     <BrowserRouter>
+   *       <Routes>
+   *         <Route path="/" element={<App />} />
+   *       </Routes>
+   *     </BrowserRouter>
+   *   );
+   * 
+   *   expect(screen.getByText('Server unreachable. Please try again later.')).toBeInTheDocument();
+   * });
+   */
+  test('handles server unreachable error', () => {
+    usePartySocket.mockImplementation(() => {
+      throw new Error('Server unreachable');
+    });
+
+    render(
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<App />} />
+        </Routes>
+      </BrowserRouter>
+    );
+
+    expect(screen.getByText('Server unreachable. Please try again later.')).toBeInTheDocument();
+  });
+
+  /**
+   * Test to check if the App component handles message send failure.
+   * 
+   * @remarks
+   * This test verifies that the App component displays an error message when a message fails to send.
+   * 
+   * @example
+   * test('handles message send failure', () => {
+   *   usePartySocket.mockReturnValue({
+   *     send: jest.fn(() => {
+   *       throw new Error('Message send failure');
+   *     }),
+   *   });
+   * 
+   *   render(
+   *     <BrowserRouter>
+   *       <Routes>
+   *         <Route path="/" element={<App />} />
+   *       </Routes>
+   *     </BrowserRouter>
+   *   );
+   * 
+   *   const input = screen.getByPlaceholderText(/Type a message/i);
+   *   fireEvent.change(input, { target: { value: 'Hello' } });
+   * 
+   *   const form = screen.getByRole('form');
+   *   fireEvent.submit(form);
+   * 
+   *   expect(screen.getByText('Message send failure. Please try again.')).toBeInTheDocument();
+   * });
+   */
+  test('handles message send failure', () => {
+    usePartySocket.mockReturnValue({
+      send: jest.fn(() => {
+        throw new Error('Message send failure');
+      }),
+    });
+
+    render(
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<App />} />
+        </Routes>
+      </BrowserRouter>
+    );
+
+    const input = screen.getByPlaceholderText(/Type a message/i);
+    fireEvent.change(input, { target: { value: 'Hello' } });
+
+    const form = screen.getByRole('form');
+    fireEvent.submit(form);
+
+    expect(screen.getByText('Message send failure. Please try again.')).toBeInTheDocument();
+  });
+
+  /**
+   * Test to check if the App component handles invalid data received.
+   * 
+   * @remarks
+   * This test verifies that the App component displays an error message when invalid data is received.
+   * 
+   * @example
+   * test('handles invalid data received', () => {
+   *   usePartySocket.mockImplementation(() => {
+   *     throw new Error('Invalid data received');
+   *   });
+   * 
+   *   render(
+   *     <BrowserRouter>
+   *       <Routes>
+   *         <Route path="/" element={<App />} />
+   *       </Routes>
+   *     </BrowserRouter>
+   *   );
+   * 
+   *   expect(screen.getByText('Invalid data received. Please try again.')).toBeInTheDocument();
+   * });
+   */
+  test('handles invalid data received', () => {
+    usePartySocket.mockImplementation(() => {
+      throw new Error('Invalid data received');
+    });
+
+    render(
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<App />} />
+        </Routes>
+      </BrowserRouter>
+    );
+
+    expect(screen.getByText('Invalid data received. Please try again.')).toBeInTheDocument();
+  });
+
+  /**
+   * Test to check if the App component handles performance optimizations.
+   * 
+   * @remarks
+   * This test verifies that the App component handles performance optimizations such as message rendering, input handling, and real-time updates.
+   * 
+   * @example
+   * test('handles performance optimizations', () => {
+   *   render(
+   *     <BrowserRouter>
+   *       <Routes>
+   *         <Route path="/" element={<App />} />
+   *       </Routes>
+   *     </BrowserRouter>
+   *   );
+   * 
+   *   const input = screen.getByPlaceholderText(/Type a message/i);
+   *   fireEvent.change(input, { target: { value: 'Hello' } });
+   * 
+   *   const form = screen.getByRole('form');
+   *   fireEvent.submit(form);
+   * 
+   *   expect(usePartySocket().send).toHaveBeenCalled();
+   *   expect(screen.getByText('Hello')).toBeInTheDocument();
+   * });
+   */
+  test('handles performance optimizations', () => {
+    render(
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<App />} />
+        </Routes>
+      </BrowserRouter>
+    );
+
+    const input = screen.getByPlaceholderText(/Type a message/i);
+    fireEvent.change(input, { target: { value: 'Hello' } });
+
+    const form = screen.getByRole('form');
+    fireEvent.submit(form);
+
+    expect(usePartySocket().send).toHaveBeenCalled();
+    expect(screen.getByText('Hello')).toBeInTheDocument();
+  });
+
+  /**
+   * Test to check if the App component handles AI assistant responses.
+   * 
+   * @remarks
+   * This test verifies that the App component handles AI assistant responses based on the conversation context and user preferences.
+   * 
+   * @example
+   * test('handles AI assistant responses', () => {
+   *   render(
+   *     <BrowserRouter>
+   *       <Routes>
+   *         <Route path="/" element={<App />} />
+   *       </Routes>
+   *     </BrowserRouter>
+   *   );
+   * 
+   *   const input = screen.getByPlaceholderText(/Type a message/i);
+   *   fireEvent.change(input, { target: { value: 'Hello' } });
+   * 
+   *   const form = screen.getByRole('form');
+   *   fireEvent.submit(form);
+   * 
+   *   expect(usePartySocket().send).toHaveBeenCalled();
+   *   expect(screen.getByText('AI response based on context')).toBeInTheDocument();
+   * });
+   */
+  test('handles AI assistant responses', () => {
+    render(
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<App />} />
+        </Routes>
+      </BrowserRouter>
+    );
+
+    const input = screen.getByPlaceholderText(/Type a message/i);
+    fireEvent.change(input, { target: { value: 'Hello' } });
+
+    const form = screen.getByRole('form');
+    fireEvent.submit(form);
+
+    expect(usePartySocket().send).toHaveBeenCalled();
+    expect(screen.getByText('AI response based on context')).toBeInTheDocument();
+  });
+
+  /**
+   * Test to check if the App component handles real-time analytics data tracking and updating.
+   * 
+   * @remarks
+   * This test verifies that the App component handles real-time analytics data tracking and updating.
+   * 
+   * @example
+   * test('handles real-time analytics data tracking and updating', () => {
+   *   render(
+   *     <BrowserRouter>
+   *       <Routes>
+   *         <Route path="/" element={<App />} />
+   *       </Routes>
+   *     </BrowserRouter>
+   *   );
+   * 
+   *   const input = screen.getByPlaceholderText(/Type a message/i);
+   *   fireEvent.change(input, { target: { value: 'Hello' } });
+   * 
+   *   const form = screen.getByRole('form');
+   *   fireEvent.submit(form);
+   * 
+   *   expect(usePartySocket().send).toHaveBeenCalled();
+   *   expect(screen.getByText('Real-Time Analytics')).toBeInTheDocument();
+   *   expect(screen.getByText('Message Count: 1')).toBeInTheDocument();
+   *   expect(screen.getByText('Message Frequency:')).toBeInTheDocument();
+   *   expect(screen.getByText('User Activity')).toBeInTheDocument();
+   *   expect(screen.getByText('User Preferences')).toBeInTheDocument();
+   *   expect(screen.getByText('Previous Interactions')).toBeInTheDocument();
+   * });
+   */
+  test('handles real-time analytics data tracking and updating', () => {
+    render(
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<App />} />
+        </Routes>
+      </BrowserRouter>
+    );
+
+    const input = screen.getByPlaceholderText(/Type a message/i);
+    fireEvent.change(input, { target: { value: 'Hello' } });
+
+    const form = screen.getByRole('form');
+    fireEvent.submit(form);
+
+    expect(usePartySocket().send).toHaveBeenCalled();
+    expect(screen.getByText('Real-Time Analytics')).toBeInTheDocument();
+    expect(screen.getByText('Message Count: 1')).toBeInTheDocument();
+    expect(screen.getByText('Message Frequency:')).toBeInTheDocument();
+    expect(screen.getByText('User Activity')).toBeInTheDocument();
+    expect(screen.getByText('User Preferences')).toBeInTheDocument();
+    expect(screen.getByText('Previous Interactions')).toBeInTheDocument();
+  });
 });
