@@ -32,6 +32,7 @@
  * @property {string} [preferences.interaction_style] - The interaction style preference of the user.
  * @property {string[]} [multi_modal_attachments] - Optional multi-modal attachments associated with the message.
  * @property {string} [sentiment] - Optional sentiment analysis result of the message.
+ * @property {string} [classification] - Optional image classification result of the message.
  * 
  * @example
  * const message = {
@@ -59,7 +60,8 @@
  *     interaction_style: "friendly"
  *   },
  *   multi_modal_attachments: ["video.mp4"],
- *   sentiment: "positive"
+ *   sentiment: "positive",
+ *   classification: "cat"
  * };
  */
 export type ChatMessage = {
@@ -88,4 +90,5 @@ export type ChatMessage = {
   };
   multi_modal_attachments?: string[];
   sentiment?: string;
+  classification?: string;
 };

@@ -1475,4 +1475,115 @@ describe("Chat", () => {
     expect(console.error).toHaveBeenCalledWith("Error processing message", expect.any(Error));
     expect(chat.messages).not.toContainEqual(errorMessage);
   });
+
+  test("should handle new message types", async () => {
+    const newMessage = {
+      id: nanoid(8),
+      user: "Alice",
+      role: "user",
+      content: "Hello",
+      attachments: ["image.jpg", "video.mp4"],
+      session_id: "session1",
+      user_id: "user1",
+      multi_modal_attachments: ["image.jpg", "video.mp4"],
+    };
+    chat.broadcast = jest.fn();
+    chat.ctx.storage.sql.exec = jest.fn();
+
+    await chat.onMessage(connection, JSON.stringify({ type: "add", ...newMessage }));
+
+    expect(chat.messages).toContainEqual(newMessage);
+    expect(chat.broadcast).toHaveBeenCalledWith(JSON.stringify({ type: "add", ...newMessage }));
+    expect(chat.ctx.storage.sql.exec).toHaveBeenCalled();
+  });
+
+  test("should handle personalized interactions", async () => {
+    const newMessage = {
+      id: nanoid(8),
+      user: "Alice",
+      role: "user",
+      content: "Hello",
+      attachments: [],
+      session_id: "session1",
+      user_id: "user1",
+      preferences: {
+        theme: "dark",
+        avatar: "robot",
+        interaction_style: "friendly",
+      },
+    };
+    chat.broadcast = jest.fn();
+    chat.ctx.storage.sql.exec = jest.fn();
+    chat.env.AI.run = jest.fn().mockResolvedValue(new ReadableStream());
+
+    await chat.onMessage(connection, JSON.stringify({ type: "add", ...newMessage }));
+
+    expect(chat.messages).toContainEqual(newMessage);
+    expect(chat.broadcast).toHaveBeenCalledWith(JSON.stringify({ type: "add", ...newMessage }));
+    expect(chat.ctx.storage.sql.exec).toHaveBeenCalled();
+  });
+
+  test("should handle multi-modal responses", async () => {
+    const newMessage = {
+      id: nanoid(8),
+      user: "Alice",
+      role: "user",
+      content: "Hello",
+      attachments: ["image.jpg", "video.mp4"],
+      session_id: "session1",
+      user_id: "user1",
+      multi_modal_attachments: ["image.jpg", "video.mp4"],
+    };
+    chat.broadcast = jest.fn();
+    chat.ctx.storage.sql.exec = jest.fn();
+    chat.env.AI.run = jest.fn().mockResolvedValue(new ReadableStream());
+
+    await chat.onMessage(connection, JSON.stringify({ type: "add", ...newMessage }));
+
+    expect(chat.messages).toContainEqual(newMessage);
+    expect(chat.broadcast).toHaveBeenCalledWith(JSON.stringify({ type: "add", ...newMessage }));
+    expect(chat.ctx.storage.sql.exec).toHaveBeenCalled();
+  });
+
+  test("should handle real-time analytics", async () => {
+    const newMessage = {
+      id: nanoid(8),
+      user: "Alice",
+      role: "user",
+      content: "Hello",
+      attachments: [],
+      session_id: "session1",
+      user_id: "user1",
+    };
+    chat.broadcast = jest.fn();
+    chat.ctx.storage.sql.exec = jest.fn();
+
+    await chat.onMessage(connection, JSON.stringify({ type: "add", ...newMessage }));
+
+    expect(chat.analyticsData.messageCount).toBe(1);
+    expect(chat.analyticsData.userActivity["Alice"]).toBe(1);
+    expect(chat.analyticsData.messageFrequency).toBeGreaterThan(0);
+  });
+
+  test("should handle context-aware responses", async () => {
+    const newMessage = {
+      id: nanoid(8),
+      user: "Alice",
+      role: "user",
+      content: "Hello",
+      attachments: [],
+      session_id: "session1",
+      user_id: "user1",
+      context: "Previous conversation context",
+    };
+    chat.broadcast = jest.fn();
+    chat.ctx.storage.sql.exec = jest.fn();
+    chat.env.AI.run = jest.fn().mockResolvedValue(new ReadableStream());
+
+    await chat.onMessage(connection, JSON.stringify({ type: "add", ...newMessage }));
+
+    expect(chat.messages).toContainEqual(newMessage);
+    expect(chat.broadcast).toHaveBeenCalledWith(JSON.stringify({ type: "add", ...newMessage }));
+    expect(chat.ctx.storage.sql.exec).toHaveBeenCalled();
+  });
 });

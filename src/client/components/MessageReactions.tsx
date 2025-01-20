@@ -13,7 +13,7 @@ export function MessageReactions({ messageId }: { messageId: string }): JSX.Elem
 
   return (
     <div className="message-reactions">
-      {["👍", "❤️", "😂", "😮", "😢", "😡"].map((reaction) => (
+      {["👍", "❤️", "😂", "😮", "😢", "😡", "👏", "🎉", "🔥", "💯"].map((reaction) => (
         <button key={reaction} onClick={() => handleReaction(reaction)}>
           {reaction} {reactions[reaction] || 0}
         </button>
