@@ -21,6 +21,8 @@ const secretsSchema = z.object({
   CLASSIFICATION_METADATA: z.string().min(1, "CLASSIFICATION_METADATA is required"),
   VECTORIZE_API_KEY: z.string().min(1, "VECTORIZE_API_KEY is required"),
   VECTORIZE_ENDPOINT: z.string().min(1, "VECTORIZE_ENDPOINT is required"),
+  AI_MODEL_ENDPOINT: z.string().min(1, "AI_MODEL_ENDPOINT is required"),
+  AI_MODEL_API_KEY: z.string().min(1, "AI_MODEL_API_KEY is required"),
 });
 
 export function CloudflareSecretsSettings(): JSX.Element {
@@ -43,6 +45,8 @@ export function CloudflareSecretsSettings(): JSX.Element {
     CLASSIFICATION_METADATA: string;
     VECTORIZE_API_KEY: string;
     VECTORIZE_ENDPOINT: string;
+    AI_MODEL_ENDPOINT: string;
+    AI_MODEL_API_KEY: string;
   }>({
     GOOGLE_CLIENT_ID: "",
     GOOGLE_CLIENT_SECRET: "",
@@ -62,6 +66,8 @@ export function CloudflareSecretsSettings(): JSX.Element {
     CLASSIFICATION_METADATA: "",
     VECTORIZE_API_KEY: "",
     VECTORIZE_ENDPOINT: "",
+    AI_MODEL_ENDPOINT: "",
+    AI_MODEL_API_KEY: "",
   });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -264,6 +270,24 @@ export function CloudflareSecretsSettings(): JSX.Element {
           type="text"
           name="VECTORIZE_ENDPOINT"
           value={secrets.VECTORIZE_ENDPOINT}
+          onChange={handleInputChange}
+        />
+      </label>
+      <label>
+        AI_MODEL_ENDPOINT:
+        <input
+          type="text"
+          name="AI_MODEL_ENDPOINT"
+          value={secrets.AI_MODEL_ENDPOINT}
+          onChange={handleInputChange}
+        />
+      </label>
+      <label>
+        AI_MODEL_API_KEY:
+        <input
+          type="password"
+          name="AI_MODEL_API_KEY"
+          value={secrets.AI_MODEL_API_KEY}
           onChange={handleInputChange}
         />
       </label>
