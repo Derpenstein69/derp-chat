@@ -12,6 +12,9 @@ export function ProfileSettings({ userId }: { userId: string }): JSX.Element {
     avatar: string;
     interaction_style: string;
     badges: string[];
+    phone: string;
+    email: string;
+    birthday: string;
   }>({
     picture: "",
     status: "",
@@ -23,6 +26,9 @@ export function ProfileSettings({ userId }: { userId: string }): JSX.Element {
     avatar: "",
     interaction_style: "",
     badges: [],
+    phone: "",
+    email: "",
+    birthday: "",
   });
 
   useEffect(() => {
@@ -168,6 +174,33 @@ export function ProfileSettings({ userId }: { userId: string }): JSX.Element {
               badges,
             }));
           }}
+        />
+      </label>
+      <label>
+        Phone:
+        <input
+          type="text"
+          name="phone"
+          value={profile.phone}
+          onChange={handleInputChange}
+        />
+      </label>
+      <label>
+        Email:
+        <input
+          type="text"
+          name="email"
+          value={profile.email}
+          onChange={handleInputChange}
+        />
+      </label>
+      <label>
+        Birthday:
+        <input
+          type="text"
+          name="birthday"
+          value={profile.birthday}
+          onChange={handleInputChange}
         />
       </label>
       <button type="submit">Save</button>

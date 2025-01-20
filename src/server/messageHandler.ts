@@ -109,6 +109,13 @@ export async function onMessage(connection: Connection, message: WSMessage) {
       session.sentiment = parsed.sentiment;
       Chat.prototype.saveSession(session);
 
+      // Generate context-aware suggestions
+      const suggestions = generateSuggestions(parsed.session_id);
+      Chat.prototype.broadcastMessage({
+        type: "suggestions",
+        suggestions,
+      });
+
       // let's ask AI to respond as well for fun
       const aiMessage = {
         id: nanoid(8),

@@ -155,6 +155,29 @@ function App(): JSX.Element {
     message.content.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  // Highlight search terms in filtered messages
+  const highlightSearchTerms = (text: string, query: string) => {
+    const parts = text.split(new RegExp(`(${query})`, "gi"));
+    return parts.map((part, index) =>
+      part.toLowerCase() === query.toLowerCase() ? (
+        <span key={index} className="highlight">
+          {part}
+        </span>
+      ) : (
+        part
+      )
+    );
+  };
+
+  // Extract message context snippet around search terms
+  const extractContextSnippet = (text: string, query: string, snippetLength: number = 30) => {
+    const index = text.toLowerCase().indexOf(query.toLowerCase());
+    if (index === -1) return text;
+    const start = Math.max(0, index - snippetLength);
+    const end = Math.min(text.length, index + query.length + snippetLength);
+    return text.substring(start, end);
+  };
+
   // Voice recognition setup
   const [isListening, setIsListening] = useState(false);
   const [voiceInput, setVoiceInput] = useState("");
@@ -214,7 +237,9 @@ function App(): JSX.Element {
             )}
           </div>
           <div className="ten columns">
-            {message.content}
+            <div className="message-content">
+              {highlightSearchTerms(extractContextSnippet(message.content, searchQuery), searchQuery)}
+            </div>
             {message.attachments &&
               message.attachments.map((attachment, index) => (
                 <div key={index}>
