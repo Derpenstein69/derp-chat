@@ -46,11 +46,16 @@ function App(): JSX.Element {
     theme: string; // Pc65c
     avatar: string; // Pc65c
     interaction_style: string; // Pc65c
+    preferences: { [key: string]: any }; // P2f4b
+    behavior: { [key: string]: any }; // P2f4b
   } | null>(null);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [searchQuery, setSearchQuery] = useState<string>(""); // Search query state
   const { room } = useParams();
   const location = useLocation();
+
+  // State for personalized message suggestions
+  const [suggestions, setSuggestions] = useState<string[]>([]);
 
   // Effect for handling authentication callback and setting user profile
   useEffect(() => {
@@ -129,6 +134,8 @@ function App(): JSX.Element {
                 : m,
             ),
           );
+        } else if (message.type === "suggestions") {
+          setSuggestions(message.suggestions);
         } else {
           setMessages(message.messages);
         }
@@ -206,7 +213,7 @@ function App(): JSX.Element {
   }, [isListening]);
 
   return (
-    <div className="chat container">
+    <div className="chat container" style={{ backgroundColor: profile?.theme || "white" }}>
       <div className="connection-status">
         Connection Status: {connectionStatus}
       </div>
@@ -382,6 +389,14 @@ function App(): JSX.Element {
           {isListening ? "Stop Listening" : "Start Listening"}
         </button>
       </form>
+      <div className="suggestions">
+        <h4>Message Suggestions</h4>
+        <ul>
+          {suggestions.map((suggestion, index) => (
+            <li key={index}>{suggestion}</li>
+          ))}
+        </ul>
+      </div>
       <SurveyLink />
       <EmbeddedSurvey />
       <AnalyticsDisplay />
