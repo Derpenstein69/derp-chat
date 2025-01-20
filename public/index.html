@@ -24,7 +24,24 @@
     <!-- Favicon
   –––––––––––––––––––––––––––––––––––––––––––––––––– -->
     <link rel="icon" type="image/ico" href="favicon.ico" />
-    <script src="/dist/index.js" type="module"></script>
+    <script type="module">
+      import { createRoot } from "react-dom/client";
+      import { Routing } from "./Routing";
+      import { ErrorBoundary } from "./ErrorHandling";
+      import React, { Suspense, lazy } from "react";
+
+      // Lazy load the Routing component
+      const LazyRouting = lazy(() => import("./Routing"));
+
+      // Render the application
+      createRoot(document.getElementById("root")).render(
+        <ErrorBoundary>
+          <Suspense fallback={<div>Loading...</div>}>
+            <LazyRouting />
+          </Suspense>
+        </ErrorBoundary>
+      );
+    </script>
     <script src="https://apis.google.com/js/platform.js" async defer></script>
     <script src="https://connect.facebook.net/en_US/sdk.js" async defer></script>
   </head>

@@ -7,11 +7,17 @@
 import { createRoot } from "react-dom/client";
 import { Routing } from "./Routing";
 import { ErrorBoundary } from "./ErrorHandling";
+import React, { Suspense, lazy } from "react";
+
+// Lazy load the Routing component
+const LazyRouting = lazy(() => import("./Routing"));
 
 // Render the application
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 createRoot(document.getElementById("root")!).render(
   <ErrorBoundary>
-    <Routing />
+    <Suspense fallback={<div>Loading...</div>}>
+      <LazyRouting />
+    </Suspense>
   </ErrorBoundary>,
 );
