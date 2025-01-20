@@ -17,6 +17,11 @@ import type { ChatMessage, Message, Session } from "../shared";
 import { Chat } from "./chatServer";
 import { generateMessageSummary, generateSuggestions, analyzeConversationSentiment } from "./sessionManager";
 
+// Define a schema for input validation using Valibot
+const messageSchema = object({
+  content: string().min(1, "Content cannot be empty"),
+});
+
 /**
  * Handles incoming messages from clients, updates local store and broadcasts messages.
  * 

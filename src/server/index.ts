@@ -54,44 +54,79 @@ export default {
         params: Object.fromEntries(url.searchParams.entries()),
       });
     } else if (url.pathname === "/rate" && request.method === "POST") {
-      const { userId, messageId, rating } = await request.json();
-      const chat = new Chat();
-      chat.saveRating(userId, messageId, rating);
-      return new Response("Rating submitted successfully", { status: 200 });
-    } else if (url.pathname === "/context-aware-summary" && request.method === "POST") {
-      const { sessionId } = await request.json();
-      const chat = new Chat();
-      const summary = generateMessageSummary(sessionId);
-      return new Response(JSON.stringify({ summary }), { status: 200 });
-    } else if (url.pathname === "/context-aware-suggestions" && request.method === "POST") {
-      const { sessionId } = await request.json();
-      const chat = new Chat();
-      const suggestions = generateSuggestions(sessionId);
-      return new Response(JSON.stringify({ suggestions }), { status: 200 });
-    } else if (url.pathname === "/context-aware-sentiment" && request.method === "POST") {
-      const { sessionId } = await request.json();
-      const chat = new Chat();
-      const sentiment = analyzeConversationSentiment(sessionId);
-      return new Response(JSON.stringify({ sentiment }), { status: 200 });
-    } else if (url.pathname === "/classify-image" && request.method === "POST") {
-      const { imageUrl } = await request.json();
-      const chat = new Chat();
-      const classification = await chat.classifyImage(imageUrl);
-      await chat.storeClassificationMetadata(imageUrl, classification);
-      return new Response(JSON.stringify({ classification }), { status: 200 });
-    } else if (url.pathname === "/seed-knowledge" && request.method === "POST") {
-      const { documents } = await request.json();
-      const chat = new Chat();
-      await chat.seedKnowledge(documents);
-      return new Response("Knowledge seeded successfully", { status: 200 });
-    } else if (url.pathname === "/query-knowledge" && request.method === "GET") {
-      const query = url.searchParams.get("query");
-      if (!query) {
-        return new Response("Query parameter is required", { status: 400 });
+      try {
+        const { userId, messageId, rating } = await request.json();
+        const chat = new Chat();
+        chat.saveRating(userId, messageId, rating);
+        return new Response("Rating submitted successfully", { status: 200 });
+      } catch (error) {
+        console.error("Error handling rating submission", error);
+        return new Response("An error occurred while submitting the rating. Please try again.", { status: 500 });
       }
-      const chat = new Chat();
-      const response = await chat.queryKnowledge(query);
-      return new Response(JSON.stringify({ response }), { status: 200 });
+    } else if (url.pathname === "/context-aware-summary" && request.method === "POST") {
+      try {
+        const { sessionId } = await request.json();
+        const chat = new Chat();
+        const summary = generateMessageSummary(sessionId);
+        return new Response(JSON.stringify({ summary }), { status: 200 });
+      } catch (error) {
+        console.error("Error generating context-aware summary", error);
+        return new Response("An error occurred while generating the summary. Please try again.", { status: 500 });
+      }
+    } else if (url.pathname === "/context-aware-suggestions" && request.method === "POST") {
+      try {
+        const { sessionId } = await request.json();
+        const chat = new Chat();
+        const suggestions = generateSuggestions(sessionId);
+        return new Response(JSON.stringify({ suggestions }), { status: 200 });
+      } catch (error) {
+        console.error("Error generating context-aware suggestions", error);
+        return new Response("An error occurred while generating the suggestions. Please try again.", { status: 500 });
+      }
+    } else if (url.pathname === "/context-aware-sentiment" && request.method === "POST") {
+      try {
+        const { sessionId } = await request.json();
+        const chat = new Chat();
+        const sentiment = analyzeConversationSentiment(sessionId);
+        return new Response(JSON.stringify({ sentiment }), { status: 200 });
+      } catch (error) {
+        console.error("Error analyzing conversation sentiment", error);
+        return new Response("An error occurred while analyzing the sentiment. Please try again.", { status: 500 });
+      }
+    } else if (url.pathname === "/classify-image" && request.method === "POST") {
+      try {
+        const { imageUrl } = await request.json();
+        const chat = new Chat();
+        const classification = await chat.classifyImage(imageUrl);
+        await chat.storeClassificationMetadata(imageUrl, classification);
+        return new Response(JSON.stringify({ classification }), { status: 200 });
+      } catch (error) {
+        console.error("Error classifying image", error);
+        return new Response("An error occurred while classifying the image. Please try again.", { status: 500 });
+      }
+    } else if (url.pathname === "/seed-knowledge" && request.method === "POST") {
+      try {
+        const { documents } = await request.json();
+        const chat = new Chat();
+        await chat.seedKnowledge(documents);
+        return new Response("Knowledge seeded successfully", { status: 200 });
+      } catch (error) {
+        console.error("Error seeding knowledge", error);
+        return new Response("An error occurred while seeding knowledge. Please try again.", { status: 500 });
+      }
+    } else if (url.pathname === "/query-knowledge" && request.method === "GET") {
+      try {
+        const query = url.searchParams.get("query");
+        if (!query) {
+          return new Response("Query parameter is required", { status: 400 });
+        }
+        const chat = new Chat();
+        const response = await chat.queryKnowledge(query);
+        return new Response(JSON.stringify({ response }), { status: 200 });
+      } catch (error) {
+        console.error("Error querying knowledge", error);
+        return new Response("An error occurred while querying knowledge. Please try again.", { status: 500 });
+      }
     }
 
     // The real OpenAuth server code starts here:
