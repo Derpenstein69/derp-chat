@@ -63,7 +63,7 @@ function App(): JSX.Element {
   }, [location.search]);
 
   // Initialize PartySocket for real-time communication and user authentication
-  const socket = usePartySocket({
+  const { socket, sendMessage, connectionStatus } = usePartySocket({
     party: "chat",
     room,
     onMessage: (evt) => {
@@ -207,6 +207,9 @@ function App(): JSX.Element {
 
   return (
     <div className="chat container">
+      <div className="connection-status">
+        Connection Status: {connectionStatus}
+      </div>
       <form className="row search-form">
         <input
           type="text"
@@ -343,7 +346,7 @@ function App(): JSX.Element {
 
             setMessages((messages) => [...messages, chatMessage]);
 
-            socket.send(
+            sendMessage(
               JSON.stringify({
                 type: "add",
                 ...chatMessage,

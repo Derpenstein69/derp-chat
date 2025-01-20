@@ -20,6 +20,7 @@ function createLogEntry(data) {
     message: data.message || '',
     context: data.context || {},
     error: data.error || null,
+    analytics: data.analytics || {}, // Added support for detailed analytics
   };
 }
 

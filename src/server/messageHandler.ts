@@ -17,6 +17,7 @@ import type { ChatMessage, Message, Session } from "../shared";
 import { Chat } from "./chatServer";
 import { generateMessageSummary, generateSuggestions, analyzeConversationSentiment } from "./sessionManager";
 import { z } from "zod";
+import rateLimit from "express-rate-limit";
 
 // Define a schema for input validation using Valibot
 const messageSchema = object({
@@ -26,6 +27,13 @@ const messageSchema = object({
 // Define a schema for input validation using Zod
 const zodMessageSchema = z.object({
   content: z.string().min(1, "Content cannot be empty"),
+});
+
+// Rate limiting middleware
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // limit each IP to 100 requests per windowMs
+  message: "Too many requests from this IP, please try again later.",
 });
 
 /**
@@ -42,6 +50,9 @@ const zodMessageSchema = z.object({
 export async function onMessage(connection: Connection, message: WSMessage) {
   const startTime = performance.now();
   try {
+    // Apply rate limiting
+    limiter(connection.request, connection.env, connection.ctx, () => {});
+
     // let's broadcast the raw message to everyone else
     Chat.prototype.broadcast(message);
 
